@@ -1,1113 +1,1559 @@
-<!DOCTYPE HTML>
-<html>
-	<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Jefferson Valandro</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="Jefferson Valandro" />
-	<meta name="keywords" content="Ciência de Dados, Análise de Dados, Machine Learning, Estatísticas, Visualização de Dados, Python, R, Big Data, Mineração de Dados, Modelagem Preditiva, Aprendizado de Máquina, Projetos de Data Science, SQL, Business Intelligence, Inteligência Artificial, Analytics, Tomada de Decisão Baseada em Dados, Dashboard Interativo, Experimentação, Feature Engineering, Data Wrangling" />
-	<meta name="author" content="Jefferson Valandro" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jefferson Valandro — Software Engineer</title>
+  <meta name="description" content="Jefferson Valandro — Senior Software Engineer, Tech Lead, and Full Stack Developer with 10+ years of experience in system architecture, Java, APIs, and MLOps.">
+  <meta name="keywords" content="Software Engineer, System Architect, Tech Lead, Java, Spring Boot, MLOps, Full Stack, Backend, DevOps, API, Microservices">
+  <meta name="author" content="Jefferson Valandro">
+  <meta property="og:title" content="Jefferson Valandro — Software Engineer">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/">
+  <meta property="og:description" content="Senior Software Engineer & Tech Lead with 10+ years building scalable systems, APIs, and cloud-native architectures.">
 
-	<meta property="og:title" content="Jefferson Valandro"/>
-	<meta property="og:image" content=""/>
-	<meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/"/>
-	<meta property="og:site_name" content="Jefferson Valandro"/>
-	<meta property="og:description" content="Explore meu portfólio para descobrir o fascinante mundo da Ciência de Dados através dos meus projetos inovadores. Com uma década de experiência em programação e uma transição empolgante para a Ciência de Dados, trago habilidades sólidas em análise de dados, machine learning e visualização de dados. Mergulhe em projetos que destacam minha capacidade de extrair insights significativos, criar modelos preditivos robustos e transformar dados em narrativas impactantes. Da mineração de dados à tomada de decisões informadas, meu portfólio reflete minha paixão por desvendar o potencial dos dados para impulsionar soluções inteligentes."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/515935cc24.js" crossorigin="anonymous"></script>
 
-	<meta name="twitter:title" content="Jefferson Valandro" />
-	<meta name="twitter:image" content="" />
-	<meta name="twitter:url" content="https://jeffev.github.io/jeffersonvalandro/" />
-	<meta name="twitter:card" content="Resumo do seu conteúdo, por exemplo, 'summary_large_image'" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg:        #070d1a;
+      --surface:   #0d1526;
+      --card:      #111e35;
+      --border:    #1e2d4a;
+      --accent:    #4f8ef7;
+      --accent2:   #06d6a0;
+      --accent3:   #f72585;
+      --text:      #e8edf5;
+      --muted:     #7a8aaa;
+      --tag-bg:    #162040;
+      --radius:    12px;
+      --shadow:    0 4px 32px rgba(0,0,0,0.5);
+    }
 
-	<link href="https://fonts.googleapis.com/css?family=Space+Mono" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Kaushan+Script" rel="stylesheet">
-	
-	<script src="https://kit.fontawesome.com/515935cc24.js" crossorigin="anonymous"></script>
+    html { scroll-behavior: smooth; }
 
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+    }
 
-	<!-- Animate.css -->
-	<link rel="stylesheet" href="css/animate.css">
-	<!-- Icomoon Icon Fonts-->
-	<link rel="stylesheet" href="css/icomoon.css">
-	<!-- Bootstrap  -->
-	<link rel="stylesheet" href="css/bootstrap.css">
+    /* ── NAV ─────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw;
+      height: 64px;
+      background: rgba(7,13,26,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
 
-	<!-- Theme style  -->
-	<link rel="stylesheet" href="css/style.css">
+    .nav-logo {
+      font-weight: 700; font-size: 1.1rem;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+    .nav-logo span { color: var(--accent); }
 
-	<!-- Modernizr JS -->
-	<script src="js/modernizr-2.6.2.min.js"></script>
-	<!-- FOR IE9 below -->
-	<!--[if lt IE 9]>
-	<script src="js/respond.min.js"></script>
-	<![endif]-->
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); font-size: 0.85rem; font-weight: 500;
+      text-decoration: none; transition: color 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .nav-links a:hover { color: var(--text); }
 
-	</head>
-	<body>
-		
-	<div class="fh5co-loader"></div>
-	
-	<div class="english">
-		<header id="fh5co-header" class="fh5co-cover js-fullheight" role="banner" style="background-image:url(images/cover_bg_5.png);" data-stellar-background-ratio="0.8">
-			<div class="overlay"></div>
-			<div class="container">
-				<div class="row">
-					<div class="col-md-8 col-md-offset-2 text-center">
-						<div class="display-t js-fullheight">
-							<div class="display-tc js-fullheight animate-box" data-animate-effect="fadeIn">
-								<div class="profile-thumb" style="background: url(images/user-3.jpg);"></div>
-								<h1><span>Jefferson Valandro</span></h1>
-								<h3><span>Software engineer / Data Scientist</span></h3>
-								<p>
-									<ul class="fh5co-social-icons">
-										<li><a href="https://www.linkedin.com/in/jefferson-valandro"><i class="icon-linkedin2"></i></a></li>
-										<li><a href="https://www.kaggle.com/jeffersonvalandro"><i class="fa-brands fa-kaggle"></i></a></li>
-										<li><a href="https://github.com/jeffev"><i class="icon-github2"></i></a></li>
-									</ul>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</header>
+    /* ── HERO ────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 100px 5vw 60px;
+      position: relative;
+      overflow: hidden;
+    }
 
-		<div id="fh5co-about" class="animate-box">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-4">
-						<ul class="info">
-							<li><span class="first-block">Name:</span><span class="second-block">Jefferson Valandro</span></li>
-							<li><span class="first-block">Phone:</span><span class="second-block">+55 (54) 99906 1618</span></li>
-							<li><span class="first-block">Email:</span><span class="second-block">jeffev123@gmail.com</span></li>
-						</ul>
-					</div>
-					<div class="col-md-8">
-						<h2>Hello!</h2>
-						<p>I am a developer with a solid 10-year experience in the programming industry. Throughout my career, I have had the opportunity to work with various technologies, which has allowed me to acquire valuable skills in software development.</p>
-						<p>Currently, I am embarking on an exciting journey of transitioning to the field of Data Science. My motivation is to explore the vast potential of data to extract meaningful insights and drive informed decisions.</p>
-						<p>
-							<ul class="fh5co-social-icons">
-								<li><a href="https://www.linkedin.com/in/jefferson-valandro"><i class="icon-linkedin2"></i></a></li>
-								<li><a href="https://www.kaggle.com/jeffersonvalandro"><i class="fa-brands fa-kaggle"></i></a></li>
-								<li><a href="https://github.com/jeffev"><i class="icon-github2"></i></a></li>
-							</ul>
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(79,142,247,0.12) 0%, transparent 70%),
+                  radial-gradient(ellipse 50% 40% at 80% 80%, rgba(6,214,160,0.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
 
-		<div id="fh5co-blog">
-			<div class="container">
-				<div class="row animate-box">
-					<div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
-						<h2>Projects</h2>
-						<p>Welcome to my professional and academic journey, where I have explored and contributed to a variety of exciting projects. Below, I highlight some of the projects that have challenged me and allowed me to grow professionally:</p>
-					</div>
-				</div>
-				
-				<div class="row">
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://investlink.streamlit.app/" class="blog-bg" style="background-image: url(images/analise_acoes.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">07/04/2024</span>
-								<h3><a href="https://investlink.streamlit.app/">Indicator-Based Predictions</a></h3>
-								<p>This project aims to use financial indicators to predict whether a stock is being traded at a price considered expensive or cheap.</p>
-								<ul class="stuff">
-									<li><a href="https://investlink.streamlit.app/">Read more<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    .hero-inner { position: relative; max-width: 720px; }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.kaggle.com/code/jeffersonvalandro/analisando-inflacao-brasil" class="blog-bg" style="background-image: url(images/Analisando_Inflacao_Brasil.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">07/01/2024</span>
-								<h3><a href="https://www.kaggle.com/code/jeffersonvalandro/analisando-inflacao-brasil">Food Prices vs. IPCA Analysis</a></h3>
-								<p>This project investigates the relationship between food prices and the IPCA, uncovering patterns and identifying products with notable variations.</p>
-								<ul class="stuff">
-									<li><a href="https://www.kaggle.com/code/jeffersonvalandro/analisando-inflacao-brasil">Read more<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    .hero-avatar {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--accent);
+      margin-bottom: 1.5rem;
+      box-shadow: 0 0 0 6px rgba(79,142,247,0.15);
+    }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.kaggle.com/code/jeffersonvalandro/house-prices-prediction" class="blog-bg" style="background-image: url(images/House_price_prediction.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">31/12/2023</span>
-								<h3><a href="https://www.kaggle.com/code/jeffersonvalandro/house-prices-prediction">House price prediction</a></h3>
-								<p>The project uses machine learning in a Kaggle competition to predict house prices, data exploration, preprocessing, and model training for accurate model.</p>
-								<ul class="stuff">
-									<li><a href="https://www.kaggle.com/code/jeffersonvalandro/house-prices-prediction">Read more<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--tag-bg); border: 1px solid var(--border);
+      color: var(--accent2); font-size: 0.75rem; font-weight: 600;
+      padding: 4px 12px; border-radius: 99px;
+      margin-bottom: 1.2rem; letter-spacing: 0.5px;
+    }
+    .hero-badge::before { content: '●'; font-size: 8px; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.kaggle.com/code/jeffersonvalandro/data-exploration-and-customer-segmentation" class="blog-bg" style="background-image: url(images/Data_Exploration_Customer_Segmentation.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">28/12/2023</span>
-								<h3><a href="https://www.kaggle.com/code/jeffersonvalandro/data-exploration-and-customer-segmentation">Data Exploration and Customer Segmentation</a></h3>
-								<p>The project analyzes purchase data from an imaginary establishment with membership cards to improve marketing and customer experience.</p>
-								<ul class="stuff">
-									<li><a href="https://www.kaggle.com/code/jeffersonvalandro/data-exploration-and-customer-segmentation">Read more<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    #hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 0.8rem;
+    }
+    #hero h1 span { color: var(--accent); }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.kaggle.com/code/jeffersonvalandro/credit-card-fraud-detection" class="blog-bg" style="background-image: url(images/Credit_Card_Fraud_Detection.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">23/12/2023</span>
-								<h3><a href="https://www.kaggle.com/code/jeffersonvalandro/credit-card-fraud-detection">Credit Card Fraud</a></h3>
-								<p>The project uses machine learning techniques to detect fraudulent transactions.</p>
-								<ul class="stuff">
-									<li><a href="https://www.kaggle.com/code/jeffersonvalandro/credit-card-fraud-detection">Read more<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    .hero-subtitle {
+      font-size: 1.05rem; color: var(--muted); font-weight: 400;
+      margin-bottom: 1.8rem; max-width: 520px; margin-left: auto; margin-right: auto;
+    }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.kaggle.com/jeffersonvalandro/compara-o-de-investimentos" class="blog-bg" style="background-image: url(images/Comparacao_Investimentos.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">25/12/2023</span>
-								<h3><a href="https://www.kaggle.com/jeffersonvalandro/compara-o-de-investimentos">Long-Term Investment Comparison</a></h3>
-								<p>In this project, the performance of various assets was evaluated over different periods.</p>
-								<ul class="stuff">
-									<li><a href="https://www.kaggle.com/jeffersonvalandro/compara-o-de-investimentos">Read more<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    .hero-tech {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      justify-content: center; margin-bottom: 2.2rem;
+    }
+    .tech-pill {
+      background: var(--tag-bg); border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.72rem; font-weight: 500;
+      padding: 4px 10px; border-radius: 99px;
+      font-family: 'JetBrains Mono', monospace;
+    }
 
-					<!--
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="#" class="blog-bg" style="background-image: url(images/portfolio-3.jpg);"></a>
-							<div class="blog-text">
-								<span class="posted_on">Mar. 15th 2016</span>
-								<h3><a href="#">Capture Living On Uderwater</a></h3>
-								<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-								<ul class="stuff">
-									<li><i class="icon-heart2"></i>249</li>
-									<li><i class="icon-eye2"></i>308</li>
-									<li><a href="#">Read More<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
-					-->
-				</div>
-			</div>
-		</div>
-		
-		<div id="fh5co-blog">
-			<div class="container">
-				<div class="row animate-box">
-					<div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
-						<h2>LinkedIn Posts</h2>
-						<p>Explore valuable insights and experiences from my professional journey through exclusive posts on LinkedIn. Connect to stay updated and participate in discussions on innovation, technology, and professional growth. Follow me on this platform for insightful perspectives and a unique view into the world of programming and Data Science.</p>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/introdu%25C3%25A7%25C3%25A3o-%25C3%25A0-estat%25C3%25ADstica-para-ci%25C3%25AAncia-de-dados-jefferson-valandro-g3djf/?trackingId=9cw0aAOHTGKDScv0ALDPJg%3D%3D" class="blog-bg" style="background-image: url(images/Introducao_a_estatistica.jpg);"></a>
-							<div class="blog-text">
-								<span class="posted_on">20/03/2024</span>
-								<h3><a href="https://www.linkedin.com/pulse/introdu%25C3%25A7%25C3%25A3o-%25C3%25A0-estat%25C3%25ADstica-para-ci%25C3%25AAncia-de-dados-jefferson-valandro-g3djf/?trackingId=9cw0aAOHTGKDScv0ALDPJg%3D%3D">Introduction to Statistics for Data Science
-								</a></h3>
-								<p></p>
-								<ul class="stuff">
-									<!--<li><i class="icon-heart2"></i>249</li>-->
-									<!--<li><i class="icon-eye2"></i>308</li>-->
-									<li><a href="https://www.linkedin.com/pulse/introdu%25C3%25A7%25C3%25A3o-%25C3%25A0-estat%25C3%25ADstica-para-ci%25C3%25AAncia-de-dados-jefferson-valandro-g3djf/?trackingId=9cw0aAOHTGKDScv0ALDPJg%3D%3D">Read more<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
-					
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/feature-selection-chave-para-modelos-de-machine-mais-e-valandro-prv2f/?trackingId=tHdYKzTyQYyP5IAkZG5Qqg%3D%3D" class="blog-bg" style="background-image: url(images/feature-selection.jpeg);"></a>
-							<div class="blog-text">
-								<span class="posted_on">08/03/2024</span>
-								<h3><a href="https://www.linkedin.com/pulse/feature-selection-chave-para-modelos-de-machine-mais-e-valandro-prv2f/?trackingId=tHdYKzTyQYyP5IAkZG5Qqg%3D%3D">Feature Selection: Eficiência e Precisão em Machine Learning</a></h3>
-								<p></p>
-								<ul class="stuff">
-									<!--<li><i class="icon-heart2"></i>249</li>-->
-									<!--<li><i class="icon-eye2"></i>308</li>-->
-									<li><a href="https://www.linkedin.com/pulse/feature-selection-chave-para-modelos-de-machine-mais-e-valandro-prv2f/?trackingId=tHdYKzTyQYyP5IAkZG5Qqg%3D%3D">Read more<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem; }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/como-escolher-o-algoritmo-ideal-para-seu-modelo-de-m%25C3%25A1quina-valandro-maklf/" class="blog-bg" style="background-image: url(images/Como_Escolher_o_Algoritmo.webp);"></a>
-							<div class="blog-text">
-								<span class="posted_on">26/02/2024</span>
-								<h3><a href="https://www.linkedin.com/pulse/como-escolher-o-algoritmo-ideal-para-seu-modelo-de-m%25C3%25A1quina-valandro-maklf/">Choosing the Ideal Algorithm for Machine Learning</a></h3>
-								<p></p>
-								<ul class="stuff">
-									<!--<li><i class="icon-heart2"></i>249</li>-->
-									<!--<li><i class="icon-eye2"></i>308</li>-->
-									<li><a href="https://www.linkedin.com/pulse/como-escolher-o-algoritmo-ideal-para-seu-modelo-de-m%25C3%25A1quina-valandro-maklf/">Read more<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
-					
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/garantindo-excel%2525C3%2525AAncia-em-machine-learning-estrat%2525C3%2525A9gias-valandro-1dxmf%3FtrackingId=apPDh93MQ5KSGV%252Beog8ltw%253D%253D/?trackingId=apPDh93MQ5KSGV%2Beog8ltw%3D%3D" class="blog-bg" style="background-image: url(images/avaliacao_modelso.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">17/01/2024</span>
-								<h3><a href="https://www.linkedin.com/pulse/garantindo-excel%2525C3%2525AAncia-em-machine-learning-estrat%2525C3%2525A9gias-valandro-1dxmf%3FtrackingId=apPDh93MQ5KSGV%252Beog8ltw%253D%253D/?trackingId=apPDh93MQ5KSGV%2Beog8ltw%3D%3D">Strategies for Monitoring, Evaluation, and Validation of Models</a></h3>
-								<p></p>
-								<ul class="stuff">
-									<!--<li><i class="icon-heart2"></i>249</li>-->
-									<!--<li><i class="icon-eye2"></i>308</li>-->
-									<li><a href="https://www.linkedin.com/pulse/garantindo-excel%2525C3%2525AAncia-em-machine-learning-estrat%2525C3%2525A9gias-valandro-1dxmf%3FtrackingId=apPDh93MQ5KSGV%252Beog8ltw%253D%253D/?trackingId=apPDh93MQ5KSGV%2Beog8ltw%3D%3D">Read more<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 22px; border-radius: 8px;
+      font-weight: 600; font-size: 0.87rem;
+      text-decoration: none; transition: all 0.2s;
+      cursor: pointer; border: none;
+    }
+    .btn-primary {
+      background: var(--accent); color: #fff;
+      box-shadow: 0 4px 20px rgba(79,142,247,0.35);
+    }
+    .btn-primary:hover { background: #6aa0f8; transform: translateY(-1px); }
+    .btn-ghost {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/vis%25C3%25A3o-para-o-futuro-impacto-revolucion%25C3%25A1rio-da-machine-valandro-mhy9f/?trackingId=KdDvD6AoS9%2BZr0XHEnVZ2A%3D%3D" class="blog-bg" style="background-image: url(images/Visao_para_Futuro.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">13/01/2024</span>
-								<h3><a href="https://www.linkedin.com/pulse/vis%25C3%25A3o-para-o-futuro-impacto-revolucion%25C3%25A1rio-da-machine-valandro-mhy9f/?trackingId=KdDvD6AoS9%2BZr0XHEnVZ2A%3D%3D">Future Vision: The Revolutionary Impact of Machine Learning</a></h3>
-								<p></p>
-								<ul class="stuff">
-									<!--<li><i class="icon-heart2"></i>249</li>-->
-									<!--<li><i class="icon-eye2"></i>308</li>-->
-									<li><a href="https://www.linkedin.com/pulse/vis%25C3%25A3o-para-o-futuro-impacto-revolucion%25C3%25A1rio-da-machine-valandro-mhy9f/?trackingId=KdDvD6AoS9%2BZr0XHEnVZ2A%3D%3D">Read more<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    .hero-socials { display: flex; gap: 1.2rem; justify-content: center; }
+    .hero-socials a {
+      width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border); border-radius: 8px;
+      color: var(--muted); font-size: 1rem;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .hero-socials a:hover { border-color: var(--accent); color: var(--accent); }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/explorando-o-universo-do-machine-learning-uma-jornada-valandro-8hshf/?trackingId=t7wLsLUzT5u92cIEcumJ0Q%3D%3D" class="blog-bg" style="background-image: url(images/machine-learning.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">01/01/2024</span>
-								<h3><a href="https://www.linkedin.com/pulse/explorando-o-universo-do-machine-learning-uma-jornada-valandro-8hshf/?trackingId=t7wLsLUzT5u92cIEcumJ0Q%3D%3D">Exploring the Universe of Machine Learning</a></h3>
-								<p>Throughout the article, I examined prominent models, their practical applications across various sectors, and the challenges involved.</p>
-								<ul class="stuff">
-									<!--<li><i class="icon-heart2"></i>249</li>-->
-									<!--<li><i class="icon-eye2"></i>308</li>-->
-									<li><a href="https://www.linkedin.com/pulse/explorando-o-universo-do-machine-learning-uma-jornada-valandro-8hshf/?trackingId=t7wLsLUzT5u92cIEcumJ0Q%3D%3D">Read more<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    /* ── SECTIONS ────────────────────────────────────── */
+    section { padding: 80px 5vw; }
+    .container { max-width: 1100px; margin: 0 auto; }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/tipos-de-modelos-em-ci%25C3%25AAncia-dados-jefferson-valandro-tmugf/?trackingId=tleoEX%2BxSP6SeD9iFdCzmg%3D%3D" class="blog-bg" style="background-image: url(images/tipo_dados.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">20/12/2023</span>
-								<h3><a href="https://www.linkedin.com/pulse/tipos-de-modelos-em-ci%25C3%25AAncia-dados-jefferson-valandro-tmugf/?trackingId=tleoEX%2BxSP6SeD9iFdCzmg%3D%3D">Types of Models in Data Science</a></h3>
-								<p>Throughout the article, I aimed to provide a comprehensive view, highlighting how these models can be powerful tools in extracting insights and guiding informed decisions.</p>
-								<ul class="stuff">
-									<!--<li><i class="icon-heart2"></i>249</li>-->
-									<!--<li><i class="icon-eye2"></i>308</li>-->
-									<li><a href="https://www.linkedin.com/pulse/tipos-de-modelos-em-ci%25C3%25AAncia-dados-jefferson-valandro-tmugf/?trackingId=tleoEX%2BxSP6SeD9iFdCzmg%3D%3D">Read more<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
-					
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/modelos-estat%C3%ADsticos-tradicionais-desvendando-o-de-n%C3%BAmeros-valandro-dfubf?lipi=urn%3Ali%3Apage%3Ad_flagship3_series_entity%3BIctJPUd3SpK4FmNIKrpsbA%3D%3D" class="blog-bg" style="background-image: url(images/modelos_tradicionais.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">26/12/2023</span>
-								<h3><a href="https://www.linkedin.com/pulse/modelos-estat%C3%ADsticos-tradicionais-desvendando-o-de-n%C3%BAmeros-valandro-dfubf?lipi=urn%3Ali%3Apage%3Ad_flagship3_series_entity%3BIctJPUd3SpK4FmNIKrpsbA%3D%3D">Traditional Statistical Models</a></h3>
-								<p>In this article, I briefly cover the main models, how they work, and discuss their importance in data science.</p>
-								<ul class="stuff">
-									<li><a href="https://www.linkedin.com/pulse/modelos-estat%C3%ADsticos-tradicionais-desvendando-o-de-n%C3%BAmeros-valandro-dfubf?lipi=urn%3Ali%3Apage%3Ad_flagship3_series_entity%3BIctJPUd3SpK4FmNIKrpsbA%3D%3D">Read more<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
-					<!--
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="#" class="blog-bg" style="background-image: url(images/portfolio-3.jpg);"></a>
-							<div class="blog-text">
-								<span class="posted_on">Mar. 15th 2016</span>
-								<h3><a href="#">Capture Living On Uderwater</a></h3>
-								<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-								<ul class="stuff">
-									<li><i class="icon-heart2"></i>249</li>
-									<li><i class="icon-eye2"></i>308</li>
-									<li><a href="#">Read More<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
-					-->
-				</div>
-			</div>
-		</div>
+    .section-header { text-align: center; margin-bottom: 3rem; }
+    .section-label {
+      display: inline-block;
+      color: var(--accent); font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 0.7rem;
+    }
+    .section-header h2 {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800; letter-spacing: -0.8px;
+    }
+    .section-header p {
+      color: var(--muted); max-width: 600px;
+      margin: 0.7rem auto 0; font-size: 0.95rem;
+    }
 
-		<div id="fh5co-resume" class="fh5co-bg-color">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-12 col-md-offset-0">
-						<ul class="timeline">
-							<li class="timeline-heading text-center animate-box">
-								<div><h3>Work Experience</h3></div>
-							</li>
-							<li class="animate-box timeline-unverted">
-								<div class="timeline-badge"><i class="icon-suitcase"></i></div>
-								<div class="timeline-panel">
-									<div class="timeline-heading">
-										<h3 class="timeline-title">Senior Programmer</h3>
-										<span class="company">Promob Software Solutions - 2021 - Present</span>
-									</div>
-									<div class="timeline-body">
-										<p>Diagnose and resolve operational issues, perform updates and improvements, and ensure the ERP continuously meets the organization's needs.</p>
-									</div>									
-								</div>
-							</li>
-							<li class="timeline-inverted animate-box">
-								<div class="timeline-badge"><i class="icon-suitcase"></i></div>
-								<div class="timeline-panel">
-									<div class="timeline-heading">
-										<h3 class="timeline-title">Mid-level Programmer</h3>
-										<span class="company">Transportes Bertolini Ltda - 2021 - 2021</span>
-									</div>
-									<div class="timeline-body">
-										<p>Diagnose and resolve operational issues, perform updates and improvements, and ensure the ERP continuously meets the organization's needs.</p>
-									</div>									
-								</div>
-							</li>
-							<li class="animate-box timeline-unverted">
-								<div class="timeline-badge"><i class="icon-suitcase"></i></div>
-								<div class="timeline-panel">
-									<div class="timeline-heading">
-										<h3 class="timeline-title">Mid-level Programmer</h3>
-										<span class="company">Group - 2019 - 2021</span>
-									</div>
-									<div class="timeline-body">
-										<p>As the responsible for orders in the ERP, I excelled in effectively integrating the ERP with other systems using a service developed in VB (Visual Basic). My contribution extended further by actively participating in various integration projects involving REST and SOAP APIs, consolidating an integrated and efficient approach in the development environment.</p>
-									</div>
-								</div>								
-							</li>
-							<li class="timeline-inverted animate-box">
-								<div class="timeline-badge"><i class="icon-suitcase"></i></div>
-								<div class="timeline-panel">
-									<div class="timeline-heading">
-										<h3 class="timeline-title">Mid-level Programmer</h3>
-										<span class="company">Promob Software Solutions - 2013 - 2019</span>
-									</div>
-									<div class="timeline-body">
-										<p>I efficiently managed orders in the ERP, leading the system integration with other platforms through a service developed in VB (Visual Basic). I actively contributed to various integration projects, including REST and SOAP APIs, enhancing connectivity and synergy between systems.</p>
-									</div>
-								</div>								
-							</li>
-							<li class="animate-box timeline-unverted">
-								<div class="timeline-badge"><i class="icon-suitcase"></i></div>
-								<div class="timeline-panel">
-									<div class="timeline-heading">
-										<h3 class="timeline-title">Programmer</h3>
-										<span class="company">MTW - 2012 - 2013</span>
-									</div>
-									<div class="timeline-body">
-										<p>I coordinated the data integration project between all schools and the government, optimizing system communication and efficiency. Additionally, I played a key role in the team that successfully introduced the Scrum methodology in our company, enhancing our project development approach.</p>
-									</div>
-								</div>								
-							</li>
+    /* ── ABOUT ───────────────────────────────────────── */
+    #about { background: var(--surface); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.8fr;
+      gap: 3rem;
+      align-items: start;
+    }
+    .about-info-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.8rem;
+    }
+    .about-info-card h3 {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 1.2rem;
+    }
+    .info-row {
+      display: flex; flex-direction: column;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { font-size: 0.72rem; font-weight: 600; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px; }
+    .info-value { font-size: 0.9rem; font-weight: 500; }
 
-							<br>
-							<li class="timeline-heading text-center animate-box">
-								<div><h3>Education</h3></div>
-							</li>
-							<li class="timeline-inverted animate-box">
-								<div class="timeline-badge"><i class="icon-graduation-cap"></i></div>
-								<div class="timeline-panel">
-									<div class="timeline-heading">
-										<h3 class="timeline-title">IBM Data Science Specialization</h3>
-										<span class="company">Coursera - 2023 - 2023</span>
-									</div>
-									<div class="timeline-body">
-										<p>The <a href="https://www.coursera.org/professional-certificates/ibm-data-science">IBM Data Science Specialization</a> is a robust option for developers transitioning to data science. Offered on Coursera.</p>
-									</div>
-								</div>
-							</li>
-							<li class="animate-box timeline-unverted">
-								<div class="timeline-badge"><i class="icon-graduation-cap"></i></div>
-								<div class="timeline-panel">
-									<div class="timeline-heading">
-										<h3 class="timeline-title">Bachelor's Degree - Systems Analysis and Development</h3>
-										<span class="company">Ftec - 2009 - 2012</span>
-									</div>
-									<div class="timeline-body">
-										<p>Awarded with the title of Outstanding Student of the graduation - Academic Honor</p>
-									</div>
-								</div>
-							</li>							
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<!--
-		<div id="fh5co-work" class="fh5co-bg-dark">
-			<div class="container">
-				<div class="row animate-box">
-					<div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
-						<h2>Work</h2>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-1.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Illustration</span>
-							</div>
-						</a>
-					</div>
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-2.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Brading</span>
-							</div>
-						</a>
-					</div>
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-3.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Illustration</span>
-							</div>
-						</a>
-					</div>
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-4.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Design</span>
-							</div>
-						</a>
-					</div>
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-5.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Website</span>
-							</div>
-						</a>
-					</div>
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-6.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Illustration</span>
-							</div>
-						</a>
-					</div>
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-7.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Brading</span>
-							</div>
-						</a>
-					</div>
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-8.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Illustration</span>
-							</div>
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-		-->
-		
-		
-		
-		<div id="fh5co-footer">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-12">
-						<p>&copy; 2023 Jefferson Valandro. All Rights Reserved. </p>
-					</div>
-				</div>
-			</div>
-		</div>
+    .about-text h2 {
+      font-size: 1.7rem; font-weight: 800;
+      letter-spacing: -0.5px; margin-bottom: 1rem;
+    }
+    .about-text p { color: var(--muted); margin-bottom: 1rem; font-size: 0.95rem; }
+    .about-text p:last-child { margin-bottom: 0; }
 
-		<div class="gototop js-top">
-			<a href="#" class="js-gotop"><i class="icon-arrow-up22"></i></a>
-		</div>
-	</div>
+    .about-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1rem; margin-top: 1.8rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 1.9rem; font-weight: 800;
+      color: var(--accent); line-height: 1;
+    }
+    .stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
 
+    /* ── SKILLS ──────────────────────────────────────── */
+    #skills {}
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .skill-category {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+    .skill-category-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 1.2rem;
+    }
+    .skill-icon {
+      width: 36px; height: 36px;
+      background: rgba(79,142,247,0.12);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent); font-size: 0.9rem;
+    }
+    .skill-category-header h3 { font-size: 0.9rem; font-weight: 700; }
 
-	<div class="second-language">	
-		<header id="fh5co-header" class="fh5co-cover js-fullheight" role="banner" style="background-image:url(images/cover_bg_5.png);" data-stellar-background-ratio="0.8">
-			<div class="overlay"></div>
-			<div class="container">
-				<div class="row">
-					<div class="col-md-8 col-md-offset-2 text-center">
-						<div class="display-t js-fullheight">
-							<div class="display-tc js-fullheight animate-box" data-animate-effect="fadeIn">
-								<div class="profile-thumb" style="background: url(images/user-3.jpg);"></div>
-								<h1><span>Jefferson Valandro</span></h1>
-								<h3><span>Software engineer / Cientista de Dados</span></h3>
-								<p>
-									<ul class="fh5co-social-icons">
-										<li><a href="https://www.linkedin.com/in/jefferson-valandro"><i class="icon-linkedin2"></i></a></li>
-										<li><a href="https://www.kaggle.com/jeffersonvalandro"><i class="fa-brands fa-kaggle"></i></a></li>
-										<li><a href="https://github.com/jeffev"><i class="icon-github2"></i></a></li>
-									</ul>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</header>
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .skill-tag {
+      background: var(--tag-bg); border: 1px solid var(--border);
+      color: var(--text); font-size: 0.75rem; font-weight: 500;
+      padding: 4px 10px; border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .skill-tag.highlight {
+      background: rgba(79,142,247,0.15);
+      border-color: rgba(79,142,247,0.3);
+      color: var(--accent);
+    }
 
-		<div id="fh5co-about" class="animate-box">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-4">
-						<ul class="info">
-							<li><span class="first-block">Nome:</span><span class="second-block">Jefferson Valandro</span></li>
-							<li><span class="first-block">Telefone:</span><span class="second-block">(54) 99906 1618</span></li>
-							<li><span class="first-block">Email:</span><span class="second-block">jeffev123@gmail.com</span></li>
-						</ul>
-					</div>
-					<div class="col-md-8">
-						<h2>Olá!</h2>
-						<p>Sou um desenvolvedor com uma experiência sólida de 10 anos na indústria da programação. Ao longo da minha carreira, tive a oportunidade de trabalhar com diversas tecnologias, o que me permitiu adquirir habilidades valiosas no desenvolvimento de software.</p>
-						<p>Atualmente, estou embarcando em uma empolgante jornada de transição para a área de Ciência de Dados. Minha motivação é explorar o vasto potencial dos dados para extrair insights significativos e conduzir decisões informadas.</p>
-						<p>
-							<ul class="fh5co-social-icons">
-								<li><a href="https://www.linkedin.com/in/jefferson-valandro"><i class="icon-linkedin2"></i></a></li>
-								<li><a href="https://www.kaggle.com/jeffersonvalandro"><i class="fa-brands fa-kaggle"></i></a></li>
-								<li><a href="https://github.com/jeffev"><i class="icon-github2"></i></a></li>
-							</ul>
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
+    /* ── EXPERIENCE ──────────────────────────────────── */
+    #experience { background: var(--surface); }
+    .timeline { position: relative; }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 20px; top: 0; bottom: 0;
+      width: 2px; background: var(--border);
+    }
 
-		<div id="fh5co-blog">
-			<div class="container">
-				<div class="row animate-box">
-					<div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
-						<h2>Projetos</h2>
-						<p>Bem-vindo à minha jornada profissional e acadêmica, onde explorei e contribuí para uma variedade de projetos empolgantes. Abaixo, destaco alguns dos projetos que me desafiaram e me permitiram crescer profissionalmente:</p>
-					</div>
-				</div>
-				
-				<div class="row">
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://investlink.streamlit.app/" class="blog-bg" style="background-image: url(images/analise_acoes.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">07/04/2024</span>
-								<h3><a href="https://investlink.streamlit.app/">Previsões Baseadas em Indicadores</a></h3>
-								<p>Este projeto visa utilizar indicadores financeiros para prever se uma ação está sendo negociada a um preço considerado caro ou barato.</p>
-								<ul class="stuff">
-									<li><a href="https://investlink.streamlit.app/">Leia mais<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    .timeline-item {
+      position: relative;
+      padding-left: 60px;
+      margin-bottom: 2.5rem;
+    }
+    .timeline-item:last-child { margin-bottom: 0; }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.kaggle.com/code/jeffersonvalandro/analisando-inflacao-brasil" class="blog-bg" style="background-image: url(images/Analisando_Inflacao_Brasil.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">07/01/2024</span>
-								<h3><a href="https://www.kaggle.com/code/jeffersonvalandro/analisando-inflacao-brasil">Análise de Preços de Alimentos vs IPCA</a></h3>
-								<p>Este projeto investiga a relação entre os preços de alimentos e o IPCA, desvendando padrões e identificando produtos com variações notáveis.</p>
-								<ul class="stuff">
-									<li><a href="https://www.kaggle.com/code/jeffersonvalandro/analisando-inflacao-brasil">Leia mais<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    .timeline-dot {
+      position: absolute; left: 10px; top: 6px;
+      width: 22px; height: 22px;
+      background: var(--bg); border: 2px solid var(--accent);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .timeline-dot i { font-size: 8px; color: var(--accent); }
+    .timeline-dot.current {
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(79,142,247,0.2);
+    }
+    .timeline-dot.current i { color: #fff; }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.kaggle.com/code/jeffersonvalandro/house-prices-prediction" class="blog-bg" style="background-image: url(images/House_price_prediction.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">31/12/2023</span>
-								<h3><a href="https://www.kaggle.com/code/jeffersonvalandro/house-prices-prediction">House price prediction</a></h3>
-								<p>The project uses machine learning in a Kaggle competition to predict house prices, data exploration, preprocessing, and model training for accurate model.</p>
-								<ul class="stuff">
-									<li><a href="https://www.kaggle.com/code/jeffersonvalandro/house-prices-prediction">Leia mais<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    .timeline-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.6rem;
+      transition: border-color 0.2s;
+    }
+    .timeline-card:hover { border-color: rgba(79,142,247,0.4); }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.kaggle.com/code/jeffersonvalandro/data-exploration-and-customer-segmentation" class="blog-bg" style="background-image: url(images/Data_Exploration_Customer_Segmentation.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">28/12/2023</span>
-								<h3><a href="https://www.kaggle.com/code/jeffersonvalandro/data-exploration-and-customer-segmentation">Data Exploration and Customer Segmentation</a></h3>
-								<p>The project analyzes purchase data from an imaginary establishment with membership cards to improve marketing and customer experience.</p>
-								<ul class="stuff">
-									<li><a href="https://www.kaggle.com/code/jeffersonvalandro/data-exploration-and-customer-segmentation">Leia mais<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    .timeline-top {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.6rem;
+    }
+    .timeline-company { font-weight: 700; font-size: 1rem; }
+    .timeline-period {
+      font-size: 0.75rem; color: var(--muted);
+      background: var(--tag-bg); border: 1px solid var(--border);
+      padding: 3px 10px; border-radius: 99px;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+    }
+    .timeline-role {
+      font-size: 0.85rem; color: var(--accent2); font-weight: 600;
+      margin-bottom: 0.7rem;
+    }
+    .timeline-desc { color: var(--muted); font-size: 0.88rem; }
+    .timeline-desc ul { padding-left: 1.2rem; }
+    .timeline-desc li { margin-bottom: 4px; }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.kaggle.com/code/jeffersonvalandro/credit-card-fraud-detection" class="blog-bg" style="background-image: url(images/Credit_Card_Fraud_Detection.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">23/12/2023</span>
-								<h3><a href="https://www.kaggle.com/code/jeffersonvalandro/credit-card-fraud-detection">Fraudes em cartão de crédito</a></h3>
-								<p>O projeto utiliza técnicas de Machine Learning para detectar transações fraudulentas.</p>
-								<ul class="stuff">
-									<li><a href="https://www.kaggle.com/code/jeffersonvalandro/credit-card-fraud-detection">Leia mais<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    .timeline-techs { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 0.9rem; }
+    .timeline-tech {
+      background: rgba(79,142,247,0.1);
+      border: 1px solid rgba(79,142,247,0.2);
+      color: var(--accent); font-size: 0.7rem; font-weight: 600;
+      padding: 2px 8px; border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.kaggle.com/jeffersonvalandro/compara-o-de-investimentos" class="blog-bg" style="background-image: url(images/Comparacao_Investimentos.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">25/12/2023</span>
-								<h3><a href="https://www.kaggle.com/jeffersonvalandro/compara-o-de-investimentos">Comparação de investimentos a longo prazo</a></h3>
-								<p>Neste projeto se avaliou o desempenho de diversos ativos em diferentes períodos.</p>
-								<ul class="stuff">
-									<li><a href="https://www.kaggle.com/jeffersonvalandro/compara-o-de-investimentos">Leia mais<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    /* ── PROJECTS ────────────────────────────────────── */
+    #projects {}
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .project-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+      display: flex; flex-direction: column;
+    }
+    .project-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(79,142,247,0.35);
+    }
+    .project-thumb {
+      height: 180px;
+      background-size: cover;
+      background-position: center;
+      background-color: var(--tag-bg);
+      position: relative;
+    }
+    .project-thumb-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(17,30,53,0.9));
+    }
+    .project-body { padding: 1.2rem 1.4rem; flex: 1; display: flex; flex-direction: column; }
+    .project-year { font-size: 0.72rem; color: var(--muted); font-weight: 600; margin-bottom: 0.4rem; }
+    .project-title {
+      font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem;
+    }
+    .project-title a { color: var(--text); text-decoration: none; }
+    .project-title a:hover { color: var(--accent); }
+    .project-desc { font-size: 0.83rem; color: var(--muted); flex: 1; margin-bottom: 1rem; }
+    .project-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--accent); font-size: 0.8rem; font-weight: 600;
+      text-decoration: none; transition: gap 0.2s;
+    }
+    .project-link:hover { gap: 10px; }
 
-					<!--
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="#" class="blog-bg" style="background-image: url(images/portfolio-3.jpg);"></a>
-							<div class="blog-text">
-								<span class="posted_on">Mar. 15th 2016</span>
-								<h3><a href="#">Capture Living On Uderwater</a></h3>
-								<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-								<ul class="stuff">
-									<li><i class="icon-heart2"></i>249</li>
-									<li><i class="icon-eye2"></i>308</li>
-									<li><a href="#">Read More<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
-					-->
-				</div>
-			</div>
-		</div>
-		
-		<div id="fh5co-blog">
-			<div class="container">
-				<div class="row animate-box">
-					<div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
-						<h2>Posts no Linkedin</h2>
-						<p>Explore insights e experiências valiosas em minha jornada profissional através dos posts exclusivos no LinkedIn. Conecte-se para ficar atualizado e participar das discussões sobre inovação, tecnologia e crescimento profissional. Acompanhe-me nesta plataforma para insights perspicazes e uma visão única sobre o mundo da programação e Ciência de Dados.</p>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/introdu%25C3%25A7%25C3%25A3o-%25C3%25A0-estat%25C3%25ADstica-para-ci%25C3%25AAncia-de-dados-jefferson-valandro-g3djf/?trackingId=9cw0aAOHTGKDScv0ALDPJg%3D%3D" class="blog-bg" style="background-image: url(images/Introducao_a_estatistica.jpg);"></a>
-							<div class="blog-text">
-								<span class="posted_on">20/03/2024</span>
-								<h3><a href="https://www.linkedin.com/pulse/introdu%25C3%25A7%25C3%25A3o-%25C3%25A0-estat%25C3%25ADstica-para-ci%25C3%25AAncia-de-dados-jefferson-valandro-g3djf/?trackingId=9cw0aAOHTGKDScv0ALDPJg%3D%3D">Introdução à Estatística para Ciência de Dados
-								</a></h3>
-								<p></p>
-								<ul class="stuff">
-									<!--<li><i class="icon-heart2"></i>249</li>-->
-									<!--<li><i class="icon-eye2"></i>308</li>-->
-									<li><a href="https://www.linkedin.com/pulse/introdu%25C3%25A7%25C3%25A3o-%25C3%25A0-estat%25C3%25ADstica-para-ci%25C3%25AAncia-de-dados-jefferson-valandro-g3djf/?trackingId=9cw0aAOHTGKDScv0ALDPJg%3D%3D">Leia mais<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
-					
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/feature-selection-chave-para-modelos-de-machine-mais-e-valandro-prv2f/?trackingId=tHdYKzTyQYyP5IAkZG5Qqg%3D%3D" class="blog-bg" style="background-image: url(images/feature-selection.jpeg);"></a>
-							<div class="blog-text">
-								<span class="posted_on">08/03/2024</span>
-								<h3><a href="https://www.linkedin.com/pulse/feature-selection-chave-para-modelos-de-machine-mais-e-valandro-prv2f/?trackingId=tHdYKzTyQYyP5IAkZG5Qqg%3D%3D">Feature Selection: Eficiência e Precisão em Machine Learning</a></h3>
-								<p></p>
-								<ul class="stuff">
-									<!--<li><i class="icon-heart2"></i>249</li>-->
-									<!--<li><i class="icon-eye2"></i>308</li>-->
-									<li><a href="https://www.linkedin.com/pulse/feature-selection-chave-para-modelos-de-machine-mais-e-valandro-prv2f/?trackingId=tHdYKzTyQYyP5IAkZG5Qqg%3D%3D">Leia mais<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    /* ── ARTICLES ────────────────────────────────────── */
+    #articles { background: var(--surface); }
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    .article-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+      display: flex; flex-direction: column;
+    }
+    .article-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(6,214,160,0.35);
+    }
+    .article-thumb {
+      height: 150px;
+      background-size: cover;
+      background-position: center;
+      background-color: var(--tag-bg);
+    }
+    .article-body { padding: 1.1rem 1.3rem; flex: 1; display: flex; flex-direction: column; }
+    .article-date { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.4rem; }
+    .article-title {
+      font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem;
+    }
+    .article-title a { color: var(--text); text-decoration: none; }
+    .article-title a:hover { color: var(--accent2); }
+    .article-desc { font-size: 0.82rem; color: var(--muted); flex: 1; margin-bottom: 0.9rem; }
+    .article-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--accent2); font-size: 0.8rem; font-weight: 600;
+      text-decoration: none; transition: gap 0.2s;
+    }
+    .article-link:hover { gap: 10px; }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/como-escolher-o-algoritmo-ideal-para-seu-modelo-de-m%25C3%25A1quina-valandro-maklf/" class="blog-bg" style="background-image: url(images/Como_Escolher_o_Algoritmo.webp);"></a>
-							<div class="blog-text">
-								<span class="posted_on">26/02/2024</span>
-								<h3><a href="https://www.linkedin.com/pulse/como-escolher-o-algoritmo-ideal-para-seu-modelo-de-m%25C3%25A1quina-valandro-maklf/">Escolhendo o Algoritmo Ideal para Machine Learning</a></h3>
-								<p></p>
-								<ul class="stuff">
-									<!--<li><i class="icon-heart2"></i>249</li>-->
-									<!--<li><i class="icon-eye2"></i>308</li>-->
-									<li><a href="https://www.linkedin.com/pulse/como-escolher-o-algoritmo-ideal-para-seu-modelo-de-m%25C3%25A1quina-valandro-maklf/">Leia mais<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
-					
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/garantindo-excel%2525C3%2525AAncia-em-machine-learning-estrat%2525C3%2525A9gias-valandro-1dxmf%3FtrackingId=apPDh93MQ5KSGV%252Beog8ltw%253D%253D/?trackingId=apPDh93MQ5KSGV%2Beog8ltw%3D%3D" class="blog-bg" style="background-image: url(images/avaliacao_modelso.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">17/01/2024</span>
-								<h3><a href="https://www.linkedin.com/pulse/garantindo-excel%2525C3%2525AAncia-em-machine-learning-estrat%2525C3%2525A9gias-valandro-1dxmf%3FtrackingId=apPDh93MQ5KSGV%252Beog8ltw%253D%253D/?trackingId=apPDh93MQ5KSGV%2Beog8ltw%3D%3D">Estratégias para Monitoramento, Avaliação e Validação de Modelos</a></h3>
-								<p></p>
-								<ul class="stuff">
-									<!--<li><i class="icon-heart2"></i>249</li>-->
-									<!--<li><i class="icon-eye2"></i>308</li>-->
-									<li><a href="https://www.linkedin.com/pulse/garantindo-excel%2525C3%2525AAncia-em-machine-learning-estrat%2525C3%2525A9gias-valandro-1dxmf%3FtrackingId=apPDh93MQ5KSGV%252Beog8ltw%253D%253D/?trackingId=apPDh93MQ5KSGV%2Beog8ltw%3D%3D">Leia mais<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    /* ── EDUCATION ───────────────────────────────────── */
+    #education {}
+    .edu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .edu-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.6rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .edu-icon {
+      min-width: 40px; height: 40px;
+      background: rgba(247,37,133,0.12);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent3); font-size: 1rem;
+      margin-top: 2px;
+    }
+    .edu-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 3px; }
+    .edu-school { font-size: 0.82rem; color: var(--muted); }
+    .edu-period { font-size: 0.75rem; color: var(--muted); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/vis%25C3%25A3o-para-o-futuro-impacto-revolucion%25C3%25A1rio-da-machine-valandro-mhy9f/?trackingId=KdDvD6AoS9%2BZr0XHEnVZ2A%3D%3D" class="blog-bg" style="background-image: url(images/Visao_para_Futuro.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">13/01/2024</span>
-								<h3><a href="https://www.linkedin.com/pulse/vis%25C3%25A3o-para-o-futuro-impacto-revolucion%25C3%25A1rio-da-machine-valandro-mhy9f/?trackingId=KdDvD6AoS9%2BZr0XHEnVZ2A%3D%3D">Visão para o Futuro: O Impacto Revolucionário da ML</a></h3>
-								<p></p>
-								<ul class="stuff">
-									<!--<li><i class="icon-heart2"></i>249</li>-->
-									<!--<li><i class="icon-eye2"></i>308</li>-->
-									<li><a href="https://www.linkedin.com/pulse/vis%25C3%25A3o-para-o-futuro-impacto-revolucion%25C3%25A1rio-da-machine-valandro-mhy9f/?trackingId=KdDvD6AoS9%2BZr0XHEnVZ2A%3D%3D">Leia mais<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    /* ── CONTACT ─────────────────────────────────────── */
+    #contact { background: var(--surface); }
+    .contact-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 3rem;
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .contact-card h2 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.7rem; }
+    .contact-card p { color: var(--muted); margin-bottom: 2rem; font-size: 0.95rem; }
+    .contact-links {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .contact-item {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--tag-bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 16px;
+      text-decoration: none; color: var(--text);
+      font-size: 0.85rem; font-weight: 500;
+      transition: all 0.2s;
+    }
+    .contact-item:hover { border-color: var(--accent); color: var(--accent); }
+    .contact-item i { color: var(--accent); font-size: 1rem; }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/explorando-o-universo-do-machine-learning-uma-jornada-valandro-8hshf/?trackingId=t7wLsLUzT5u92cIEcumJ0Q%3D%3D" class="blog-bg" style="background-image: url(images/machine-learning.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">01/01/2024</span>
-								<h3><a href="https://www.linkedin.com/pulse/explorando-o-universo-do-machine-learning-uma-jornada-valandro-8hshf/?trackingId=t7wLsLUzT5u92cIEcumJ0Q%3D%3D">Explorando o Universo do Machine Learning</a></h3>
-								<p>No decorrer do artigo, examinei modelos proeminentes, suas aplicações práticas em diversos setores e os desafios.</p>
-								<ul class="stuff">
-									<!--<li><i class="icon-heart2"></i>249</li>-->
-									<!--<li><i class="icon-eye2"></i>308</li>-->
-									<li><a href="https://www.linkedin.com/pulse/explorando-o-universo-do-machine-learning-uma-jornada-valandro-8hshf/?trackingId=t7wLsLUzT5u92cIEcumJ0Q%3D%3D">Leia mais<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
+    /* ── FOOTER ──────────────────────────────────────── */
+    footer {
+      padding: 2rem 5vw;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+      border-top: 1px solid var(--border);
+    }
 
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/tipos-de-modelos-em-ci%25C3%25AAncia-dados-jefferson-valandro-tmugf/?trackingId=tleoEX%2BxSP6SeD9iFdCzmg%3D%3D" class="blog-bg" style="background-image: url(images/tipo_dados.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">20/12/2023</span>
-								<h3><a href="https://www.linkedin.com/pulse/tipos-de-modelos-em-ci%25C3%25AAncia-dados-jefferson-valandro-tmugf/?trackingId=tleoEX%2BxSP6SeD9iFdCzmg%3D%3D">Tipos de modelos em Ciência de Dados</a></h3>
-								<p>Ao longo do artigo, busquei oferecer uma visão abrangente, destacando como esses modelos podem ser ferramentas poderosas na extração de insights e na condução de decisões informadas</p>
-								<ul class="stuff">
-									<!--<li><i class="icon-heart2"></i>249</li>-->
-									<!--<li><i class="icon-eye2"></i>308</li>-->
-									<li><a href="https://www.linkedin.com/pulse/tipos-de-modelos-em-ci%25C3%25AAncia-dados-jefferson-valandro-tmugf/?trackingId=tleoEX%2BxSP6SeD9iFdCzmg%3D%3D">Leia mais<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
-					
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="https://www.linkedin.com/pulse/modelos-estat%C3%ADsticos-tradicionais-desvendando-o-de-n%C3%BAmeros-valandro-dfubf?lipi=urn%3Ali%3Apage%3Ad_flagship3_series_entity%3BIctJPUd3SpK4FmNIKrpsbA%3D%3D" class="blog-bg" style="background-image: url(images/modelos_tradicionais.png);"></a>
-							<div class="blog-text">
-								<span class="posted_on">26/12/2023</span>
-								<h3><a href="https://www.linkedin.com/pulse/modelos-estat%C3%ADsticos-tradicionais-desvendando-o-de-n%C3%BAmeros-valandro-dfubf?lipi=urn%3Ali%3Apage%3Ad_flagship3_series_entity%3BIctJPUd3SpK4FmNIKrpsbA%3D%3D">Modelos Estatísticos Tradicionais</a></h3>
-								<p>Neste artigo abordo brevemente os principais modelos e eles funcionam e falo sobre a importância deles na ciência de dados.</p>
-								<ul class="stuff">
-									<li><a href="https://www.linkedin.com/pulse/modelos-estat%C3%ADsticos-tradicionais-desvendando-o-de-n%C3%BAmeros-valandro-dfubf?lipi=urn%3Ali%3Apage%3Ad_flagship3_series_entity%3BIctJPUd3SpK4FmNIKrpsbA%3D%3D">Leia mais<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
-					<!--
-					<div class="col-md-4">
-						<div class="fh5co-blog animate-box">
-							<a href="#" class="blog-bg" style="background-image: url(images/portfolio-3.jpg);"></a>
-							<div class="blog-text">
-								<span class="posted_on">Mar. 15th 2016</span>
-								<h3><a href="#">Capture Living On Uderwater</a></h3>
-								<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-								<ul class="stuff">
-									<li><i class="icon-heart2"></i>249</li>
-									<li><i class="icon-eye2"></i>308</li>
-									<li><a href="#">Read More<i class="icon-arrow-right22"></i></a></li>
-								</ul>
-							</div> 
-						</div>
-					</div>
-					-->
-				</div>
-			</div>
-		</div>
+    /* ── RESPONSIVE ──────────────────────────────────── */
+    @media (max-width: 768px) {
+      .about-grid { grid-template-columns: 1fr; }
+      .about-stats { grid-template-columns: repeat(3,1fr); }
+      .nav-links { display: none; }
+      #hero { padding-top: 120px; }
+      .contact-card { padding: 2rem 1.5rem; }
+    }
+    @media (max-width: 480px) {
+      .about-stats { grid-template-columns: repeat(2,1fr); }
+    }
 
-		<div id="fh5co-resume" class="fh5co-bg-color">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-12 col-md-offset-0">
-						<ul class="timeline">
-							<li class="timeline-heading text-center animate-box">
-								<div><h3>Experiência de trabalho</h3></div>
-							</li>
-							<li class="animate-box timeline-unverted">
-								<div class="timeline-badge"><i class="icon-suitcase"></i></div>
-								<div class="timeline-panel">
-									<div class="timeline-heading">
-										<h3 class="timeline-title">Programador sênior</h3>
-										<span class="company">Promob Software Solutions - 2021 - Atual</span>
-									</div>
-									<div class="timeline-body">
-										<p>Diagnosticar e resolver problemas operacionais, realizar atualizações e melhorias, e garantir que o ERP atenda continuamente às necessidades da organização.</p>
-									</div>
-								</div>
-							</li>
-							<li class="timeline-inverted animate-box">
-								<div class="timeline-badge"><i class="icon-suitcase"></i></div>
-								<div class="timeline-panel">
-									<div class="timeline-heading">
-										<h3 class="timeline-title">Programador pleno</h3>
-										<span class="company">Transportes Bertolini Ltda - 2021 - 2021</span>
-									</div>
-									<div class="timeline-body">
-										<p>Diagnosticar e resolver problemas operacionais, realizar atualizações e melhorias, e garantir que o ERP atenda continuamente às necessidades da organização.</p>
-									</div>
-								</div>
-							</li>
-							<li class="animate-box timeline-unverted">
-								<div class="timeline-badge"><i class="icon-suitcase"></i></div>
-								<div class="timeline-panel">
-									<div class="timeline-heading">
-										<h3 class="timeline-title">Programador pleno</h3>
-										<span class="company">Group - 2019 - 2021</span>
-									</div>
-									<div class="timeline-body">
-										<p>Como responsável pelos pedidos no ERP, destaquei-me na integração eficaz do ERP com outros sistemas, utilizando um serviço desenvolvido em VB (Visual Basic). Minha contribuição estendeu-se para além, participando ativamente de diversos projetos de integração, abrangendo APIs REST e SOUP, consolidando uma abordagem integrada e eficiente no ambiente de desenvolvimento.</p>
-									</div>
-								</div>
-							</li>
-							<li class="timeline-inverted animate-box">
-								<div class="timeline-badge"><i class="icon-suitcase"></i></div>
-								<div class="timeline-panel">
-									<div class="timeline-heading">
-										<h3 class="timeline-title">Programador pleno</h3>
-										<span class="company">Promob Software Solutions - 2013 - 2019</span>
-									</div>
-									<div class="timeline-body">
-										<p>Gerenciei eficientemente os pedidos no ERP, liderando a integração do sistema com outras plataformas por meio de um serviço desenvolvido em VB (Visual Basic). Contribuí ativamente para diversos projetos de integração, incluindo APIs REST e SOUP, ampliando a conectividade e a sinergia entre sistemas.</p>
-									</div>
-								</div>
-							</li>
-							<li class="animate-box timeline-unverted">
-								<div class="timeline-badge"><i class="icon-suitcase"></i></div>
-								<div class="timeline-panel">
-									<div class="timeline-heading">
-										<h3 class="timeline-title">Programador</h3>
-										<span class="company">MTW - 2012 - 2013</span>
-									</div>
-									<div class="timeline-body">
-										<p>Coordenei o projeto de integração de dados entre todas as escolas e o governo, otimizando a comunicação e eficiência do sistema. Além disso, desempenhei um papel fundamental na equipe que introduziu com sucesso a metodologia Scrum em nossa empresa, aprimorando nossa abordagem de desenvolvimento de projetos.</p>
-									</div>
-								</div>
-							</li>
+    /* ── LANG TOGGLE ─────────────────────────────────── */
+    .lang-toggle {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--tag-bg); border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.78rem; font-weight: 600;
+      padding: 5px 12px; border-radius: 99px;
+      cursor: pointer; transition: all 0.2s;
+      font-family: 'Inter', sans-serif; letter-spacing: 0.3px;
+    }
+    .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
 
-							<br>
-							<li class="timeline-heading text-center animate-box">
-								<div><h3>Educação</h3></div>
-							</li>
-							<li class="timeline-inverted animate-box">
-								<div class="timeline-badge"><i class="icon-graduation-cap"></i></div>
-								<div class="timeline-panel">
-									<div class="timeline-heading">
-										<h3 class="timeline-title">Especialização em Ciência de Dados da IBM</h3>
-										<span class="company">Coursera - 2023 - 2023</span>
-									</div>
-									<div class="timeline-body">
-										<p>A <a href="https://www.coursera.org/professional-certificates/ibm-data-science">Especialização em Ciência de Dados da IBM</a> é uma opção robusta para desenvolvedores em transição. Oferecido na Coursera.</p>
-									</div>
-								</div>
-							</li>
-							<li class="animate-box timeline-unverted">
-								<div class="timeline-badge"><i class="icon-graduation-cap"></i></div>
-								<div class="timeline-panel">
-									<div class="timeline-heading">
-										<h3 class="timeline-title">Curso superior - Analise e desenvolvimento de sistemas</h3>
-										<span class="company">Ftec - 2009 - 2012</span>
-									</div>
-									<div class="timeline-body">
-										<p>Premiado com o título de Aluno Destaque da graduação – Laurea acadêmica</p>
-									</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<!--
-		<div id="fh5co-work" class="fh5co-bg-dark">
-			<div class="container">
-				<div class="row animate-box">
-					<div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
-						<h2>Work</h2>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-1.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Illustration</span>
-							</div>
-						</a>
-					</div>
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-2.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Brading</span>
-							</div>
-						</a>
-					</div>
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-3.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Illustration</span>
-							</div>
-						</a>
-					</div>
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-4.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Design</span>
-							</div>
-						</a>
-					</div>
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-5.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Website</span>
-							</div>
-						</a>
-					</div>
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-6.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Illustration</span>
-							</div>
-						</a>
-					</div>
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-7.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Brading</span>
-							</div>
-						</a>
-					</div>
-					<div class="col-md-3 text-center col-padding animate-box">
-						<a href="#" class="work" style="background-image: url(images/portfolio-8.jpg);">
-							<div class="desc">
-								<h3>Project Name</h3>
-								<span>Illustration</span>
-							</div>
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-		-->
-		
-		
-		
-		<div id="fh5co-footer">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-12">
-						<p>&copy; 2023 Jefferson Valandro. All Rights Reserved. </p>
-					</div>
-				</div>
-			</div>
-		</div>
+    /* ── SCROLL ANIMATIONS ───────────────────────────── */
+    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-in.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
 
-		<div class="gototop js-top">
-			<a href="#" class="js-gotop"><i class="icon-arrow-up22"></i></a>
-		</div>
-	</div>
-	<!-- jQuery -->
-	<script src="js/jquery.min.js"></script>
-	<!-- jQuery Easing -->
-	<script src="js/jquery.easing.1.3.js"></script>
-	<!-- Bootstrap -->
-	<script src="js/bootstrap.min.js"></script>
-	<!-- Waypoints -->
-	<script src="js/jquery.waypoints.min.js"></script>
-	<!-- Stellar Parallax -->
-	<script src="js/jquery.stellar.min.js"></script>
-	<!-- Easy PieChart -->
-	<script src="js/jquery.easypiechart.min.js"></script>
-	<!-- Google Map -->
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCefOgb1ZWqYtj7raVSmN4PL2WkTrc-KyA&sensor=false"></script>
-	<script src="js/google_map.js"></script>
-	
-	<!-- Main -->
-	<script src="js/main.js"></script>
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">JV<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#about" data-i18n="nav.about">About</a></li>
+    <li><a href="#skills" data-i18n="nav.skills">Skills</a></li>
+    <li><a href="#experience" data-i18n="nav.experience">Experience</a></li>
+    <li><a href="#projects" data-i18n="nav.projects">Projects</a></li>
+    <li><a href="#articles" data-i18n="nav.articles">Articles</a></li>
+    <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+  </ul>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" title="Switch language">
+    <span id="langFlag">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
 
-	</body>
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <img src="images/user-3.jpg" alt="Jefferson Valandro" class="hero-avatar">
+    <div class="hero-badge" data-i18n="hero.badge">Available for opportunities</div>
+    <h1>Jefferson <span>Valandro</span></h1>
+    <p class="hero-subtitle" data-i18n="hero.subtitle">
+      Senior Software Engineer &amp; Tech Lead with 10+ years building scalable systems,
+      microservices architectures, and cloud-native solutions.
+    </p>
+    <div class="hero-tech">
+      <span class="tech-pill">Java</span>
+      <span class="tech-pill">Spring Boot</span>
+      <span class="tech-pill">React</span>
+      <span class="tech-pill">Python</span>
+      <span class="tech-pill">PostgreSQL</span>
+      <span class="tech-pill">Docker</span>
+      <span class="tech-pill">CI/CD</span>
+      <span class="tech-pill">MLOps</span>
+    </div>
+    <div class="hero-actions">
+      <a href="#experience" class="btn btn-primary"><i class="fas fa-briefcase"></i> <span data-i18n="hero.btnExp">View Experience</span></a>
+      <a href="#contact" class="btn btn-ghost"><i class="fas fa-envelope"></i> <span data-i18n="hero.btnContact">Get in touch</span></a>
+    </div>
+    <div class="hero-socials">
+      <a href="https://www.linkedin.com/in/jefferson-valandro" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+      <a href="https://github.com/jeffev" title="GitHub"><i class="fab fa-github"></i></a>
+      <a href="https://www.kaggle.com/jeffersonvalandro" title="Kaggle"><i class="fab fa-kaggle"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label" data-i18n="about.label">About me</span>
+      <h2 data-i18n="about.title">Who I am</h2>
+    </div>
+    <div class="about-grid fade-in">
+      <div>
+        <div class="about-info-card">
+          <h3 data-i18n="about.contactTitle">Contact Info</h3>
+          <div class="info-row">
+            <span class="info-label" data-i18n="about.infoName">Name</span>
+            <span class="info-value">Jefferson Valandro</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label" data-i18n="about.infoPhone">Phone</span>
+            <span class="info-value">+55 (54) 99906-1618</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label" data-i18n="about.infoEmail">Email</span>
+            <span class="info-value">jeffev123@gmail.com</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label" data-i18n="about.infoLocation">Location</span>
+            <span class="info-value" data-i18n="about.infoLocationVal">Brazil</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label" data-i18n="about.infoAvail">Availability</span>
+            <span class="info-value" style="color:var(--accent2);" data-i18n="about.infoAvailVal">Open to opportunities</span>
+          </div>
+        </div>
+      </div>
+      <div class="about-text">
+        <h2 data-i18n="about.greeting">Hello! I'm Jefferson</h2>
+        <p data-i18n="about.p1">
+          I'm a software engineer with over 10 years of experience, specializing in backend development,
+          system architecture, and API integrations. I've led multidisciplinary teams as a Tech Lead,
+          building scalable systems in Java and delivering projects in the education, logistics, and
+          fintech domains.
+        </p>
+        <p data-i18n="about.p2">
+          Currently working as a Full Stack Developer (PJ) at Montreal, I bring a blend of deep
+          backend expertise — Java, Spring Boot, Hibernate — and modern frontend skills with React.
+          I'm also expanding into MLOps, combining my engineering background with machine learning
+          production pipelines.
+        </p>
+        <p data-i18n="about.p3">
+          I'm passionate about clean architecture, integration patterns, agile methodologies,
+          and sharing knowledge within teams to raise the bar on software quality.
+        </p>
+        <div class="about-stats">
+          <div class="stat-card">
+            <div class="stat-number">10+</div>
+            <div class="stat-label" data-i18n="about.stat1">Years of experience</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">6+</div>
+            <div class="stat-label" data-i18n="about.stat2">Companies</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">20+</div>
+            <div class="stat-label" data-i18n="about.stat3">Projects delivered</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label" data-i18n="skills.label">Technical skills</span>
+      <h2 data-i18n="skills.title">Skills &amp; Expertise</h2>
+      <p data-i18n="skills.desc">Core technologies and methodologies I use to build and ship software.</p>
+    </div>
+    <div class="skills-grid fade-in">
+      <div class="skill-category">
+        <div class="skill-category-header">
+          <div class="skill-icon"><i class="fas fa-code"></i></div>
+          <h3>Languages</h3>
+        </div>
+        <div class="skill-tags">
+          <span class="skill-tag highlight">Java</span>
+          <span class="skill-tag highlight">Python</span>
+          <span class="skill-tag">JavaScript</span>
+          <span class="skill-tag">SQL</span>
+        </div>
+      </div>
+      <div class="skill-category">
+        <div class="skill-category-header">
+          <div class="skill-icon"><i class="fas fa-layer-group"></i></div>
+          <h3>Frameworks &amp; Libraries</h3>
+        </div>
+        <div class="skill-tags">
+          <span class="skill-tag highlight">Spring Boot</span>
+          <span class="skill-tag highlight">Hibernate / JPA</span>
+          <span class="skill-tag">Struts</span>
+          <span class="skill-tag">JSP</span>
+          <span class="skill-tag">Flask</span>
+          <span class="skill-tag highlight">React</span>
+          <span class="skill-tag">Material-UI</span>
+        </div>
+      </div>
+      <div class="skill-category">
+        <div class="skill-category-header">
+          <div class="skill-icon"><i class="fas fa-database"></i></div>
+          <h3>Data &amp; Infra</h3>
+        </div>
+        <div class="skill-tags">
+          <span class="skill-tag highlight">PostgreSQL</span>
+          <span class="skill-tag highlight">Oracle</span>
+          <span class="skill-tag highlight">IBM DB2</span>
+          <span class="skill-tag highlight">Docker</span>
+          <span class="skill-tag">RabbitMQ</span>
+          <span class="skill-tag">Kafka</span>
+          <span class="skill-tag">Maven</span>
+          <span class="skill-tag">Gradle</span>
+          <span class="skill-tag">GitLab</span>
+          <span class="skill-tag">Jenkins</span>
+          <span class="skill-tag">CI/CD</span>
+        </div>
+      </div>
+      <div class="skill-category">
+        <div class="skill-category-header">
+          <div class="skill-icon"><i class="fas fa-sitemap"></i></div>
+          <h3>Architecture &amp; Integration</h3>
+        </div>
+        <div class="skill-tags">
+          <span class="skill-tag highlight">System Architecture</span>
+          <span class="skill-tag">Microservices</span>
+          <span class="skill-tag highlight">REST APIs</span>
+          <span class="skill-tag">SOAP</span>
+          <span class="skill-tag">ERP Integration</span>
+          <span class="skill-tag">Monorepo</span>
+        </div>
+      </div>
+      <div class="skill-category">
+        <div class="skill-category-header">
+          <div class="skill-icon"><i class="fas fa-robot"></i></div>
+          <h3>MLOps &amp; Data Science</h3>
+        </div>
+        <div class="skill-tags">
+          <span class="skill-tag">MLOps Pipelines</span>
+          <span class="skill-tag">Machine Learning</span>
+          <span class="skill-tag">Data Engineering</span>
+          <span class="skill-tag">ETL</span>
+          <span class="skill-tag">iReports</span>
+        </div>
+      </div>
+      <div class="skill-category">
+        <div class="skill-category-header">
+          <div class="skill-icon"><i class="fas fa-users-cog"></i></div>
+          <h3>Leadership &amp; Process</h3>
+        </div>
+        <div class="skill-tags">
+          <span class="skill-tag highlight">Tech Lead</span>
+          <span class="skill-tag highlight">Scrum / Agile</span>
+          <span class="skill-tag">Code Review</span>
+          <span class="skill-tag">Mentoring</span>
+          <span class="skill-tag">Best Practices</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label" data-i18n="exp.label">Career</span>
+      <h2 data-i18n="exp.title">Work Experience</h2>
+      <p data-i18n="exp.desc">10+ years delivering software across logistics, education, fintech, and enterprise domains.</p>
+    </div>
+    <div class="timeline fade-in">
+
+      <!-- Montreal -->
+      <div class="timeline-item">
+        <div class="timeline-dot current"><i class="fas fa-circle"></i></div>
+        <div class="timeline-card">
+          <div class="timeline-top">
+            <span class="timeline-company">Montreal</span>
+            <span class="timeline-period">01/2026 — Present</span>
+          </div>
+          <div class="timeline-role" data-i18n="exp.montreal.role">Full Stack Developer (PJ)</div>
+          <div class="timeline-desc">
+            <ul>
+              <li data-i18n="exp.montreal.li1">Developing and maintaining enterprise-grade backend services with Java 21 and Spring Boot, integrating with Oracle databases and cloud infrastructure on Azure.</li>
+              <li data-i18n="exp.montreal.li2">Building and evolving React frontends, delivering complete features end-to-end from REST API design to UI implementation.</li>
+              <li data-i18n="exp.montreal.li3">Collaborating with cross-functional teams to define technical solutions, review code, and ensure system reliability and scalability in production.</li>
+
+            </ul>
+          </div>
+          <div class="timeline-techs">
+            <span class="timeline-tech">Java 21</span>
+            <span class="timeline-tech">Spring Boot</span>
+            <span class="timeline-tech">Hibernate</span>
+            <span class="timeline-tech">Oracle</span>
+            <span class="timeline-tech">Azure</span>
+            <span class="timeline-tech">React</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dexian -->
+      <div class="timeline-item">
+        <div class="timeline-dot"><i class="fas fa-briefcase"></i></div>
+        <div class="timeline-card">
+          <div class="timeline-top">
+            <span class="timeline-company">Dexian</span>
+            <span class="timeline-period">07/2025 — 12/2025</span>
+          </div>
+          <div class="timeline-role" data-i18n="exp.dexian.role">Senior Backend Developer</div>
+          <div class="timeline-desc">
+            <ul>
+              <li data-i18n="exp.dexian.li1">Development and architecture of scalable backend systems in Java, with Oracle as the primary database.</li>
+              <li data-i18n="exp.dexian.li2">Integration with infrastructure and information security practices.</li>
+              <li data-i18n="exp.dexian.li3">Definition of best practices, standards, and backend development strategies.</li>
+            </ul>
+          </div>
+          <div class="timeline-techs">
+            <span class="timeline-tech">Java 21</span>
+            <span class="timeline-tech">Spring Boot</span>
+            <span class="timeline-tech">Hibernate</span>
+            <span class="timeline-tech">JPA</span>
+            <span class="timeline-tech">Microservices</span>
+            <span class="timeline-tech">Hexagonal Architecture</span>
+            <span class="timeline-tech">RabbitMQ</span>
+            <span class="timeline-tech">Oracle</span>
+            <span class="timeline-tech">GitLab</span>
+            <span class="timeline-tech">Jenkins</span>
+            <span class="timeline-tech">CI/CD</span>
+            <span class="timeline-tech">Maven</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Esig -->
+      <div class="timeline-item">
+        <div class="timeline-dot"><i class="fas fa-briefcase"></i></div>
+        <div class="timeline-card">
+          <div class="timeline-top">
+            <span class="timeline-company">Esig Software</span>
+            <span class="timeline-period">11/2024 — 07/2025</span>
+          </div>
+          <div class="timeline-role" data-i18n="exp.esig.role">Tech Lead</div>
+          <div class="timeline-desc">
+            <ul>
+              <li data-i18n="exp.esig.li1">Technical leadership of a multidisciplinary team on educational software projects.</li>
+              <li data-i18n="exp.esig.li2">Architecture and development of scalable systems in Java, ensuring code quality and best practices.</li>
+              <li data-i18n="exp.esig.li3">Integration with infrastructure and information security across multiple environments.</li>
+              <li data-i18n="exp.esig.li4">Definition of coding standards, technical guidelines, and development strategies.</li>
+            </ul>
+          </div>
+          <div class="timeline-techs">
+            <span class="timeline-tech">Java 7</span>
+            <span class="timeline-tech">JSP</span>
+            <span class="timeline-tech">iReports</span>
+            <span class="timeline-tech">Hibernate</span>
+            <span class="timeline-tech">JPA</span>
+            <span class="timeline-tech">PostgreSQL</span>
+            <span class="timeline-tech">GitLab</span>
+            <span class="timeline-tech">Jenkins</span>
+            <span class="timeline-tech">Struts</span>
+            <span class="timeline-tech">Gradle</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Promob 2021 -->
+      <div class="timeline-item">
+        <div class="timeline-dot"><i class="fas fa-briefcase"></i></div>
+        <div class="timeline-card">
+          <div class="timeline-top">
+            <span class="timeline-company">Promob Software Solutions</span>
+            <span class="timeline-period">2021 — 2024</span>
+          </div>
+          <div class="timeline-role" data-i18n="exp.promob2.role">Senior Software Engineer</div>
+          <div class="timeline-desc">
+            <ul>
+              <li data-i18n="exp.promob2.li1">Led ERP modernization initiatives focused on performance, scalability, and system reliability.</li>
+              <li data-i18n="exp.promob2.li2">Implemented new backend features and automated business processes, achieving a 20% gain in operational efficiency.</li>
+              <li data-i18n="exp.promob2.li3">Ensured seamless integration with third-party services and maintained high availability across production environments.</li>
+            </ul>
+          </div>
+          <div class="timeline-techs">
+            <span class="timeline-tech">Java 11+</span>
+            <span class="timeline-tech">Spring Boot</span>
+            <span class="timeline-tech">Hibernate</span>
+            <span class="timeline-tech">JPA</span>
+            <span class="timeline-tech">RabbitMQ</span>
+            <span class="timeline-tech">Docker</span>
+            <span class="timeline-tech">Kubernetes</span>
+            <span class="timeline-tech">PostgreSQL</span>
+            <span class="timeline-tech">MySQL</span>
+            <span class="timeline-tech">MongoDB</span>
+            <span class="timeline-tech">React</span>
+            <span class="timeline-tech">Python</span>
+            <span class="timeline-tech">Jenkins</span>
+            <span class="timeline-tech">GitLab</span>
+            <span class="timeline-tech">Maven</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bertolini -->
+      <div class="timeline-item">
+        <div class="timeline-dot"><i class="fas fa-briefcase"></i></div>
+        <div class="timeline-card">
+          <div class="timeline-top">
+            <span class="timeline-company">Transportes Bertolini Ltda</span>
+            <span class="timeline-period">2021 — 2021</span>
+          </div>
+          <div class="timeline-role" data-i18n="exp.bertolini.role">Software Engineer</div>
+          <div class="timeline-desc">
+            <p data-i18n="exp.bertolini.p1">Operational issue diagnosis, ERP updates, and process improvements for the transport sector.</p>
+          </div>
+          <div class="timeline-techs">
+            <span class="timeline-tech">Java 8</span>
+            <span class="timeline-tech">JSP</span>
+            <span class="timeline-tech">RichFaces</span>
+            <span class="timeline-tech">iBatis</span>
+            <span class="timeline-tech">Spring</span>
+            <span class="timeline-tech">PostgreSQL</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Group -->
+      <div class="timeline-item">
+        <div class="timeline-dot"><i class="fas fa-briefcase"></i></div>
+        <div class="timeline-card">
+          <div class="timeline-top">
+            <span class="timeline-company">Group</span>
+            <span class="timeline-period">2019 — 2021</span>
+          </div>
+          <div class="timeline-role" data-i18n="exp.group.role">Software Engineer — ERP &amp; Integrations</div>
+          <div class="timeline-desc">
+            <ul>
+              <li data-i18n="exp.group.li1">Integrated REST and SOAP APIs across internal and external systems, improving data flow and reducing operational costs by 10%.</li>
+              <li data-i18n="exp.group.li2">Maintained and evolved a legacy ERP built in Visual DataFlex, adding new features and improving system stability.</li>
+              <li data-i18n="exp.group.li3">Contributed to backend services in Java, supporting order management and business process automation.</li>
+            </ul>
+          </div>
+          <div class="timeline-techs">
+            <span class="timeline-tech">Java 11+</span>
+            <span class="timeline-tech">Spring Boot</span>
+            <span class="timeline-tech">Hibernate</span>
+            <span class="timeline-tech">JPA</span>
+            <span class="timeline-tech">RabbitMQ</span>
+            <span class="timeline-tech">Docker</span>
+            <span class="timeline-tech">Kubernetes</span>
+            <span class="timeline-tech">Oracle</span>
+            <span class="timeline-tech">PostgreSQL</span>
+            <span class="timeline-tech">MySQL</span>
+            <span class="timeline-tech">MongoDB</span>
+            <span class="timeline-tech">Jenkins</span>
+            <span class="timeline-tech">GitLab</span>
+            <span class="timeline-tech">Maven</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Promob 2013 -->
+      <div class="timeline-item">
+        <div class="timeline-dot"><i class="fas fa-briefcase"></i></div>
+        <div class="timeline-card">
+          <div class="timeline-top">
+            <span class="timeline-company">Promob Software Solutions</span>
+            <span class="timeline-period">2013 — 2019</span>
+          </div>
+          <div class="timeline-role" data-i18n="exp.promob1.role">Software Developer</div>
+          <div class="timeline-desc">
+            <ul>
+              <li data-i18n="exp.promob1.li1">Managed order workflows and built integrations between internal ERP modules and external platforms in Java.</li>
+              <li data-i18n="exp.promob1.li2">Evolved critical ERP features with focus on stability, performance, and code maintainability.</li>
+              <li data-i18n="exp.promob1.li3">Participated in REST and SOAP API integration projects, enhancing system connectivity and data consistency.</li>
+            </ul>
+          </div>
+          <div class="timeline-techs">
+            <span class="timeline-tech">Java 11+</span>
+            <span class="timeline-tech">Spring Boot</span>
+            <span class="timeline-tech">Hibernate</span>
+            <span class="timeline-tech">JPA</span>
+            <span class="timeline-tech">Python</span>
+            <span class="timeline-tech">JSF</span>
+            <span class="timeline-tech">Primefaces</span>
+            <span class="timeline-tech">PostgreSQL</span>
+            <span class="timeline-tech">Jenkins</span>
+            <span class="timeline-tech">GitLab</span>
+            <span class="timeline-tech">JUnit</span>
+            <span class="timeline-tech">Maven</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MTW -->
+      <div class="timeline-item">
+        <div class="timeline-dot"><i class="fas fa-briefcase"></i></div>
+        <div class="timeline-card">
+          <div class="timeline-top">
+            <span class="timeline-company">MTW</span>
+            <span class="timeline-period">2012 — 2013</span>
+          </div>
+          <div class="timeline-role" data-i18n="exp.mtw.role">Junior Software Developer</div>
+          <div class="timeline-desc">
+            <ul>
+              <li data-i18n="exp.mtw.li1">Coordinated data integration project between schools and government, optimizing system communication.</li>
+              <li data-i18n="exp.mtw.li2">Key contributor in introducing the Scrum methodology in the company.</li>
+            </ul>
+          </div>
+          <div class="timeline-techs">
+            <span class="timeline-tech">Java 7</span>
+            <span class="timeline-tech">JSP</span>
+            <span class="timeline-tech">RichFaces</span>
+            <span class="timeline-tech">iBatis</span>
+            <span class="timeline-tech">Spring</span>
+            <span class="timeline-tech">PostgreSQL</span>
+            <span class="timeline-tech">Scrum</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label" data-i18n="projects.label">Portfolio</span>
+      <h2 data-i18n="projects.title">Projects</h2>
+      <p data-i18n="projects.desc">Selected projects showcasing my work in software development, architecture, and data science.</p>
+    </div>
+    <div class="projects-grid fade-in">
+
+      <div class="project-card">
+        <div class="project-thumb" style="background-image: url(images/analise_acoes.png);">
+          <div class="project-thumb-overlay"></div>
+        </div>
+        <div class="project-body">
+          <div class="project-year">2023 — Present</div>
+          <div class="project-title"><a href="https://github.com/jeffev/Investlink">InvestLink</a></div>
+          <p class="project-desc" data-i18n="projects.investlink.desc">Brazilian investment analysis platform for IBXX stocks and FIIs. Monorepo with Flask API, React frontend, data pipeline, and Docker orchestration.</p>
+          <a href="https://github.com/jeffev/Investlink" class="project-link" data-i18n="projects.linkGithub">View on GitHub <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-thumb" style="background-image: url(images/github.png); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: var(--tag-bg);">
+          <div class="project-thumb-overlay"></div>
+        </div>
+        <div class="project-body">
+          <div class="project-year">2024</div>
+          <div class="project-title"><a href="https://github.com/jeffev/ghost-doc">Ghost Doc</a></div>
+          <p class="project-desc" data-i18n="projects.ghostdoc.desc">Automated documentation tool that instruments functions with decorators to capture calls, arguments, return values, and generate live interactive flowcharts.</p>
+          <a href="https://github.com/jeffev/ghost-doc" class="project-link" data-i18n="projects.linkGithub">View on GitHub <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-thumb" style="background-image: url(images/machine-learning.png);">
+          <div class="project-thumb-overlay"></div>
+        </div>
+        <div class="project-body">
+          <div class="project-year">2024</div>
+          <div class="project-title"><a href="https://github.com/jeffev/vizion">Vizion — AI-Powered BI</a></div>
+          <p class="project-desc" data-i18n="projects.vizion.desc">AI-guided data analysis platform that transforms uploaded data into insights, visualizations, and reports without requiring technical BI knowledge.</p>
+          <a href="https://github.com/jeffev/vizion" class="project-link" data-i18n="projects.linkGithub">View on GitHub <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-thumb" style="background-image: url(images/cover_bg_7.png); background-color: #0d1526;">
+          <div class="project-thumb-overlay"></div>
+        </div>
+        <div class="project-body">
+          <div class="project-year">2025</div>
+          <div class="project-title"><a href="https://github.com/jeffev/cloud-native-task-platform">Cloud Native Task Platform</a></div>
+          <p class="project-desc" data-i18n="projects.cloudnative.desc">Production-ready cloud-native task management platform built with FastAPI, PostgreSQL, Redis, Docker, and full Observability + CI/CD stack. Designed to demonstrate scalable backend architecture, background processing, DevOps practices, and SRE fundamentals.</p>
+          <div class="project-tags" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:0.8rem;">
+            <span style="background:var(--tag-bg);border:1px solid var(--border);color:var(--muted);font-size:0.7rem;padding:2px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;">FastAPI</span>
+            <span style="background:var(--tag-bg);border:1px solid var(--border);color:var(--muted);font-size:0.7rem;padding:2px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;">PostgreSQL</span>
+            <span style="background:var(--tag-bg);border:1px solid var(--border);color:var(--muted);font-size:0.7rem;padding:2px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;">Redis</span>
+            <span style="background:var(--tag-bg);border:1px solid var(--border);color:var(--muted);font-size:0.7rem;padding:2px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;">Docker</span>
+            <span style="background:var(--tag-bg);border:1px solid var(--border);color:var(--muted);font-size:0.7rem;padding:2px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;">CI/CD</span>
+          </div>
+          <a href="https://github.com/jeffev/cloud-native-task-platform" class="project-link" data-i18n="projects.linkGithub">View on GitHub <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-thumb" style="background-image: url(images/Analisando_Inflacao_Brasil.png);">
+          <div class="project-thumb-overlay"></div>
+        </div>
+        <div class="project-body">
+          <div class="project-year">01/2024</div>
+          <div class="project-title"><a href="https://www.kaggle.com/code/jeffersonvalandro/analisando-inflacao-brasil">Food Prices vs. IPCA</a></div>
+          <p class="project-desc" data-i18n="projects.ipca.desc">Investigates the relationship between food prices and the Brazilian IPCA inflation index, uncovering patterns and identifying notable variations.</p>
+          <a href="https://www.kaggle.com/code/jeffersonvalandro/analisando-inflacao-brasil" class="project-link" data-i18n="projects.linkKaggle">View on Kaggle <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-thumb" style="background-image: url(images/Credit_Card_Fraud_Detection.png);">
+          <div class="project-thumb-overlay"></div>
+        </div>
+        <div class="project-body">
+          <div class="project-year">12/2023</div>
+          <div class="project-title"><a href="https://www.kaggle.com/code/jeffersonvalandro/credit-card-fraud-detection">Credit Card Fraud Detection</a></div>
+          <p class="project-desc" data-i18n="projects.fraud.desc">Machine learning model to detect fraudulent credit card transactions using advanced classification techniques.</p>
+          <a href="https://www.kaggle.com/code/jeffersonvalandro/credit-card-fraud-detection" class="project-link" data-i18n="projects.linkKaggle">View on Kaggle <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-thumb" style="background-image: url(images/House_price_prediction.png);">
+          <div class="project-thumb-overlay"></div>
+        </div>
+        <div class="project-body">
+          <div class="project-year">12/2023</div>
+          <div class="project-title"><a href="https://www.kaggle.com/code/jeffersonvalandro/house-prices-prediction">House Price Prediction</a></div>
+          <p class="project-desc" data-i18n="projects.house.desc">Kaggle competition — data exploration, preprocessing, and model training for accurate house price prediction.</p>
+          <a href="https://www.kaggle.com/code/jeffersonvalandro/house-prices-prediction" class="project-link" data-i18n="projects.linkKaggle">View on Kaggle <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-thumb" style="background-image: url(images/Comparacao_Investimentos.png);">
+          <div class="project-thumb-overlay"></div>
+        </div>
+        <div class="project-body">
+          <div class="project-year">12/2023</div>
+          <div class="project-title"><a href="https://www.kaggle.com/jeffersonvalandro/compara-o-de-investimentos">Long-Term Investment Comparison</a></div>
+          <p class="project-desc" data-i18n="projects.invest.desc">Performance evaluation of various Brazilian investment assets across different time periods.</p>
+          <a href="https://www.kaggle.com/jeffersonvalandro/compara-o-de-investimentos" class="project-link" data-i18n="projects.linkKaggle">View on Kaggle <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ARTICLES -->
+<section id="articles">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label" data-i18n="articles.label">Writing</span>
+      <h2 data-i18n="articles.title">Articles &amp; Insights</h2>
+      <p data-i18n="articles.desc">Technical writing on software architecture, MLOps, and data science.</p>
+    </div>
+    <div class="articles-grid fade-in">
+
+      <div class="article-card">
+        <div class="article-thumb" style="background-image: url('images/cover_bg_5.png'); background-color: #0d1526;"></div>
+        <div class="article-body">
+          <div class="article-date">March 2025 &nbsp;·&nbsp; 12 min read</div>
+          <div class="article-title"><a href="articles/scalable-architectures.html">Designing Scalable System Architectures</a></div>
+          <p class="article-desc" data-i18n="articles.scalable.desc">Microservices, DDD Bounded Contexts, CQRS, event-driven communication, and resilience patterns for systems that grow without breaking.</p>
+          <a href="articles/scalable-architectures.html" class="article-link" data-i18n="articles.readLink">Read article <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="article-card">
+        <div class="article-thumb" style="background-image: url('images/machine-learning.png'); background-size: cover; background-color: #0d1526;"></div>
+        <div class="article-body">
+          <div class="article-date">February 2025 &nbsp;·&nbsp; 14 min read</div>
+          <div class="article-title"><a href="articles/mlops-deployment.html">MLOps: Deploying ML Models in Production</a></div>
+          <p class="article-desc" data-i18n="articles.mlops.desc">End-to-end MLOps pipeline: experiment tracking with MLflow, model packaging, CI/CD quality gates, canary releases, and feature stores.</p>
+          <a href="articles/mlops-deployment.html" class="article-link" data-i18n="articles.readLink">Read article <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="article-card">
+        <div class="article-thumb" style="background-image: url('images/cover_bg_7.png'); background-color: #0d1526;"></div>
+        <div class="article-body">
+          <div class="article-date">January 2025 &nbsp;·&nbsp; 13 min read</div>
+          <div class="article-title"><a href="articles/event-driven-architecture.html">Event-Driven Architecture with Apache Kafka</a></div>
+          <p class="article-desc" data-i18n="articles.eda.desc">Topics, partitions, consumer groups, the Outbox Pattern, Event Sourcing, and Schema Registry for building decoupled distributed systems.</p>
+          <a href="articles/event-driven-architecture.html" class="article-link" data-i18n="articles.readLink">Read article <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="article-card">
+        <div class="article-thumb" style="background-image: url('images/avaliacao_modelso.png'); background-size: cover; background-color: #0d1526;"></div>
+        <div class="article-body">
+          <div class="article-date">March 2025 &nbsp;·&nbsp; 11 min read</div>
+          <div class="article-title"><a href="articles/model-monitoring.html">Model Monitoring &amp; Drift Detection in Production</a></div>
+          <p class="article-desc" data-i18n="articles.monitoring.desc">Four-layer monitoring stack for ML: data quality, feature drift (PSI, KS test), performance degradation, and automated retraining triggers.</p>
+          <a href="articles/model-monitoring.html" class="article-link" data-i18n="articles.readLink">Read article <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="article-card">
+        <div class="article-thumb" style="background-image: url('images/cover_bg_4.jpg'); background-color: #0d1526;"></div>
+        <div class="article-body">
+          <div class="article-date">March 2025 &nbsp;·&nbsp; 13 min read</div>
+          <div class="article-title"><a href="articles/microservices-communication.html">Microservices Communication Patterns</a></div>
+          <p class="article-desc" data-i18n="articles.mscomm.desc">REST vs gRPC, API Gateway, Service Mesh, and the Saga pattern for managing distributed transactions without global locks.</p>
+          <a href="articles/microservices-communication.html" class="article-link" data-i18n="articles.readLink">Read article <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="article-card">
+        <div class="article-thumb" style="background-image: url('images/tipo_dados.png'); background-size: cover; background-color: #0d1526;"></div>
+        <div class="article-body">
+          <div class="article-date">February 2025 &nbsp;·&nbsp; 12 min read</div>
+          <div class="article-title"><a href="articles/data-pipelines-ml.html">Building Reliable Data Pipelines for ML</a></div>
+          <p class="article-desc" data-i18n="articles.datapipe.desc">Medallion Architecture, idempotency, dbt schema contracts, Airflow orchestration, and late-arriving data strategies for production ML systems.</p>
+          <a href="articles/data-pipelines-ml.html" class="article-link" data-i18n="articles.readLink">Read article <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="article-card">
+        <div class="article-thumb" style="background-image: url('images/cover_bg_3.png'); background-color: #0d1526;"></div>
+        <div class="article-body">
+          <div class="article-date">March 2025 &nbsp;·&nbsp; 11 min read</div>
+          <div class="article-title"><a href="articles/hexagonal-architecture.html">Hexagonal Architecture in Practice</a></div>
+          <p class="article-desc" data-i18n="articles.hexagonal.desc">Ports & Adapters with Spring Boot: isolating the domain core, defining ports as interfaces, and writing use cases that are fully testable without infrastructure.</p>
+          <a href="articles/hexagonal-architecture.html" class="article-link" data-i18n="articles.readLink">Read article <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="article-card">
+        <div class="article-thumb" style="background-image: url('images/cover_bg_1.jpg'); background-color: #0d1526;"></div>
+        <div class="article-body">
+          <div class="article-date">February 2025 &nbsp;·&nbsp; 12 min read</div>
+          <div class="article-title"><a href="articles/api-design-best-practices.html">API Design Best Practices</a></div>
+          <p class="article-desc" data-i18n="articles.apidesign.desc">Resource modeling, HTTP semantics, versioning, consistent error responses, cursor pagination, rate limiting, and contract-first with OpenAPI.</p>
+          <a href="articles/api-design-best-practices.html" class="article-link" data-i18n="articles.readLink">Read article <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="article-card">
+        <div class="article-thumb" style="background-image: url('images/cover_bg_5.png'); background-color: #0d1526;"></div>
+        <div class="article-body">
+          <div class="article-date">January 2025 &nbsp;·&nbsp; 12 min read</div>
+          <div class="article-title"><a href="articles/cicd-pipelines-backend.html">CI/CD Pipelines for Backend Systems</a></div>
+          <p class="article-desc" data-i18n="articles.cicd.desc">Pipeline stages, quality gates with SonarQube, Testcontainers, multi-stage Docker builds, GitOps with ArgoCD, and deployment strategies for production.</p>
+          <a href="articles/cicd-pipelines-backend.html" class="article-link" data-i18n="articles.readLink">Read article <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label" data-i18n="edu.label">Background</span>
+      <h2 data-i18n="edu.title">Education &amp; Certifications</h2>
+    </div>
+    <div class="edu-grid fade-in">
+
+      <div class="edu-card">
+        <div class="edu-icon"><i class="fas fa-user-graduate"></i></div>
+        <div>
+          <div class="edu-title" data-i18n="edu.postgrad">Postgraduate in Data Science &amp; Analytics</div>
+          <div class="edu-school">PUCRIO — Rio de Janeiro, Brazil</div>
+          <div class="edu-period">2024 — 2025</div>
+        </div>
+      </div>
+
+      <div class="edu-card">
+        <div class="edu-icon"><i class="fas fa-graduation-cap"></i></div>
+        <div>
+          <div class="edu-title" data-i18n="edu.degree">Bachelor's in Systems Analysis &amp; Development</div>
+          <div class="edu-school">Ftec — Caxias do Sul, Brazil</div>
+          <div class="edu-period">2009 — 2012 · <span style="color:var(--accent2)" data-i18n="edu.honor">Academic Honor — Outstanding Student</span></div>
+        </div>
+      </div>
+
+      <div class="edu-card">
+        <div class="edu-icon"><i class="fas fa-certificate"></i></div>
+        <div>
+          <div class="edu-title">IBM Data Science Professional Certificate</div>
+          <div class="edu-school">Coursera — IBM</div>
+          <div class="edu-period">2023</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-card fade-in">
+      <h2 data-i18n="contact.title">Let's work together</h2>
+      <p data-i18n="contact.desc">Open to full-time roles, freelance projects, and technical consulting. Feel free to reach out.</p>
+      <div class="contact-links">
+        <a href="mailto:jeffev123@gmail.com" class="contact-item">
+          <i class="fas fa-envelope"></i> jeffev123@gmail.com
+        </a>
+        <a href="tel:+5554999061618" class="contact-item">
+          <i class="fas fa-phone"></i> +55 (54) 99906-1618
+        </a>
+      </div>
+      <div class="contact-links">
+        <a href="https://www.linkedin.com/in/jefferson-valandro" class="contact-item">
+          <i class="fab fa-linkedin-in"></i> LinkedIn
+        </a>
+        <a href="https://github.com/jeffev" class="contact-item">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+        <a href="https://www.kaggle.com/jeffersonvalandro" class="contact-item">
+          <i class="fab fa-kaggle"></i> Kaggle
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>&copy; 2026 Jefferson Valandro. Built with care.</p>
+</footer>
+
+<script>
+  // ── TRANSLATIONS ──────────────────────────────────────────────────────────
+  const translations = {
+    en: {
+      'nav.about': 'About',
+      'nav.skills': 'Skills',
+      'nav.experience': 'Experience',
+      'nav.projects': 'Projects',
+      'nav.articles': 'Articles',
+      'nav.contact': 'Contact',
+
+      'hero.badge': 'Available for opportunities',
+      'hero.subtitle': 'Senior Software Engineer & Tech Lead with 10+ years building scalable systems, microservices architectures, and cloud-native solutions.',
+      'hero.btnExp': 'View Experience',
+      'hero.btnContact': 'Get in touch',
+
+      'about.label': 'About me',
+      'about.title': 'Who I am',
+      'about.contactTitle': 'Contact Info',
+      'about.infoName': 'Name',
+      'about.infoPhone': 'Phone',
+      'about.infoEmail': 'Email',
+      'about.infoLocation': 'Location',
+      'about.infoLocationVal': 'Brazil',
+      'about.infoAvail': 'Availability',
+      'about.infoAvailVal': 'Open to opportunities',
+      'about.greeting': "Hello! I'm Jefferson",
+      'about.p1': "I'm a software engineer with over 10 years of experience, specializing in backend development, system architecture, and API integrations. I've led multidisciplinary teams as a Tech Lead, building scalable systems in Java and delivering projects in the education, logistics, and fintech domains.",
+      'about.p2': "Currently working as a Full Stack Developer (PJ) at Montreal, I bring a blend of deep backend expertise — Java, Spring Boot, Hibernate — and modern frontend skills with React. I'm also expanding into MLOps, combining my engineering background with machine learning production pipelines.",
+      'about.p3': "I'm passionate about clean architecture, integration patterns, agile methodologies, and sharing knowledge within teams to raise the bar on software quality.",
+      'about.stat1': 'Years of experience',
+      'about.stat2': 'Companies',
+      'about.stat3': 'Projects delivered',
+
+      'skills.label': 'Technical skills',
+      'skills.title': 'Skills & Expertise',
+      'skills.desc': 'Core technologies and methodologies I use to build and ship software.',
+
+      'exp.label': 'Career',
+      'exp.title': 'Work Experience',
+      'exp.desc': '10+ years delivering software across logistics, education, fintech, and enterprise domains.',
+      'exp.montreal.role': 'Full Stack Developer (PJ)',
+      'exp.montreal.li1': 'Developing and maintaining enterprise-grade backend services with Java 21 and Spring Boot, integrating with Oracle databases and cloud infrastructure on Azure.',
+      'exp.montreal.li2': 'Building and evolving React frontends, delivering complete features end-to-end from REST API design to UI implementation.',
+      'exp.montreal.li3': 'Collaborating with cross-functional teams to define technical solutions, review code, and ensure system reliability and scalability in production.',
+      'exp.dexian.role': 'Senior Backend Developer',
+      'exp.dexian.li1': 'Development and architecture of scalable backend systems in Java, with Oracle as the primary database.',
+      'exp.dexian.li2': 'Integration with infrastructure and information security practices.',
+      'exp.dexian.li3': 'Definition of best practices, standards, and backend development strategies.',
+      'exp.esig.role': 'Tech Lead',
+      'exp.esig.li1': 'Technical leadership of a multidisciplinary team on educational software projects.',
+      'exp.esig.li2': 'Architecture and development of scalable systems in Java, ensuring code quality and best practices.',
+      'exp.esig.li3': 'Integration with infrastructure and information security across multiple environments.',
+      'exp.esig.li4': 'Definition of coding standards, technical guidelines, and development strategies.',
+      'exp.promob2.role': 'Senior Software Engineer',
+      'exp.promob2.li1': 'Led ERP modernization initiatives focused on performance, scalability, and system reliability.',
+      'exp.promob2.li2': 'Implemented new backend features and automated business processes, achieving a 20% gain in operational efficiency.',
+      'exp.promob2.li3': 'Ensured seamless integration with third-party services and maintained high availability across production environments.',
+      'exp.bertolini.role': 'Software Engineer',
+      'exp.bertolini.p1': 'Operational issue diagnosis, ERP updates, and process improvements for the transport sector.',
+      'exp.group.role': 'Software Engineer — ERP & Integrations',
+      'exp.group.li1': 'Integrated REST and SOAP APIs across internal and external systems, improving data flow and reducing operational costs by 10%.',
+      'exp.group.li2': 'Maintained and evolved a legacy ERP built in Visual DataFlex, adding new features and improving system stability.',
+      'exp.group.li3': 'Contributed to backend services in Java, supporting order management and business process automation.',
+      'exp.promob1.role': 'Software Developer',
+      'exp.promob1.li1': 'Managed order workflows and built integrations between internal ERP modules and external platforms in Java.',
+      'exp.promob1.li2': 'Evolved critical ERP features with focus on stability, performance, and code maintainability.',
+      'exp.promob1.li3': 'Participated in REST and SOAP API integration projects, enhancing system connectivity and data consistency.',
+      'exp.mtw.role': 'Junior Software Developer',
+      'exp.mtw.li1': 'Coordinated data integration project between schools and government, optimizing system communication.',
+      'exp.mtw.li2': 'Key contributor in introducing the Scrum methodology in the company.',
+
+      'projects.label': 'Portfolio',
+      'projects.title': 'Projects',
+      'projects.desc': 'Selected projects showcasing my work in software development, architecture, and data science.',
+      'projects.linkGithub': 'View on GitHub <i class="fas fa-arrow-right"></i>',
+      'projects.linkKaggle': 'View on Kaggle <i class="fas fa-arrow-right"></i>',
+      'projects.investlink.desc': 'Brazilian investment analysis platform for IBXX stocks and FIIs. Monorepo with Flask API, React frontend, data pipeline, and Docker orchestration.',
+      'projects.ghostdoc.desc': 'Automated documentation tool that instruments functions with decorators to capture calls, arguments, return values, and generate live interactive flowcharts.',
+      'projects.vizion.desc': 'AI-guided data analysis platform that transforms uploaded data into insights, visualizations, and reports without requiring technical BI knowledge.',
+      'projects.cloudnative.desc': 'Production-ready cloud-native task management platform built with FastAPI, PostgreSQL, Redis, Docker, and full Observability + CI/CD stack. Designed to demonstrate scalable backend architecture, background processing, DevOps practices, and SRE fundamentals.',
+      'projects.ipca.desc': 'Investigates the relationship between food prices and the Brazilian IPCA inflation index, uncovering patterns and identifying notable variations.',
+      'projects.fraud.desc': 'Machine learning model to detect fraudulent credit card transactions using advanced classification techniques.',
+      'projects.house.desc': 'Kaggle competition — data exploration, preprocessing, and model training for accurate house price prediction.',
+      'projects.invest.desc': 'Performance evaluation of various Brazilian investment assets across different time periods.',
+
+      'articles.label': 'Writing',
+      'articles.title': 'Articles & Insights',
+      'articles.desc': 'Technical writing on software architecture, MLOps, and data science.',
+      'articles.readLink': 'Read article <i class="fas fa-arrow-right"></i>',
+      'articles.scalable.desc': 'Microservices, DDD Bounded Contexts, CQRS, event-driven communication, and resilience patterns for systems that grow without breaking.',
+      'articles.mlops.desc': 'End-to-end MLOps pipeline: experiment tracking with MLflow, model packaging, CI/CD quality gates, canary releases, and feature stores.',
+      'articles.eda.desc': 'Topics, partitions, consumer groups, the Outbox Pattern, Event Sourcing, and Schema Registry for building decoupled distributed systems.',
+      'articles.monitoring.desc': 'Four-layer monitoring stack for ML: data quality, feature drift (PSI, KS test), performance degradation, and automated retraining triggers.',
+      'articles.mscomm.desc': 'REST vs gRPC, API Gateway, Service Mesh, and the Saga pattern for managing distributed transactions without global locks.',
+      'articles.datapipe.desc': 'Medallion Architecture, idempotency, dbt schema contracts, Airflow orchestration, and late-arriving data strategies for production ML systems.',
+      'articles.hexagonal.desc': 'Ports & Adapters with Spring Boot: isolating the domain core, defining ports as interfaces, and writing use cases that are fully testable without infrastructure.',
+      'articles.apidesign.desc': 'Resource modeling, HTTP semantics, versioning, consistent error responses, cursor pagination, rate limiting, and contract-first with OpenAPI.',
+      'articles.cicd.desc': 'Pipeline stages, quality gates with SonarQube, Testcontainers, multi-stage Docker builds, GitOps with ArgoCD, and deployment strategies for production.',
+
+      'edu.label': 'Background',
+      'edu.title': 'Education & Certifications',
+      'edu.postgrad': 'Postgraduate in Data Science & Analytics',
+      'edu.degree': 'Bachelor\'s in Systems Analysis & Development',
+      'edu.honor': 'Academic Honor — Outstanding Student',
+
+      'contact.title': "Let's work together",
+      'contact.desc': 'Open to full-time roles, freelance projects, and technical consulting. Feel free to reach out.',
+    },
+    pt: {
+      'nav.about': 'Sobre',
+      'nav.skills': 'Habilidades',
+      'nav.experience': 'Experiência',
+      'nav.projects': 'Projetos',
+      'nav.articles': 'Artigos',
+      'nav.contact': 'Contato',
+
+      'hero.badge': 'Aberto a oportunidades',
+      'hero.subtitle': 'Engenheiro de Software Sênior & Tech Lead com 10+ anos desenvolvendo sistemas escaláveis, arquiteturas de microsserviços e soluções cloud-native.',
+      'hero.btnExp': 'Ver Experiência',
+      'hero.btnContact': 'Entrar em contato',
+
+      'about.label': 'Sobre mim',
+      'about.title': 'Quem sou eu',
+      'about.contactTitle': 'Informações de Contato',
+      'about.infoName': 'Nome',
+      'about.infoPhone': 'Telefone',
+      'about.infoEmail': 'E-mail',
+      'about.infoLocation': 'Localização',
+      'about.infoLocationVal': 'Brasil',
+      'about.infoAvail': 'Disponibilidade',
+      'about.infoAvailVal': 'Aberto a oportunidades',
+      'about.greeting': 'Olá! Sou Jefferson',
+      'about.p1': 'Sou engenheiro de software com mais de 10 anos de experiência, especializado em desenvolvimento backend, arquitetura de sistemas e integrações via API. Já liderei equipes multidisciplinares como Tech Lead, construindo sistemas escaláveis em Java e entregando projetos nos domínios de educação, logística e fintech.',
+      'about.p2': 'Atualmente trabalhando como Desenvolvedor Full Stack (PJ) na Montreal, combino expertise profunda em backend — Java, Spring Boot, Hibernate — com habilidades modernas de frontend com React. Também estou expandindo para MLOps, unindo minha base de engenharia com pipelines de machine learning em produção.',
+      'about.p3': 'Sou apaixonado por arquitetura limpa, padrões de integração, metodologias ágeis e compartilhamento de conhecimento dentro das equipes para elevar a qualidade do software.',
+      'about.stat1': 'Anos de experiência',
+      'about.stat2': 'Empresas',
+      'about.stat3': 'Projetos entregues',
+
+      'skills.label': 'Habilidades técnicas',
+      'skills.title': 'Habilidades & Expertise',
+      'skills.desc': 'Tecnologias e metodologias que uso para construir e entregar software.',
+
+      'exp.label': 'Carreira',
+      'exp.title': 'Experiência Profissional',
+      'exp.desc': '10+ anos entregando software nos setores de logística, educação, fintech e sistemas empresariais.',
+      'exp.montreal.role': 'Desenvolvedor Full Stack (PJ)',
+      'exp.montreal.li1': 'Desenvolvimento e manutenção de serviços backend corporativos com Java 21 e Spring Boot, integrando com bancos de dados Oracle e infraestrutura em nuvem no Azure.',
+      'exp.montreal.li2': 'Construção e evolução de frontends em React, entregando funcionalidades completas end-to-end desde o design da API REST até a implementação da interface.',
+      'exp.montreal.li3': 'Colaboração com equipes multifuncionais para definir soluções técnicas, revisar código e garantir confiabilidade e escalabilidade do sistema em produção.',
+      'exp.dexian.role': 'Desenvolvedor Backend Sênior',
+      'exp.dexian.li1': 'Desenvolvimento e arquitetura de sistemas backend escaláveis em Java, utilizando Oracle como banco de dados principal.',
+      'exp.dexian.li2': 'Integração com infraestrutura e práticas de segurança da informação.',
+      'exp.dexian.li3': 'Definição de boas práticas, padrões e estratégias de desenvolvimento backend.',
+      'exp.esig.role': 'Tech Lead',
+      'exp.esig.li1': 'Liderança técnica de equipe multidisciplinar em projetos de software educacional.',
+      'exp.esig.li2': 'Arquitetura e desenvolvimento de sistemas escaláveis em Java, garantindo qualidade de código e boas práticas.',
+      'exp.esig.li3': 'Integração com infraestrutura e segurança da informação em múltiplos ambientes.',
+      'exp.esig.li4': 'Definição de padrões de codificação, diretrizes técnicas e estratégias de desenvolvimento.',
+      'exp.promob2.role': 'Engenheiro de Software Sênior',
+      'exp.promob2.li1': 'Liderou iniciativas de modernização do ERP com foco em desempenho, escalabilidade e confiabilidade do sistema.',
+      'exp.promob2.li2': 'Implementou novas funcionalidades backend e automatizou processos de negócio, alcançando 20% de ganho em eficiência operacional.',
+      'exp.promob2.li3': 'Garantiu integração contínua com serviços terceiros e alta disponibilidade nos ambientes de produção.',
+      'exp.bertolini.role': 'Engenheiro de Software',
+      'exp.bertolini.p1': 'Diagnóstico de problemas operacionais, atualizações de ERP e melhorias de processos para o setor de transportes.',
+      'exp.group.role': 'Engenheiro de Software — ERP & Integrações',
+      'exp.group.li1': 'Integrou APIs REST e SOAP entre sistemas internos e externos, melhorando o fluxo de dados e reduzindo custos operacionais em 10%.',
+      'exp.group.li2': 'Manteve e evoluiu um ERP legado construído em Visual DataFlex, adicionando funcionalidades e melhorando a estabilidade do sistema.',
+      'exp.group.li3': 'Contribuiu em serviços backend em Java, apoiando o gerenciamento de pedidos e a automação de processos de negócio.',
+      'exp.promob1.role': 'Desenvolvedor de Software',
+      'exp.promob1.li1': 'Gerenciou fluxos de pedidos e construiu integrações entre módulos internos do ERP e plataformas externas em Java.',
+      'exp.promob1.li2': 'Evoluiu funcionalidades críticas do ERP com foco em estabilidade, desempenho e manutenibilidade do código.',
+      'exp.promob1.li3': 'Participou de projetos de integração com APIs REST e SOAP, melhorando a conectividade e consistência de dados entre sistemas.',
+      'exp.mtw.role': 'Desenvolvedor de Software Júnior',
+      'exp.mtw.li1': 'Coordenou projeto de integração de dados entre escolas e governo, otimizando a comunicação entre sistemas.',
+      'exp.mtw.li2': 'Principal contribuidor na introdução da metodologia Scrum na empresa.',
+
+      'projects.label': 'Portfólio',
+      'projects.title': 'Projetos',
+      'projects.desc': 'Projetos selecionados que demonstram meu trabalho em desenvolvimento de software, arquitetura e ciência de dados.',
+      'projects.linkGithub': 'Ver no GitHub <i class="fas fa-arrow-right"></i>',
+      'projects.linkKaggle': 'Ver no Kaggle <i class="fas fa-arrow-right"></i>',
+      'projects.investlink.desc': 'Plataforma de análise de investimentos brasileiros para ações do IBXX e FIIs. Monorepo com API Flask, frontend React, pipeline de dados e orquestração Docker.',
+      'projects.ghostdoc.desc': 'Ferramenta de documentação automatizada que instrumenta funções com decorators para capturar chamadas, argumentos, valores de retorno e gerar fluxogramas interativos.',
+      'projects.vizion.desc': 'Plataforma de análise de dados guiada por IA que transforma dados enviados em insights, visualizações e relatórios sem exigir conhecimento técnico em BI.',
+      'projects.cloudnative.desc': 'Plataforma de gerenciamento de tarefas cloud-native pronta para produção, construída com FastAPI, PostgreSQL, Redis, Docker e stack completa de Observabilidade + CI/CD. Projetada para demonstrar arquitetura backend escalável, processamento em background, práticas DevOps e fundamentos de SRE.',
+      'projects.ipca.desc': 'Investiga a relação entre preços de alimentos e o índice de inflação IPCA brasileiro, descobrindo padrões e identificando variações notáveis.',
+      'projects.fraud.desc': 'Modelo de machine learning para detectar transações fraudulentas de cartão de crédito usando técnicas avançadas de classificação.',
+      'projects.house.desc': 'Competição Kaggle — exploração de dados, pré-processamento e treinamento de modelos para previsão precisa de preços de imóveis.',
+      'projects.invest.desc': 'Avaliação de desempenho de diversos ativos de investimento brasileiros em diferentes períodos de tempo.',
+
+      'articles.label': 'Escrita',
+      'articles.title': 'Artigos & Insights',
+      'articles.desc': 'Escrita técnica sobre arquitetura de software, MLOps e ciência de dados.',
+      'articles.readLink': 'Ler artigo <i class="fas fa-arrow-right"></i>',
+      'articles.scalable.desc': 'Microsserviços, Bounded Contexts DDD, CQRS, comunicação orientada a eventos e padrões de resiliência para sistemas que crescem sem quebrar.',
+      'articles.mlops.desc': 'Pipeline MLOps end-to-end: rastreamento de experimentos com MLflow, empacotamento de modelos, quality gates de CI/CD, canary releases e feature stores.',
+      'articles.eda.desc': 'Tópicos, partições, consumer groups, Padrão Outbox, Event Sourcing e Schema Registry para construir sistemas distribuídos desacoplados.',
+      'articles.monitoring.desc': 'Stack de monitoramento de 4 camadas para ML: qualidade de dados, drift de features (PSI, KS test), degradação de performance e gatilhos de retreinamento automatizado.',
+      'articles.mscomm.desc': 'REST vs gRPC, API Gateway, Service Mesh e o padrão Saga para gerenciar transações distribuídas sem locks globais.',
+      'articles.datapipe.desc': 'Arquitetura Medallion, idempotência, contratos de schema com dbt, orquestração Airflow e estratégias para dados que chegam com atraso em sistemas de ML.',
+      'articles.hexagonal.desc': 'Ports & Adapters com Spring Boot: isolando o core do domínio, definindo ports como interfaces e escrevendo casos de uso totalmente testáveis sem infraestrutura.',
+      'articles.apidesign.desc': 'Modelagem de recursos, semântica HTTP, versionamento, respostas de erro consistentes, paginação por cursor, rate limiting e contract-first com OpenAPI.',
+      'articles.cicd.desc': 'Estágios de pipeline, quality gates com SonarQube, Testcontainers, builds Docker multi-stage, GitOps com ArgoCD e estratégias de deploy para produção.',
+
+      'edu.label': 'Formação',
+      'edu.title': 'Educação & Certificações',
+      'edu.postgrad': 'Pós-Graduação em Ciência de Dados & Analytics',
+      'edu.degree': 'Bacharel em Análise e Desenvolvimento de Sistemas',
+      'edu.honor': 'Honra Acadêmica — Aluno Destaque',
+
+      'contact.title': 'Vamos trabalhar juntos',
+      'contact.desc': 'Aberto a posições CLT, projetos freelance e consultoria técnica. Fique à vontade para entrar em contato.',
+    }
+  };
+
+  let currentLang = localStorage.getItem('lang') || 'en';
+
+  function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    const t = translations[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+    document.getElementById('langFlag').textContent = lang === 'en' ? '🇧🇷' : '🇺🇸';
+    document.getElementById('langLabel').textContent = lang === 'en' ? 'PT' : 'EN';
+    document.documentElement.lang = lang === 'en' ? 'en' : 'pt-BR';
+  }
+
+  function toggleLang() {
+    setLanguage(currentLang === 'en' ? 'pt' : 'en');
+  }
+
+  // Apply on load
+  setLanguage(currentLang);
+
+  // ── SCROLL ANIMATIONS ──────────────────────────────
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Active nav link highlight on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.id; });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--text)' : '';
+    });
+  });
+</script>
+
+</body>
 </html>
-

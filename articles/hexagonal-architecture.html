@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hexagonal Architecture in Practice — Jefferson Valandro</title>
+  <meta name="description" content="A practical guide to Hexagonal Architecture (Ports & Adapters): structuring Java Spring Boot applications for testability, flexibility, and long-term maintainability.">
+  <meta name="author" content="Jefferson Valandro">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/515935cc24.js" crossorigin="anonymous"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg:#070d1a; --surface:#0d1526; --card:#111e35; --border:#1e2d4a; --accent:#4f8ef7; --accent2:#06d6a0; --accent3:#f72585; --text:#e8edf5; --muted:#7a8aaa; --tag-bg:#162040; --radius:12px; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 16px; }
+    nav { position: fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:0 5vw; height:64px; background:rgba(7,13,26,0.9); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+    .nav-logo { font-weight:700; font-size:1.05rem; color:var(--text); text-decoration:none; letter-spacing:-0.5px; }
+    .nav-logo span { color:var(--accent); }
+    .nav-back { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:0.85rem; font-weight:500; text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .hero-article { padding:120px 5vw 60px; background:linear-gradient(180deg,rgba(79,142,247,0.08) 0%,transparent 60%); border-bottom:1px solid var(--border); }
+    .hero-inner { max-width:780px; margin:0 auto; }
+    .article-category { display:inline-flex; align-items:center; gap:6px; background:rgba(79,142,247,0.1); border:1px solid rgba(79,142,247,0.25); color:var(--accent); font-size:0.72rem; font-weight:700; padding:4px 12px; border-radius:99px; letter-spacing:1px; text-transform:uppercase; margin-bottom:1.2rem; }
+    .hero-article h1 { font-size:clamp(1.8rem,4vw,2.8rem); font-weight:800; letter-spacing:-1px; line-height:1.15; margin-bottom:1rem; }
+    .article-meta { display:flex; align-items:center; gap:1.5rem; color:var(--muted); font-size:0.82rem; flex-wrap:wrap; }
+    .article-meta span { display:flex; align-items:center; gap:5px; }
+    .article-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:1.4rem; }
+    .tag { background:var(--tag-bg); border:1px solid var(--border); color:var(--muted); font-size:0.72rem; font-weight:500; padding:3px 10px; border-radius:6px; font-family:'JetBrains Mono',monospace; }
+    .article-content { max-width:1280px; margin:0 auto; padding:20px 5vw 100px; }
+    .article-content h2 { font-size:1.4rem; font-weight:800; letter-spacing:-0.4px; margin:2.5rem 0 1rem; color:var(--text); padding-bottom:0.5rem; border-bottom:1px solid var(--border); }
+    .article-content h3 { font-size:1.05rem; font-weight:700; margin:1.8rem 0 0.7rem; color:var(--accent2); }
+    .article-content p { color:var(--muted); margin-bottom:1.2rem; font-size:0.97rem; }
+    .article-content strong { color:var(--text); }
+    .article-content ul, .article-content ol { margin:0.5rem 0 1.2rem 1.5rem; }
+    .article-content li { color:var(--muted); font-size:0.97rem; margin-bottom:0.4rem; }
+    .article-content li strong { color:var(--text); }
+    .callout { background:var(--card); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0; padding:1.2rem 1.4rem; margin:1.5rem 0; }
+    .callout.green { border-left-color:var(--accent2); }
+    .callout.red { border-left-color:var(--accent3); }
+    .callout p { margin:0; font-size:0.92rem; }
+    .code-block { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:1.3rem 1.5rem; margin:1.2rem 0; overflow-x:auto; }
+    .code-block code { font-family:'JetBrains Mono',monospace; font-size:0.82rem; color:var(--accent2); line-height:1.6; white-space:pre; }
+    .diagram { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:1.8rem; margin:1.5rem 0; display:flex; flex-direction:column; align-items:center; gap:0.7rem; }
+    .hex-ring { display:flex; align-items:center; justify-content:center; gap:1rem; flex-wrap:wrap; }
+    .hex-box { border-radius:10px; padding:0.7rem 1.2rem; font-family:'JetBrains Mono',monospace; font-size:0.78rem; font-weight:600; text-align:center; border:1px solid; }
+    .hex-core { background:rgba(79,142,247,0.15); border-color:rgba(79,142,247,0.4); color:var(--accent); font-size:0.9rem; padding:1rem 2rem; }
+    .hex-port { background:rgba(6,214,160,0.1); border-color:rgba(6,214,160,0.3); color:var(--accent2); }
+    .hex-adapter { background:var(--tag-bg); border-color:var(--border); color:var(--muted); }
+    .diagram-label { font-size:0.72rem; color:var(--muted); font-style:italic; margin-top:0.5rem; }
+    .article-footer { max-width:780px; margin:0 auto; padding:0 5vw 60px; border-top:1px solid var(--border); padding-top:2rem; }
+    .back-link { display:inline-flex; align-items:center; gap:8px; color:var(--accent); font-size:0.87rem; font-weight:600; text-decoration:none; transition:gap 0.2s; }
+    .back-link:hover { gap:12px; }
+    footer { text-align:center; padding:2rem; color:var(--muted); font-size:0.8rem; border-top:1px solid var(--border); }
+
+    .lang-toggle {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--tag-bg); border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.78rem; font-weight: 600;
+      padding: 5px 12px; border-radius: 99px;
+      cursor: pointer; transition: all 0.2s;
+      font-family: 'Inter', sans-serif; letter-spacing: 0.3px;
+    }
+    .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="../index2.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index2.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" title="Switch language">
+    <span id="langFlag">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-hexagon"></i> <span lang="en">Software Architecture</span><span lang="pt" hidden>Arquitetura de Software</span></div>
+    <h1><span lang="en">Hexagonal Architecture in Practice</span><span lang="pt" hidden>Arquitetura Hexagonal na Pratica</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> March 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">11 min read</span><span lang="pt" hidden>11 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">hexagonal</span>
+      <span class="tag">ports & adapters</span>
+      <span class="tag">clean architecture</span>
+      <span class="tag">Spring Boot</span>
+      <span class="tag">testability</span>
+      <span class="tag">DDD</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">Hexagonal Architecture — also known as Ports and Adapters — was introduced by Alistair Cockburn with a deceptively simple idea: the application core should have no knowledge of the outside world. Databases, HTTP, message brokers, UI frameworks — all of these are details that should be pluggable from the outside, not baked into your business logic.</span><span lang="pt" hidden>A Arquitetura Hexagonal — também conhecida como Ports and Adapters — foi introduzida por Alistair Cockburn com uma ideia deceptivamente simples: o núcleo da aplicação não deve ter conhecimento do mundo externo. Bancos de dados, HTTP, message brokers, frameworks de UI — todos são detalhes que devem ser plugáveis por fora, não embutidos na lógica de negócio.</span></p>
+
+  <p><span lang="en">After applying this pattern across several enterprise Java projects, I've found it to be one of the highest-leverage architectural decisions a team can make — not because it produces "clean" code in the aesthetic sense, but because it dramatically reduces the cost of change and makes the system genuinely testable without infrastructure.</span><span lang="pt" hidden>Após aplicar este padrão em vários projetos Java corporativos, descobri que é uma das decisões arquiteturais de maior alavancagem que uma equipe pode tomar — não porque produz código "limpo" no sentido estético, mas porque reduz dramaticamente o custo de mudança e torna o sistema genuinamente testável sem infraestrutura.</span></p>
+
+  <h2><span lang="en">The Core Idea</span><span lang="pt" hidden>A Ideia Central</span></h2>
+
+  <p><span lang="en">The application is organized in three concentric layers:</span><span lang="pt" hidden>A aplicação é organizada em três camadas concêntricas:</span></p>
+
+  <div class="diagram">
+    <div class="hex-ring">
+      <div class="hex-adapter">REST Controller<br><small>Driving Adapter</small></div>
+      <div class="hex-adapter">Kafka Consumer<br><small>Driving Adapter</small></div>
+      <div class="hex-adapter">CLI<br><small>Driving Adapter</small></div>
+    </div>
+    <div style="color:var(--muted);font-size:0.8rem;">↓ calls input ports ↓</div>
+    <div class="hex-ring">
+      <div class="hex-port">Input Port<br><small>UseCase interface</small></div>
+      <div class="hex-core">Domain<br>Application Core</div>
+      <div class="hex-port">Output Port<br><small>Repository interface</small></div>
+    </div>
+    <div style="color:var(--muted);font-size:0.8rem;">↓ calls output ports ↓</div>
+    <div class="hex-ring">
+      <div class="hex-adapter">JPA Repository<br><small>Driven Adapter</small></div>
+      <div class="hex-adapter">Kafka Producer<br><small>Driven Adapter</small></div>
+      <div class="hex-adapter">REST Client<br><small>Driven Adapter</small></div>
+    </div>
+    <div class="diagram-label"><span lang="en">The core defines interfaces (ports); adapters implement them — dependency always points inward</span><span lang="pt" hidden>O nucleo define interfaces (portas); adaptadores as implementam — a dependencia sempre aponta para dentro</span></div>
+  </div>
+
+  <ul>
+    <li><span lang="en"><strong>Domain:</strong> Pure business logic. No framework annotations, no database imports. Entities, value objects, domain services. Can be tested with plain unit tests.</span><span lang="pt" hidden><strong>Domínio:</strong> Lógica de negócio pura. Sem anotações de framework, sem imports de banco de dados. Entidades, value objects, serviços de domínio. Pode ser testado com testes unitários simples.</span></li>
+    <li><span lang="en"><strong>Ports:</strong> Interfaces that define <em>what</em> the application needs (output ports) or <em>what</em> it offers (input ports). The core owns these interfaces.</span><span lang="pt" hidden><strong>Portas:</strong> Interfaces que definem <em>o que</em> a aplicação precisa (portas de saída) ou <em>o que</em> ela oferece (portas de entrada). O núcleo é dono dessas interfaces.</span></li>
+    <li><span lang="en"><strong>Adapters:</strong> Concrete implementations of ports. A JPA adapter implements the repository port. A REST controller calls the use case port. Adapters depend on the core — never the other way around.</span><span lang="pt" hidden><strong>Adaptadores:</strong> Implementações concretas das portas. Um adaptador JPA implementa a porta de repositório. Um controller REST chama a porta de caso de uso. Adaptadores dependem do núcleo — nunca o contrário.</span></li>
+  </ul>
+
+  <h2><span lang="en">Project Structure in Spring Boot</span><span lang="pt" hidden>Estrutura de Projeto no Spring Boot</span></h2>
+
+  <div class="code-block"><code>src/main/java/com/example/order/
+├── domain/
+│   ├── model/
+│   │   ├── Order.java          # Aggregate root — pure Java, no JPA
+│   │   ├── OrderItem.java
+│   │   └── OrderStatus.java    # Value object
+│   └── service/
+│       └── OrderDomainService.java
+│
+├── application/
+│   ├── port/
+│   │   ├── in/
+│   │   │   ├── PlaceOrderUseCase.java     # Input port (interface)
+│   │   │   └── GetOrderUseCase.java
+│   │   └── out/
+│   │       ├── OrderRepository.java       # Output port (interface)
+│   │       └── PaymentGateway.java
+│   └── service/
+│       └── PlaceOrderService.java         # Use case implementation
+│
+└── adapter/
+    ├── in/
+    │   └── web/
+    │       └── OrderController.java       # REST adapter (calls input port)
+    └── out/
+        ├── persistence/
+        │   ├── OrderJpaRepository.java
+        │   └── OrderPersistenceAdapter.java  # Implements OrderRepository port
+        └── messaging/
+            └── PaymentGatewayAdapter.java    # Implements PaymentGateway port</code></div>
+
+  <h2><span lang="en">Defining Ports</span><span lang="pt" hidden>Definindo Portas</span></h2>
+
+  <p><span lang="en">Ports are plain Java interfaces owned by the application layer. They express <em>intent</em>, not implementation.</span><span lang="pt" hidden>Portas são interfaces Java simples pertencentes à camada de aplicação. Elas expressam <em>intenção</em>, não implementação.</span></p>
+
+  <div class="code-block"><code>// Input port — what the application offers to the outside world
+public interface PlaceOrderUseCase {
+    OrderId placeOrder(PlaceOrderCommand command);
+}
+
+// Output port — what the application needs from the outside world
+public interface OrderRepository {
+    void save(Order order);
+    Optional&lt;Order&gt; findById(OrderId id);
+}
+
+public interface PaymentGateway {
+    PaymentResult charge(CustomerId customerId, Money amount);
+}</code></div>
+
+  <h2><span lang="en">The Domain Model: No Framework Contamination</span><span lang="pt" hidden>O Modelo de Dominio: Sem Contaminacao de Framework</span></h2>
+
+  <p><span lang="en">The most important discipline: domain entities must not import anything from Spring, JPA, or any other framework. They are plain Java objects that encode business rules.</span><span lang="pt" hidden>A disciplina mais importante: entidades de domínio não devem importar nada do Spring, JPA ou qualquer outro framework. São objetos Java simples que codificam regras de negócio.</span></p>
+
+  <div class="code-block"><code>// Pure domain entity — no @Entity, no @Column, no Spring annotations
+public class Order {
+    private final OrderId id;
+    private final CustomerId customerId;
+    private final List&lt;OrderItem&gt; items;
+    private OrderStatus status;
+
+    private Order(OrderId id, CustomerId customerId, List&lt;OrderItem&gt; items) {
+        this.id = id;
+        this.customerId = customerId;
+        this.items = new ArrayList&lt;&gt;(items);
+        this.status = OrderStatus.PENDING;
+    }
+
+    public static Order create(CustomerId customerId, List&lt;OrderItem&gt; items) {
+        if (items.isEmpty()) throw new DomainException("Order must have at least one item");
+        return new Order(OrderId.generate(), customerId, items);
+    }
+
+    public void confirm() {
+        if (this.status != OrderStatus.PENDING)
+            throw new DomainException("Only pending orders can be confirmed");
+        this.status = OrderStatus.CONFIRMED;
+    }
+
+    public Money totalAmount() {
+        return items.stream()
+            .map(OrderItem::subtotal)
+            .reduce(Money.ZERO, Money::add);
+    }
+}</code></div>
+
+  <h2><span lang="en">Use Case Implementation</span><span lang="pt" hidden>Implementacao de Caso de Uso</span></h2>
+
+  <p><span lang="en">The use case orchestrates the domain and calls output ports. It has no knowledge of HTTP, JPA, or Kafka — only the interfaces.</span><span lang="pt" hidden>O caso de uso orquestra o domínio e chama as portas de saída. Não tem conhecimento de HTTP, JPA ou Kafka — apenas das interfaces.</span></p>
+
+  <div class="code-block"><code>@Service
+@Transactional
+@RequiredArgsConstructor
+public class PlaceOrderService implements PlaceOrderUseCase {
+
+    private final OrderRepository orderRepository;   // output port — injected
+    private final PaymentGateway paymentGateway;      // output port — injected
+
+    @Override
+    public OrderId placeOrder(PlaceOrderCommand command) {
+        Order order = Order.create(command.customerId(), command.items());
+
+        PaymentResult payment = paymentGateway.charge(
+            command.customerId(), order.totalAmount()
+        );
+
+        if (!payment.isSuccessful()) {
+            throw new PaymentFailedException(payment.reason());
+        }
+
+        order.confirm();
+        orderRepository.save(order);
+
+        return order.getId();
+    }
+}</code></div>
+
+  <h2><span lang="en">Adapters: Connecting to the Infrastructure</span><span lang="pt" hidden>Adaptadores: Conectando a Infraestrutura</span></h2>
+
+  <h3><span lang="en">Persistence Adapter (JPA)</span><span lang="pt" hidden>Adaptador de Persistencia (JPA)</span></h3>
+
+  <div class="code-block"><code>// JPA entity — separate from the domain entity
+@Entity
+@Table(name = "orders")
+class OrderJpaEntity {
+    @Id String id;
+    String customerId;
+    String status;
+    // ... JPA-specific fields
+}
+
+// The adapter translates between domain model and JPA entity
+@Component
+@RequiredArgsConstructor
+class OrderPersistenceAdapter implements OrderRepository {
+
+    private final OrderJpaRepository jpaRepository;
+    private final OrderMapper mapper;
+
+    @Override
+    public void save(Order order) {
+        jpaRepository.save(mapper.toJpaEntity(order));
+    }
+
+    @Override
+    public Optional&lt;Order&gt; findById(OrderId id) {
+        return jpaRepository.findById(id.value())
+            .map(mapper::toDomainEntity);
+    }
+}</code></div>
+
+  <h3><span lang="en">REST Adapter (Spring MVC)</span><span lang="pt" hidden>Adaptador REST (Spring MVC)</span></h3>
+
+  <div class="code-block"><code>@RestController
+@RequestMapping("/api/orders")
+@RequiredArgsConstructor
+public class OrderController {
+
+    private final PlaceOrderUseCase placeOrderUseCase;  // input port
+
+    @PostMapping
+    public ResponseEntity&lt;PlaceOrderResponse&gt; placeOrder(
+            @RequestBody @Valid PlaceOrderRequest request) {
+
+        PlaceOrderCommand command = PlaceOrderCommand.from(request);
+        OrderId orderId = placeOrderUseCase.placeOrder(command);
+
+        return ResponseEntity
+            .created(URI.create("/api/orders/" + orderId.value()))
+            .body(new PlaceOrderResponse(orderId.value()));
+    }
+}</code></div>
+
+  <h2><span lang="en">The Testability Payoff</span><span lang="pt" hidden>O Retorno da Testabilidade</span></h2>
+
+  <p><span lang="en">The real return on this investment shows up in the test suite. Because the domain has no infrastructure dependencies, unit tests are fast, focused, and free of Spring context startup.</span><span lang="pt" hidden>O verdadeiro retorno desse investimento aparece na suite de testes. Como o domínio não tem dependências de infraestrutura, os testes unitários são rápidos, focados e livres da inicialização do contexto Spring.</span></p>
+
+  <div class="code-block"><code>class PlaceOrderServiceTest {
+
+    // No Spring context, no database, no Kafka
+    private final OrderRepository orderRepository = mock(OrderRepository.class);
+    private final PaymentGateway paymentGateway   = mock(PaymentGateway.class);
+    private final PlaceOrderService service =
+        new PlaceOrderService(orderRepository, paymentGateway);
+
+    @Test
+    void shouldConfirmOrderWhenPaymentSucceeds() {
+        given(paymentGateway.charge(any(), any()))
+            .willReturn(PaymentResult.success());
+
+        OrderId orderId = service.placeOrder(validCommand());
+
+        assertThat(orderId).isNotNull();
+        verify(orderRepository).save(argThat(o ->
+            o.getStatus() == OrderStatus.CONFIRMED
+        ));
+    }
+
+    @Test
+    void shouldThrowWhenPaymentFails() {
+        given(paymentGateway.charge(any(), any()))
+            .willReturn(PaymentResult.failure("Insufficient funds"));
+
+        assertThatThrownBy(() -> service.placeOrder(validCommand()))
+            .isInstanceOf(PaymentFailedException.class);
+
+        verify(orderRepository, never()).save(any());
+    }
+}</code></div>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>Result:</strong> The entire use case logic runs in milliseconds with no infrastructure. Integration tests (using Testcontainers) are reserved for verifying the adapters — not the business rules. This separation typically reduces test suite runtime by 60–80% compared to testing everything through the Spring context.</span><span lang="pt" hidden><strong>Resultado:</strong> Toda a lógica do caso de uso roda em milissegundos sem infraestrutura. Testes de integração (usando Testcontainers) são reservados para verificar os adaptadores — não as regras de negócio. Essa separação tipicamente reduz o tempo de execução da suite de testes em 60–80% comparado a testar tudo pelo contexto Spring.</span></p>
+  </div>
+
+  <h2><span lang="en">When Not to Use It</span><span lang="pt" hidden>Quando Nao Usar</span></h2>
+
+  <p><span lang="en">Hexagonal Architecture has a real cost: more files, more interfaces, more mapping code. It is the right trade-off when:</span><span lang="pt" hidden>A Arquitetura Hexagonal tem um custo real: mais arquivos, mais interfaces, mais código de mapeamento. É o trade-off correto quando:</span></p>
+  <ul>
+    <li><span lang="en">The domain logic is complex enough to warrant isolation.</span><span lang="pt" hidden>A lógica de domínio é complexa o suficiente para justificar o isolamento.</span></li>
+    <li><span lang="en">The team needs to test business rules independently of infrastructure.</span><span lang="pt" hidden>A equipe precisa testar regras de negócio independentemente da infraestrutura.</span></li>
+    <li><span lang="en">You expect to swap or add adapters (e.g., adding a Kafka consumer alongside the REST API).</span><span lang="pt" hidden>Você espera trocar ou adicionar adaptadores (ex: adicionar um consumer Kafka ao lado da API REST).</span></li>
+  </ul>
+  <p><span lang="en">For CRUD-heavy microservices with minimal business logic, a simpler layered architecture (controller → service → repository) will often serve better. Hexagonal architecture is a scalpel, not a hammer.</span><span lang="pt" hidden>Para microsserviços centrados em CRUD com lógica de negócio mínima, uma arquitetura em camadas mais simples (controller → service → repository) frequentemente serve melhor. Arquitetura hexagonal é um bisturi, não um martelo.</span></p>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+  <ul>
+    <li><span lang="en">The domain model must be free of framework annotations — test it with plain unit tests.</span><span lang="pt" hidden>O modelo de domínio deve ser livre de anotações de framework — teste-o com testes unitários simples.</span></li>
+    <li><span lang="en">Ports are interfaces owned by the application core; adapters are implementations owned by the infrastructure layer.</span><span lang="pt" hidden>Portas são interfaces pertencentes ao núcleo da aplicação; adaptadores são implementações pertencentes à camada de infraestrutura.</span></li>
+    <li><span lang="en">Dependency always flows inward: adapters depend on the core, never the reverse.</span><span lang="pt" hidden>A dependência sempre flui para dentro: adaptadores dependem do núcleo, nunca o contrário.</span></li>
+    <li><span lang="en">Keep domain entities and JPA entities separate — map between them in the persistence adapter.</span><span lang="pt" hidden>Mantenha entidades de domínio e entidades JPA separadas — mapeie entre elas no adaptador de persistência.</span></li>
+    <li><span lang="en">The payoff is testability: full use case coverage with no Spring context, no database, no message broker.</span><span lang="pt" hidden>O retorno é a testabilidade: cobertura completa do caso de uso sem contexto Spring, sem banco de dados, sem message broker.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index2.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+<footer><p>&copy; 2025 Jefferson Valandro. Built with care.</p></footer>
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>

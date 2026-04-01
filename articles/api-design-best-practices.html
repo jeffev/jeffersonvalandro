@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API Design Best Practices — Jefferson Valandro</title>
+  <meta name="description" content="Practical guide to designing robust REST APIs: versioning, error handling, pagination, security, rate limiting, and documentation standards for production systems.">
+  <meta name="author" content="Jefferson Valandro">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/515935cc24.js" crossorigin="anonymous"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg:#070d1a; --surface:#0d1526; --card:#111e35; --border:#1e2d4a; --accent:#4f8ef7; --accent2:#06d6a0; --accent3:#f72585; --text:#e8edf5; --muted:#7a8aaa; --tag-bg:#162040; --radius:12px; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 16px; }
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:0 5vw; height:64px; background:rgba(7,13,26,0.9); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+    .nav-logo { font-weight:700; font-size:1.05rem; color:var(--text); text-decoration:none; letter-spacing:-0.5px; }
+    .nav-logo span { color:var(--accent); }
+    .nav-back { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:0.85rem; font-weight:500; text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .hero-article { padding:120px 5vw 60px; background:linear-gradient(180deg,rgba(247,37,133,0.06) 0%,transparent 60%); border-bottom:1px solid var(--border); }
+    .hero-inner { max-width:780px; margin:0 auto; }
+    .article-category { display:inline-flex; align-items:center; gap:6px; background:rgba(247,37,133,0.1); border:1px solid rgba(247,37,133,0.25); color:var(--accent3); font-size:0.72rem; font-weight:700; padding:4px 12px; border-radius:99px; letter-spacing:1px; text-transform:uppercase; margin-bottom:1.2rem; }
+    .hero-article h1 { font-size:clamp(1.8rem,4vw,2.8rem); font-weight:800; letter-spacing:-1px; line-height:1.15; margin-bottom:1rem; }
+    .article-meta { display:flex; align-items:center; gap:1.5rem; color:var(--muted); font-size:0.82rem; flex-wrap:wrap; }
+    .article-meta span { display:flex; align-items:center; gap:5px; }
+    .article-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:1.4rem; }
+    .tag { background:var(--tag-bg); border:1px solid var(--border); color:var(--muted); font-size:0.72rem; font-weight:500; padding:3px 10px; border-radius:6px; font-family:'JetBrains Mono',monospace; }
+    .article-content { max-width:1280px; margin:0 auto; padding:20px 5vw 100px; }
+    .article-content h2 { font-size:1.4rem; font-weight:800; letter-spacing:-0.4px; margin:2.5rem 0 1rem; color:var(--text); padding-bottom:0.5rem; border-bottom:1px solid var(--border); }
+    .article-content h3 { font-size:1.05rem; font-weight:700; margin:1.8rem 0 0.7rem; color:var(--accent2); }
+    .article-content p { color:var(--muted); margin-bottom:1.2rem; font-size:0.97rem; }
+    .article-content strong { color:var(--text); }
+    .article-content ul, .article-content ol { margin:0.5rem 0 1.2rem 1.5rem; }
+    .article-content li { color:var(--muted); font-size:0.97rem; margin-bottom:0.4rem; }
+    .article-content li strong { color:var(--text); }
+    .callout { background:var(--card); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0; padding:1.2rem 1.4rem; margin:1.5rem 0; }
+    .callout.green { border-left-color:var(--accent2); }
+    .callout.red { border-left-color:var(--accent3); }
+    .callout p { margin:0; font-size:0.92rem; }
+    .code-block { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:1.3rem 1.5rem; margin:1.2rem 0; overflow-x:auto; }
+    .code-block code { font-family:'JetBrains Mono',monospace; font-size:0.82rem; color:var(--accent2); line-height:1.6; white-space:pre; }
+    .http-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:0.8rem; margin:1.2rem 0; }
+    .http-card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:0.9rem 1rem; }
+    .http-method { font-family:'JetBrains Mono',monospace; font-size:0.78rem; font-weight:700; margin-bottom:4px; }
+    .http-method.get { color:#06d6a0; } .http-method.post { color:#4f8ef7; } .http-method.put { color:#f4a261; } .http-method.patch { color:#a78bfa; } .http-method.delete { color:#f72585; }
+    .http-desc { font-size:0.75rem; color:var(--muted); }
+    .article-footer { max-width:780px; margin:0 auto; padding:0 5vw 60px; border-top:1px solid var(--border); padding-top:2rem; }
+    .back-link { display:inline-flex; align-items:center; gap:8px; color:var(--accent); font-size:0.87rem; font-weight:600; text-decoration:none; transition:gap 0.2s; }
+    .back-link:hover { gap:12px; }
+    footer { text-align:center; padding:2rem; color:var(--muted); font-size:0.8rem; border-top:1px solid var(--border); }
+
+    .lang-toggle {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--tag-bg); border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.78rem; font-weight: 600;
+      padding: 5px 12px; border-radius: 99px;
+      cursor: pointer; transition: all 0.2s;
+      font-family: 'Inter', sans-serif; letter-spacing: 0.3px;
+    }
+    .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="../index2.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index2.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" title="Switch language">
+    <span id="langFlag">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-plug"></i> <span lang="en">Software Architecture</span><span lang="pt" hidden>Arquitetura de Software</span></div>
+    <h1><span lang="en">API Design Best Practices</span><span lang="pt" hidden>Boas Práticas de Design de API</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> February 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">12 min read</span><span lang="pt" hidden>12 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">REST</span>
+      <span class="tag">API design</span>
+      <span class="tag">versioning</span>
+      <span class="tag">security</span>
+      <span class="tag">OpenAPI</span>
+      <span class="tag">rate limiting</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">An API is a contract. Once published and consumed by clients, every breaking change carries a real cost — coordination overhead, client-side hotfixes, and eroded trust. The decisions you make when designing an API are disproportionately expensive to reverse, which is why getting them right from the start matters more than almost any other engineering choice.</span><span lang="pt" hidden>Uma API é um contrato. Uma vez publicada e consumida por clientes, cada quebra de compatibilidade tem um custo real — sobrecarga de coordenação, correções emergenciais no lado do cliente e perda de confiança. As decisões tomadas no design de uma API são desproporcionalmente caras de reverter, e é por isso que acertá-las desde o início importa mais do que quase qualquer outra decisão de engenharia.</span></p>
+
+  <p><span lang="en">This article covers the decisions I apply when designing production REST APIs: resource modeling, versioning, error handling, pagination, security, and documentation. These are not theoretical principles — they are patterns that have survived contact with real traffic, real clients, and real incidents.</span><span lang="pt" hidden>Este artigo cobre as decisões que aplico ao projetar APIs REST em produção: modelagem de recursos, versionamento, tratamento de erros, paginação, segurança e documentação. Não são princípios teóricos — são padrões que sobreviveram ao contato com tráfego real, clientes reais e incidentes reais.</span></p>
+
+  <h2><span lang="en">Resource Modeling</span><span lang="pt" hidden>Modelagem de Recursos</span></h2>
+
+  <p><span lang="en">REST is about resources, not actions. The URL identifies a resource; the HTTP method expresses what to do with it.</span><span lang="pt" hidden>REST é sobre recursos, não ações. A URL identifica um recurso; o método HTTP expressa o que fazer com ele.</span></p>
+
+  <div class="http-grid">
+    <div class="http-card"><div class="http-method get">GET</div><div class="http-desc"><span lang="en">Read — safe and idempotent</span><span lang="pt" hidden>Leitura — seguro e idempotente</span></div></div>
+    <div class="http-card"><div class="http-method post">POST</div><div class="http-desc"><span lang="en">Create — not idempotent</span><span lang="pt" hidden>Criação — não idempotente</span></div></div>
+    <div class="http-card"><div class="http-method put">PUT</div><div class="http-desc"><span lang="en">Full replace — idempotent</span><span lang="pt" hidden>Substituição total — idempotente</span></div></div>
+    <div class="http-card"><div class="http-method patch">PATCH</div><div class="http-desc"><span lang="en">Partial update — idempotent</span><span lang="pt" hidden>Atualização parcial — idempotente</span></div></div>
+    <div class="http-card"><div class="http-method delete">DELETE</div><div class="http-desc"><span lang="en">Remove — idempotent</span><span lang="pt" hidden>Remoção — idempotente</span></div></div>
+  </div>
+
+  <div class="code-block"><code># Good — nouns, plural, hierarchical
+GET    /orders                    # list orders
+GET    /orders/{id}               # get one order
+POST   /orders                    # create order
+PATCH  /orders/{id}               # update order
+DELETE /orders/{id}               # cancel order
+GET    /orders/{id}/items         # list items in an order
+
+# Bad — verbs in URLs, RPC-style
+POST /getOrder
+POST /createNewOrder
+GET  /deleteOrder?id=123</code></div>
+
+  <h3><span lang="en">Actions That Don't Fit CRUD</span><span lang="pt" hidden>Ações Que Não Se Encaixam no CRUD</span></h3>
+  <p><span lang="en">Some operations are genuinely not CRUD: confirming an order, archiving a document, resending an email. Two approaches:</span><span lang="pt" hidden>Algumas operações genuinamente não são CRUD: confirmar um pedido, arquivar um documento, reenviar um e-mail. Duas abordagens:</span></p>
+  <ul>
+    <li><span lang="en"><strong>Sub-resource action:</strong> <code>POST /orders/{id}/confirm</code> — treats the action as a resource being created.</span><span lang="pt" hidden><strong>Ação de sub-recurso:</strong> <code>POST /orders/{id}/confirm</code> — trata a ação como um recurso sendo criado.</span></li>
+    <li><span lang="en"><strong>State transition via PATCH:</strong> <code>PATCH /orders/{id}</code> with body <code>{"status": "confirmed"}</code> — makes state explicit in the resource model.</span><span lang="pt" hidden><strong>Transição de estado via PATCH:</strong> <code>PATCH /orders/{id}</code> com body <code>{"status": "confirmed"}</code> — torna o estado explícito no modelo de recurso.</span></li>
+  </ul>
+
+  <div class="callout">
+    <p><span lang="en"><strong>Prefer state transitions via PATCH</strong> when the action naturally maps to a state change. Use sub-resource actions for complex commands with multiple side effects (e.g., <code>POST /invoices/{id}/send</code>).</span><span lang="pt" hidden><strong>Prefira transições de estado via PATCH</strong> quando a ação mapeia naturalmente para uma mudança de estado. Use ações de sub-recurso para comandos complexos com múltiplos efeitos colaterais (ex.: <code>POST /invoices/{id}/send</code>).</span></p>
+  </div>
+
+  <h2><span lang="en">HTTP Status Codes</span><span lang="pt" hidden>Códigos de Status HTTP</span></h2>
+
+  <p><span lang="en">Use status codes semantically. Clients build logic on top of them — returning <code>200</code> for every response, including errors, forces clients to parse the body to know if the call succeeded.</span><span lang="pt" hidden>Use códigos de status de forma semântica. Clientes constroem lógica em cima deles — retornar <code>200</code> para toda resposta, incluindo erros, obriga os clientes a analisar o corpo para saber se a chamada foi bem-sucedida.</span></p>
+
+  <div class="code-block"><code># Success
+200 OK             — GET, PATCH success with body
+201 Created        — POST success; include Location header
+204 No Content     — DELETE, PATCH with no response body
+
+# Client errors
+400 Bad Request    — validation failure (include error details)
+401 Unauthorized   — missing or invalid authentication
+403 Forbidden      — authenticated but not authorized
+404 Not Found      — resource does not exist
+409 Conflict       — state conflict (e.g., duplicate, wrong status)
+422 Unprocessable  — semantically invalid (business rule violation)
+429 Too Many Req.  — rate limit exceeded
+
+# Server errors
+500 Internal Error — unexpected failure (never expose stack traces)
+503 Unavailable    — downstream dependency down; include Retry-After</code></div>
+
+  <h2><span lang="en">Consistent Error Response Structure</span><span lang="pt" hidden>Estrutura Consistente de Resposta de Erro</span></h2>
+
+  <p><span lang="en">Every error response must follow the same structure. Clients must be able to parse errors programmatically, not by reading error messages written for humans.</span><span lang="pt" hidden>Toda resposta de erro deve seguir a mesma estrutura. Os clientes precisam conseguir processar erros programaticamente, não lendo mensagens de erro escritas para humanos.</span></p>
+
+  <div class="code-block"><code>// Standard error envelope
+{
+  "type":     "https://api.example.com/errors/validation-error",
+  "title":    "Validation Failed",
+  "status":   400,
+  "detail":   "The request body contains invalid fields.",
+  "traceId":  "abc123xyz",
+  "errors": [
+    { "field": "email",  "code": "INVALID_FORMAT", "message": "Must be a valid email address" },
+    { "field": "amount", "code": "OUT_OF_RANGE",   "message": "Must be between 0.01 and 999999" }
+  ]
+}</code></div>
+
+  <p><span lang="en">The <code>traceId</code> field is non-negotiable in production. When a client reports an error, you need to correlate it to a specific request in your distributed tracing system within seconds — not minutes.</span><span lang="pt" hidden>O campo <code>traceId</code> é inegociável em produção. Quando um cliente reporta um erro, você precisa correlacioná-lo a uma requisição específica no seu sistema de rastreamento distribuído em segundos — não em minutos.</span></p>
+
+  <h2><span lang="en">API Versioning</span><span lang="pt" hidden>Versionamento de API</span></h2>
+
+  <p><span lang="en">APIs evolve. Without a versioning strategy, every change is a potential breaking change for every client. Three common approaches:</span><span lang="pt" hidden>APIs evoluem. Sem uma estratégia de versionamento, cada mudança é uma potencial quebra de compatibilidade para todos os clientes. Três abordagens comuns:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>URL path versioning:</strong> <code>/v1/orders</code>, <code>/v2/orders</code>. Explicit, easy to route, easy to deprecate. The most widely used approach. Downside: the version becomes part of the resource URL, which is technically impure REST.</span><span lang="pt" hidden><strong>Versionamento por path da URL:</strong> <code>/v1/orders</code>, <code>/v2/orders</code>. Explícito, fácil de rotear, fácil de deprecar. A abordagem mais amplamente usada. Desvantagem: a versão se torna parte da URL do recurso, o que tecnicamente não é REST puro.</span></li>
+    <li><span lang="en"><strong>Header versioning:</strong> <code>Accept: application/vnd.api+json;version=2</code>. Cleaner URLs, but harder to test and share links.</span><span lang="pt" hidden><strong>Versionamento por header:</strong> <code>Accept: application/vnd.api+json;version=2</code>. URLs mais limpas, mas mais difícil de testar e compartilhar links.</span></li>
+    <li><span lang="en"><strong>Query param:</strong> <code>/orders?version=2</code>. Simplest for internal APIs, but pollutes query semantics.</span><span lang="pt" hidden><strong>Query param:</strong> <code>/orders?version=2</code>. Mais simples para APIs internas, mas polui a semântica da query.</span></li>
+  </ul>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>Recommendation:</strong> Use URL path versioning for public and partner APIs — it is explicit and cacheable. Use header versioning for internal service-to-service APIs where URL cleanliness matters and testing infrastructure is controlled.</span><span lang="pt" hidden><strong>Recomendação:</strong> Use versionamento por path para APIs públicas e de parceiros — é explícito e cacheável. Use versionamento por header para APIs internas entre serviços onde a limpeza da URL importa e a infraestrutura de testes é controlada.</span></p>
+  </div>
+
+  <h3><span lang="en">Deprecation Policy</span><span lang="pt" hidden>Política de Deprecação</span></h3>
+  <p><span lang="en">Never remove a version without notice. Include deprecation warnings in response headers starting at least 6 months before sunset:</span><span lang="pt" hidden>Nunca remova uma versão sem aviso prévio. Inclua avisos de deprecação nos headers de resposta com pelo menos 6 meses de antecedência:</span></p>
+
+  <div class="code-block"><code>Deprecation: Sun, 01 Jun 2025 00:00:00 GMT
+Sunset: Mon, 01 Dec 2025 00:00:00 GMT
+Link: &lt;https://api.example.com/v2/orders&gt;; rel="successor-version"</code></div>
+
+  <h2><span lang="en">Pagination</span><span lang="pt" hidden>Paginação</span></h2>
+
+  <p><span lang="en">Never return unbounded collections. A <code>GET /orders</code> endpoint that returns all orders will eventually destroy your database and timeout the client.</span><span lang="pt" hidden>Nunca retorne coleções ilimitadas. Um endpoint <code>GET /orders</code> que retorna todos os pedidos eventualmente vai sobrecarregar o banco de dados e causar timeout no cliente.</span></p>
+
+  <h3><span lang="en">Cursor-based Pagination (preferred)</span><span lang="pt" hidden>Paginação Baseada em Cursor (preferida)</span></h3>
+
+  <div class="code-block"><code>// Request
+GET /orders?cursor=eyJpZCI6MTIzfQ&limit=20
+
+// Response
+{
+  "data": [...],
+  "pagination": {
+    "limit": 20,
+    "nextCursor": "eyJpZCI6MTQzfQ",  // null if last page
+    "hasMore": true
+  }
+}</code></div>
+
+  <p><span lang="en">Cursor-based pagination is stable under concurrent writes — a new order inserted on page 1 doesn't cause items to skip or duplicate across pages. Offset-based (<code>?page=3&size=20</code>) is simpler but breaks under high write rates.</span><span lang="pt" hidden>A paginação baseada em cursor é estável sob escritas concorrentes — um novo pedido inserido na página 1 não causa saltos ou duplicações de itens entre páginas. A paginação por offset (<code>?page=3&size=20</code>) é mais simples, mas falha com altas taxas de escrita.</span></p>
+
+  <h2><span lang="en">Security: Beyond Authentication</span><span lang="pt" hidden>Segurança: Além da Autenticação</span></h2>
+
+  <h3><span lang="en">Rate Limiting</span><span lang="pt" hidden>Limitação de Taxa</span></h3>
+  <p><span lang="en">Implement rate limiting at the API Gateway layer. Return <code>429</code> with a <code>Retry-After</code> header and expose limit metadata so clients can back off gracefully:</span><span lang="pt" hidden>Implemente limitação de taxa na camada do API Gateway. Retorne <code>429</code> com um header <code>Retry-After</code> e exponha metadados de limite para que os clientes possam recuar graciosamente:</span></p>
+
+  <div class="code-block"><code>HTTP/1.1 429 Too Many Requests
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 0
+X-RateLimit-Reset: 1711929600
+Retry-After: 47</code></div>
+
+  <h3><span lang="en">Input Validation</span><span lang="pt" hidden>Validação de Entrada</span></h3>
+  <p><span lang="en">Validate at the API boundary — never trust client input. Use Bean Validation in Spring Boot and validate all inputs before they touch business logic:</span><span lang="pt" hidden>Valide na fronteira da API — nunca confie em entradas do cliente. Use Bean Validation no Spring Boot e valide todas as entradas antes de chegarem à lógica de negócio:</span></p>
+
+  <div class="code-block"><code>public record PlaceOrderRequest(
+    @NotNull @Size(min=1, max=50)
+    String customerId,
+
+    @NotEmpty @Size(max=100)
+    List&lt;@Valid OrderItemRequest&gt; items,
+
+    @NotNull @DecimalMin("0.01") @DecimalMax("999999")
+    BigDecimal totalAmount
+) {}</code></div>
+
+  <h3><span lang="en">Sensitive Data in Responses</span><span lang="pt" hidden>Dados Sensíveis nas Respostas</span></h3>
+  <p><span lang="en">Never expose internal identifiers, stack traces, database primary keys as sequential integers, or server implementation details in API responses. Sequential IDs allow enumeration attacks — use UUIDs or opaque tokens as public identifiers.</span><span lang="pt" hidden>Nunca exponha identificadores internos, stack traces, chaves primárias do banco de dados como inteiros sequenciais, ou detalhes de implementação do servidor nas respostas da API. IDs sequenciais permitem ataques de enumeração — use UUIDs ou tokens opacos como identificadores públicos.</span></p>
+
+  <h2><span lang="en">Contract-First with OpenAPI</span><span lang="pt" hidden>Contract-First com OpenAPI</span></h2>
+
+  <p><span lang="en">Define your API contract in OpenAPI 3.x before writing any code. The spec becomes the single source of truth from which you generate server stubs, client SDKs, and interactive documentation.</span><span lang="pt" hidden>Defina o contrato da sua API em OpenAPI 3.x antes de escrever qualquer código. A especificação se torna a única fonte de verdade a partir da qual você gera stubs de servidor, SDKs de cliente e documentação interativa.</span></p>
+
+  <div class="code-block"><code>openapi: 3.1.0
+info:
+  title: Order Service API
+  version: 1.0.0
+
+paths:
+  /v1/orders:
+    post:
+      operationId: placeOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaceOrderRequest'
+      responses:
+        '201':
+          description: Order created
+          headers:
+            Location:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '422':
+          $ref: '#/components/responses/BusinessRuleViolation'</code></div>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>Practice:</strong> Use <code>openapi-generator</code> to generate Spring controller interfaces from the spec. Your implementation must satisfy the contract — not the other way around. This prevents the spec from drifting out of sync with the real API.</span><span lang="pt" hidden><strong>Prática:</strong> Use <code>openapi-generator</code> para gerar interfaces de controller do Spring a partir da especificação. Sua implementação deve satisfazer o contrato — não o contrário. Isso evita que a especificação fique desatualizada em relação à API real.</span></p>
+  </div>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Conclusões Principais</span></h2>
+  <ul>
+    <li><span lang="en">Model resources as nouns; use HTTP methods for semantics. Reserve sub-resource actions for complex commands.</span><span lang="pt" hidden>Modele recursos como substantivos; use métodos HTTP para semântica. Reserve ações de sub-recurso para comandos complexos.</span></li>
+    <li><span lang="en">Use status codes correctly — never return <code>200</code> for errors.</span><span lang="pt" hidden>Use códigos de status corretamente — nunca retorne <code>200</code> para erros.</span></li>
+    <li><span lang="en">Every error response must include a <code>traceId</code> and machine-readable error codes.</span><span lang="pt" hidden>Toda resposta de erro deve incluir um <code>traceId</code> e códigos de erro legíveis por máquina.</span></li>
+    <li><span lang="en">Version your API from day one — URL path versioning for public APIs, header versioning for internal ones.</span><span lang="pt" hidden>Versione sua API desde o primeiro dia — versionamento por path para APIs públicas, por header para as internas.</span></li>
+    <li><span lang="en">Use cursor-based pagination for collections that change frequently.</span><span lang="pt" hidden>Use paginação baseada em cursor para coleções que mudam com frequência.</span></li>
+    <li><span lang="en">Define your contract in OpenAPI first; generate stubs from it to prevent drift.</span><span lang="pt" hidden>Defina seu contrato em OpenAPI primeiro; gere stubs a partir dele para evitar divergências.</span></li>
+    <li><span lang="en">Implement rate limiting and input validation at the boundary — these protect your system regardless of what clients do.</span><span lang="pt" hidden>Implemente limitação de taxa e validação de entrada na fronteira — elas protegem seu sistema independentemente do que os clientes façam.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index2.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> <span lang="en">Back to all articles</span><span lang="pt" hidden>Voltar para todos os artigos</span></a>
+</div>
+<footer><p>&copy; 2025 Jefferson Valandro. Built with care.</p></footer>
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>

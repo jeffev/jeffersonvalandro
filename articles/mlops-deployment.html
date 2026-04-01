@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MLOps: Deploying ML Models in Production — Jefferson Valandro</title>
+  <meta name="description" content="Strategies and tools for building MLOps pipelines that ensure reliable machine learning model deployment, versioning, and monitoring in production environments.">
+  <meta name="author" content="Jefferson Valandro">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/515935cc24.js" crossorigin="anonymous"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #070d1a;
+      --surface: #0d1526;
+      --card:    #111e35;
+      --border:  #1e2d4a;
+      --accent:  #4f8ef7;
+      --accent2: #06d6a0;
+      --accent3: #f72585;
+      --text:    #e8edf5;
+      --muted:   #7a8aaa;
+      --tag-bg:  #162040;
+      --radius:  12px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 16px; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw; height: 64px;
+      background: rgba(7,13,26,0.9); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-weight: 700; font-size: 1.05rem; color: var(--text); text-decoration: none; letter-spacing: -0.5px; }
+    .nav-logo span { color: var(--accent); }
+    .nav-back { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.85rem; font-weight: 500; text-decoration: none; transition: color 0.2s; }
+    .nav-back:hover { color: var(--text); }
+
+    .hero-article {
+      padding: 120px 5vw 60px;
+      background: linear-gradient(180deg, rgba(6,214,160,0.07) 0%, transparent 60%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-inner { max-width: 780px; margin: 0 auto; }
+    .article-category {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(6,214,160,0.1); border: 1px solid rgba(6,214,160,0.25);
+      color: var(--accent2); font-size: 0.72rem; font-weight: 700;
+      padding: 4px 12px; border-radius: 99px; letter-spacing: 1px;
+      text-transform: uppercase; margin-bottom: 1.2rem;
+    }
+    .hero-article h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
+      letter-spacing: -1px; line-height: 1.15; margin-bottom: 1rem;
+    }
+    .article-meta { display: flex; align-items: center; gap: 1.5rem; color: var(--muted); font-size: 0.82rem; flex-wrap: wrap; }
+    .article-meta span { display: flex; align-items: center; gap: 5px; }
+    .article-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1.4rem; }
+    .tag { background: var(--tag-bg); border: 1px solid var(--border); color: var(--muted); font-size: 0.72rem; font-weight: 500; padding: 3px 10px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; }
+
+    .article-content { max-width:1280px; margin:0 auto; padding:20px 5vw 100px; }
+    .article-content h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.4px; margin: 2.5rem 0 1rem; color: var(--text); padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .article-content h3 { font-size: 1.05rem; font-weight: 700; margin: 1.8rem 0 0.7rem; color: var(--accent2); }
+    .article-content p { color: var(--muted); margin-bottom: 1.2rem; font-size: 0.97rem; }
+    .article-content strong { color: var(--text); }
+    .article-content ul, .article-content ol { margin: 0.5rem 0 1.2rem 1.5rem; }
+    .article-content li { color: var(--muted); font-size: 0.97rem; margin-bottom: 0.4rem; }
+    .article-content li strong { color: var(--text); }
+
+    .callout { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0; padding: 1.2rem 1.4rem; margin: 1.5rem 0; }
+    .callout.green { border-left-color: var(--accent2); }
+    .callout.red { border-left-color: var(--accent3); }
+    .callout p { margin: 0; font-size: 0.92rem; }
+
+    .code-block { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.3rem 1.5rem; margin: 1.2rem 0; overflow-x: auto; }
+    .code-block code { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--accent2); line-height: 1.6; white-space: pre; }
+
+    .pipeline {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .pipeline-steps { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+    .pipeline-step {
+      background: var(--tag-bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.6rem 1rem;
+      font-size: 0.8rem; font-weight: 600; font-family: 'JetBrains Mono', monospace;
+      color: var(--text);
+    }
+    .pipeline-step.active { border-color: rgba(6,214,160,0.4); color: var(--accent2); }
+    .pipeline-arrow { color: var(--muted); font-size: 1rem; }
+    .pipeline-label { font-size: 0.72rem; color: var(--muted); margin-top: 0.8rem; font-style: italic; }
+
+    .article-footer { max-width: 780px; margin: 0 auto; padding: 0 5vw 60px; border-top: 1px solid var(--border); padding-top: 2rem; }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-size: 0.87rem; font-weight: 600; text-decoration: none; transition: gap 0.2s; }
+    .back-link:hover { gap: 12px; }
+
+    footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); }
+
+    .lang-toggle {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--tag-bg); border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.78rem; font-weight: 600;
+      padding: 5px 12px; border-radius: 99px;
+      cursor: pointer; transition: all 0.2s;
+      font-family: 'Inter', sans-serif; letter-spacing: 0.3px;
+    }
+    .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="../index2.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index2.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" title="Switch language">
+    <span id="langFlag">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-robot"></i> <span lang="en">MLOps</span><span lang="pt" hidden>MLOps</span></div>
+    <h1><span lang="en">MLOps: Deploying ML Models in Production</span><span lang="pt" hidden>MLOps: Colocando Modelos de ML em Producao</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> February 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">14 min read</span><span lang="pt" hidden>14 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">mlops</span>
+      <span class="tag">CI/CD</span>
+      <span class="tag">docker</span>
+      <span class="tag">kubernetes</span>
+      <span class="tag">model-serving</span>
+      <span class="tag">mlflow</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">Shipping a machine learning model that works in a Jupyter notebook is the easy part. Shipping it in a way that is reliable, reproducible, monitored, and deployable by a team — that is MLOps. The gap between a notebook and production is where most ML projects quietly die.</span><span lang="pt" hidden>Colocar em produção um modelo de machine learning que funciona num Jupyter notebook é a parte fácil. Fazê-lo de forma confiável, reproduzível, monitorada e implantável por um time — isso é MLOps. A lacuna entre um notebook e a produção é onde a maioria dos projetos de ML silenciosamente fracassa.</span></p>
+
+  <p><span lang="en">This article covers the complete lifecycle: from experiment tracking and model packaging to serving infrastructure, automated retraining, and production monitoring. It is based on patterns I've applied in real production systems handling both batch inference and low-latency real-time prediction.</span><span lang="pt" hidden>Este artigo cobre o ciclo de vida completo: do rastreamento de experimentos e empacotamento de modelos até a infraestrutura de serving, retreinamento automatizado e monitoramento em produção. É baseado em padrões aplicados em sistemas reais de produção com inferência batch e predição em tempo real de baixa latência.</span></p>
+
+  <h2><span lang="en">Why MLOps Is a Software Architecture Problem</span><span lang="pt" hidden>Por Que MLOps é um Problema de Arquitetura de Software</span></h2>
+
+  <p><span lang="en">ML systems have all the challenges of traditional software — CI/CD, versioning, testing, observability — plus several unique ones:</span><span lang="pt" hidden>Sistemas de ML têm todos os desafios do software tradicional — CI/CD, versionamento, testes, observabilidade — além de vários desafios únicos:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Data dependency:</strong> The model is only as good as its training data. Data pipelines must be version-controlled alongside model code.</span><span lang="pt" hidden><strong>Dependência de dados:</strong> O modelo é tão bom quanto seus dados de treinamento. Pipelines de dados devem ser versionados junto com o código do modelo.</span></li>
+    <li><span lang="en"><strong>Experiment reproducibility:</strong> You must be able to re-run any experiment months later and get the same artifact.</span><span lang="pt" hidden><strong>Reprodutibilidade de experimentos:</strong> Você deve ser capaz de re-executar qualquer experimento meses depois e obter o mesmo artefato.</span></li>
+    <li><span lang="en"><strong>Concept drift:</strong> The world changes. A model trained in January may degrade silently by June without any code changes.</span><span lang="pt" hidden><strong>Concept drift:</strong> O mundo muda. Um modelo treinado em janeiro pode se degradar silenciosamente até junho sem nenhuma alteração de código.</span></li>
+    <li><span lang="en"><strong>Dual ownership:</strong> Data scientists own the model logic; engineers own the infrastructure. Friction at this boundary kills velocity.</span><span lang="pt" hidden><strong>Propriedade dual:</strong> Cientistas de dados são responsáveis pela lógica do modelo; engenheiros pela infraestrutura. Atrito nessa fronteira mata a velocidade.</span></li>
+  </ul>
+
+  <div class="callout">
+    <p><span lang="en"><strong>Key insight:</strong> The most impactful thing you can do for an ML team is not a better algorithm — it is reducing the time from "model ready" to "model in production serving real traffic" from weeks to hours.</span><span lang="pt" hidden><strong>Insight chave:</strong> A coisa mais impactante que você pode fazer por um time de ML não é um algoritmo melhor — é reduzir o tempo de "modelo pronto" para "modelo em produção servindo tráfego real" de semanas para horas.</span></p>
+  </div>
+
+  <h2><span lang="en">The MLOps Pipeline</span><span lang="pt" hidden>O Pipeline de MLOps</span></h2>
+
+  <p><span lang="en">A production-grade MLOps pipeline has six stages:</span><span lang="pt" hidden>Um pipeline MLOps de nível de produção tem seis etapas:</span></p>
+
+  <div class="pipeline">
+    <div class="pipeline-steps">
+      <div class="pipeline-step active">Data Ingestion</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step active">Feature Engineering</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step active">Training</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step active">Evaluation</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step active">Deployment</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step active">Monitoring</div>
+    </div>
+    <div class="pipeline-label"><span lang="en">Each stage is automated, versioned, and observable</span><span lang="pt" hidden>Cada etapa é automatizada, versionada e observável</span></div>
+  </div>
+
+  <p><span lang="en">The critical property is that this pipeline is <strong>automated end-to-end</strong>. Manual steps — "run this notebook, then upload the pkl file to S3" — are a reliability hazard and a knowledge silo.</span><span lang="pt" hidden>A propriedade crítica é que este pipeline é <strong>automatizado de ponta a ponta</strong>. Passos manuais — "execute este notebook, depois faça upload do pkl para o S3" — são um risco de confiabilidade e um silo de conhecimento.</span></p>
+
+  <h2><span lang="en">Experiment Tracking with MLflow</span><span lang="pt" hidden>Rastreamento de Experimentos com MLflow</span></h2>
+
+  <p><span lang="en">Before talking about deployment, you need reproducible experiments. MLflow is the de facto standard for tracking parameters, metrics, and artifacts across training runs.</span><span lang="pt" hidden>Antes de falar sobre deploy, você precisa de experimentos reproduzíveis. O MLflow é o padrão de facto para rastrear parâmetros, métricas e artefatos entre execuções de treinamento.</span></p>
+
+  <div class="code-block"><code>import mlflow
+import mlflow.sklearn
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import roc_auc_score
+
+mlflow.set_experiment("churn-prediction-v2")
+
+with mlflow.start_run():
+    params = {"n_estimators": 200, "max_depth": 4, "learning_rate": 0.05}
+    mlflow.log_params(params)
+
+    model = GradientBoostingClassifier(**params)
+    model.fit(X_train, y_train)
+
+    auc = roc_auc_score(y_test, model.predict_proba(X_test)[:, 1])
+    mlflow.log_metric("roc_auc", auc)
+    mlflow.log_metric("precision", precision_score(y_test, model.predict(X_test)))
+
+    mlflow.sklearn.log_model(model, "model", registered_model_name="churn-classifier")</code></div>
+
+  <p><span lang="en">Every run records its parameters, metrics, and the model artifact. The model registry tracks versions and their promotion through stages: <em>Staging → Production → Archived</em>. No artifact ever leaves MLflow without a registered version.</span><span lang="pt" hidden>Cada execução registra seus parâmetros, métricas e o artefato do modelo. O registro de modelos rastreia versões e sua promoção pelas etapas: <em>Staging → Production → Archived</em>. Nenhum artefato sai do MLflow sem uma versão registrada.</span></p>
+
+  <h2><span lang="en">Packaging: From Artifact to Docker Image</span><span lang="pt" hidden>Empacotamento: Do Artefato à Imagem Docker</span></h2>
+
+  <p><span lang="en">A trained model artifact (pkl, ONNX, SavedModel) is not deployable by itself. It needs a serving runtime — an HTTP endpoint that can receive feature vectors and return predictions. Packaging as a Docker image makes this runtime portable and reproducible.</span><span lang="pt" hidden>Um artefato de modelo treinado (pkl, ONNX, SavedModel) não é implantável por si só. Ele precisa de um runtime de serving — um endpoint HTTP que recebe vetores de features e retorna predições. Empacotar como imagem Docker torna esse runtime portável e reproduzível.</span></p>
+
+  <div class="code-block"><code># Dockerfile for a FastAPI model serving container
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY model/ ./model/
+COPY app/ ./app/
+
+ENV MODEL_URI=./model/artifact
+ENV PORT=8080
+
+EXPOSE 8080
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]</code></div>
+
+  <div class="code-block"><code># app/main.py — minimal FastAPI serving endpoint
+from fastapi import FastAPI
+import mlflow.pyfunc, pandas as pd
+
+app = FastAPI()
+model = mlflow.pyfunc.load_model("./model/artifact")
+
+@app.post("/predict")
+def predict(features: dict):
+    df = pd.DataFrame([features])
+    prediction = model.predict(df)
+    return {"prediction": int(prediction[0]), "model_version": model.metadata.run_id}</code></div>
+
+  <h3><span lang="en">Feature Preprocessing Must Be Inside the Container</span><span lang="pt" hidden>Pré-processamento de Features Deve Estar Dentro do Container</span></h3>
+  <p><span lang="en">A common mistake is packaging only the model estimator and handling preprocessing in the calling service. This creates a <strong>training-serving skew</strong>: the preprocessing logic in the notebook diverges from the preprocessing in the API over time. Always package the full pipeline — scaler, encoder, and estimator — as a single MLflow pyfunc model.</span><span lang="pt" hidden>Um erro comum é empacotar apenas o estimador do modelo e tratar o pré-processamento no serviço chamador. Isso cria um <strong>training-serving skew</strong>: a lógica de pré-processamento no notebook diverge da lógica na API ao longo do tempo. Sempre empacote o pipeline completo — scaler, encoder e estimador — como um único modelo MLflow pyfunc.</span></p>
+
+  <h2><span lang="en">CI/CD for Machine Learning</span><span lang="pt" hidden>CI/CD para Machine Learning</span></h2>
+
+  <p><span lang="en">The ML CI/CD pipeline differs from software CI/CD in one critical way: the "build" step (training) can take hours and requires GPU resources. The pipeline must be designed to run training only when necessary.</span><span lang="pt" hidden>O pipeline CI/CD de ML difere do CI/CD de software em um aspecto crítico: a etapa de "build" (treinamento) pode levar horas e requer recursos de GPU. O pipeline deve ser projetado para executar o treinamento somente quando necessário.</span></p>
+
+  <div class="code-block"><code># .github/workflows/ml-pipeline.yml (simplified)
+name: ML Pipeline
+
+on:
+  push:
+    paths:
+      - 'src/features/**'
+      - 'src/train.py'
+      - 'data/schema.yaml'
+
+jobs:
+  train-and-evaluate:
+    runs-on: self-hosted  # GPU runner
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run training pipeline
+        run: python src/train.py --config config/prod.yaml
+      - name: Evaluate against threshold
+        run: python src/evaluate.py --min-auc 0.82
+      - name: Build and push Docker image
+        run: |
+          docker build -t registry/churn-model:${{ github.sha }} .
+          docker push registry/churn-model:${{ github.sha }}
+      - name: Deploy to staging
+        run: kubectl set image deployment/churn-model app=registry/churn-model:${{ github.sha }}</code></div>
+
+  <p><span lang="en">The evaluate step is a <strong>quality gate</strong>: if the new model's AUC drops below the threshold (compared to the champion model in MLflow), the pipeline fails and the image is never deployed. This prevents regressions from reaching production.</span><span lang="pt" hidden>A etapa de avaliação é um <strong>quality gate</strong>: se o AUC do novo modelo cair abaixo do limite (comparado ao modelo campeão no MLflow), o pipeline falha e a imagem nunca é implantada. Isso impede que regressões cheguem à produção.</span></p>
+
+  <h2><span lang="en">Deployment Strategies</span><span lang="pt" hidden>Estratégias de Deploy</span></h2>
+
+  <h3><span lang="en">Blue/Green Deployment</span><span lang="pt" hidden>Deploy Blue/Green</span></h3>
+  <p><span lang="en">Run two identical environments — blue (current) and green (new). After deploying the new model to green and validating it with a subset of traffic, switch the load balancer. Rollback is instant: flip back to blue.</span><span lang="pt" hidden>Execute dois ambientes idênticos — blue (atual) e green (novo). Após implantar o novo modelo no green e validá-lo com um subconjunto do tráfego, troque o load balancer. O rollback é instantâneo: volte para o blue.</span></p>
+
+  <h3><span lang="en">Canary Releases</span><span lang="pt" hidden>Releases Canary</span></h3>
+  <p><span lang="en">Route a small percentage of traffic (5–10%) to the new model version. Monitor key metrics — prediction latency, error rate, and business metrics like conversion rate — before progressively increasing the percentage.</span><span lang="pt" hidden>Direcione uma pequena porcentagem do tráfego (5–10%) para a nova versão do modelo. Monitore métricas chave — latência de predição, taxa de erros e métricas de negócio como taxa de conversão — antes de aumentar progressivamente a porcentagem.</span></p>
+
+  <h3><span lang="en">Shadow Mode</span><span lang="pt" hidden>Modo Shadow</span></h3>
+  <p><span lang="en">The new model receives all production traffic but its predictions are discarded. This lets you compare the new model's outputs against the champion model on real data, without any user impact. Invaluable for validating a major model architecture change before going live.</span><span lang="pt" hidden>O novo modelo recebe todo o tráfego de produção, mas suas predições são descartadas. Isso permite comparar as saídas do novo modelo com o modelo campeão em dados reais, sem impacto ao usuário. Inestimável para validar uma grande mudança de arquitetura de modelo antes do lançamento.</span></p>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>Recommendation:</strong> For business-critical models (fraud detection, pricing, personalization), always use canary releases with a minimum 24-hour observation window. Aggregate metrics can hide problems that only surface over a full daily traffic cycle.</span><span lang="pt" hidden><strong>Recomendação:</strong> Para modelos críticos para o negócio (detecção de fraude, precificação, personalização), sempre use canary releases com uma janela de observação mínima de 24 horas. Métricas agregadas podem esconder problemas que só aparecem em um ciclo de tráfego diário completo.</span></p>
+  </div>
+
+  <h2><span lang="en">Model Serving at Scale: Batch vs. Real-Time</span><span lang="pt" hidden>Servindo Modelos em Escala: Batch vs. Tempo Real</span></h2>
+
+  <h3><span lang="en">Real-Time (Online) Inference</span><span lang="pt" hidden>Inferência em Tempo Real (Online)</span></h3>
+  <p><span lang="en">Low-latency prediction on demand. Served via a REST or gRPC endpoint. Requirements: p99 latency under 100ms, horizontal scaling, stateless containers. Tools: FastAPI + Kubernetes, AWS SageMaker, BentoML, Triton Inference Server.</span><span lang="pt" hidden>Predição de baixa latência sob demanda. Servida via endpoint REST ou gRPC. Requisitos: latência p99 abaixo de 100ms, escalabilidade horizontal, containers sem estado. Ferramentas: FastAPI + Kubernetes, AWS SageMaker, BentoML, Triton Inference Server.</span></p>
+
+  <h3><span lang="en">Batch Inference</span><span lang="pt" hidden>Inferência em Batch</span></h3>
+  <p><span lang="en">Generate predictions for a large dataset on a schedule (e.g., score all customers nightly for the next day's campaign). Requirements: throughput over latency, cost-efficiency, checkpoint/restart. Tools: Apache Spark, AWS Batch, Kubernetes Jobs, Airflow DAGs.</span><span lang="pt" hidden>Gere predições para um grande conjunto de dados de forma agendada (ex: pontuar todos os clientes à noite para a campanha do dia seguinte). Requisitos: throughput acima de latência, eficiência de custo, checkpoint/restart. Ferramentas: Apache Spark, AWS Batch, Kubernetes Jobs, Airflow DAGs.</span></p>
+
+  <div class="callout">
+    <p><span lang="en"><strong>Architecture tip:</strong> For batch inference at scale, run inference in parallel chunks using Spark or Ray. Pre-load the model once per executor, not once per row. A 10GB model loaded 10 million times is a performance disaster.</span><span lang="pt" hidden><strong>Dica de arquitetura:</strong> Para inferência batch em escala, execute a inferência em chunks paralelos usando Spark ou Ray. Carregue o modelo uma vez por executor, não uma vez por linha. Um modelo de 10GB carregado 10 milhões de vezes é um desastre de performance.</span></p>
+  </div>
+
+  <h2><span lang="en">The Feature Store</span><span lang="pt" hidden>O Feature Store</span></h2>
+
+  <p><span lang="en">As models multiply, the same features get computed independently in multiple pipelines — different implementations, different bugs, different latencies. A Feature Store centralizes feature computation and serves them to both training pipelines (offline store) and inference endpoints (online store, typically sub-millisecond Redis/DynamoDB).</span><span lang="pt" hidden>À medida que os modelos se multiplicam, as mesmas features são computadas independentemente em múltiplos pipelines — implementações diferentes, bugs diferentes, latências diferentes. Um Feature Store centraliza a computação de features e as serve tanto para pipelines de treinamento (offline store) quanto para endpoints de inferência (online store, tipicamente Redis/DynamoDB abaixo de 1ms).</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Offline store:</strong> Historical feature values for training (Parquet on S3, Delta Lake, BigQuery).</span><span lang="pt" hidden><strong>Offline store:</strong> Valores históricos de features para treinamento (Parquet no S3, Delta Lake, BigQuery).</span></li>
+    <li><span lang="en"><strong>Online store:</strong> Latest feature values for real-time serving (Redis, DynamoDB, Cassandra).</span><span lang="pt" hidden><strong>Online store:</strong> Últimos valores de features para serving em tempo real (Redis, DynamoDB, Cassandra).</span></li>
+    <li><span lang="en"><strong>Point-in-time correctness:</strong> Training data uses the feature values as they existed at prediction time — not the future-leaking values. This is the most subtle and costly bug in ML pipelines.</span><span lang="pt" hidden><strong>Correção point-in-time:</strong> Os dados de treinamento usam os valores de features como existiam no momento da predição — não os valores com vazamento futuro. Este é o bug mais sutil e custoso em pipelines de ML.</span></li>
+  </ul>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+
+  <ul>
+    <li><span lang="en">Automate the full pipeline — data ingestion to deployment. Manual steps are reliability risks.</span><span lang="pt" hidden>Automatize o pipeline completo — da ingestão de dados ao deploy. Passos manuais são riscos de confiabilidade.</span></li>
+    <li><span lang="en">Track every experiment in MLflow. Never deploy an artifact without a registered version.</span><span lang="pt" hidden>Rastreie cada experimento no MLflow. Nunca implante um artefato sem uma versão registrada.</span></li>
+    <li><span lang="en">Package the full preprocessing pipeline inside the model artifact to prevent training-serving skew.</span><span lang="pt" hidden>Empacote o pipeline de pré-processamento completo dentro do artefato do modelo para evitar training-serving skew.</span></li>
+    <li><span lang="en">Use quality gates in CI to catch model regressions before they reach production.</span><span lang="pt" hidden>Use quality gates no CI para detectar regressões de modelo antes que cheguem à produção.</span></li>
+    <li><span lang="en">Deploy with canary releases and shadow mode for high-stakes models.</span><span lang="pt" hidden>Implante com canary releases e modo shadow para modelos de alto risco.</span></li>
+    <li><span lang="en">Invest in a Feature Store as soon as you have more than 3–4 models in production.</span><span lang="pt" hidden>Invista em um Feature Store assim que tiver mais de 3–4 modelos em produção.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index2.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+
+<footer>
+  <p>&copy; 2025 Jefferson Valandro. Built with care.</p>
+</footer>
+
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>

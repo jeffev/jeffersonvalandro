@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Designing Scalable System Architectures — Jefferson Valandro</title>
+  <meta name="description" content="Best practices for building robust, scalable software architectures that support growth and maintainability using microservices, DDD, CQRS, and event-driven patterns.">
+  <meta name="author" content="Jefferson Valandro">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/515935cc24.js" crossorigin="anonymous"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #070d1a;
+      --surface: #0d1526;
+      --card:    #111e35;
+      --border:  #1e2d4a;
+      --accent:  #4f8ef7;
+      --accent2: #06d6a0;
+      --accent3: #f72585;
+      --text:    #e8edf5;
+      --muted:   #7a8aaa;
+      --tag-bg:  #162040;
+      --radius:  12px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 16px; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw; height: 64px;
+      background: rgba(7,13,26,0.9); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-weight: 700; font-size: 1.05rem; color: var(--text); text-decoration: none; letter-spacing: -0.5px; }
+    .nav-logo span { color: var(--accent); }
+    .nav-back { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.85rem; font-weight: 500; text-decoration: none; transition: color 0.2s; }
+    .nav-back:hover { color: var(--text); }
+
+    .hero-article {
+      padding: 120px 5vw 60px;
+      background: linear-gradient(180deg, rgba(79,142,247,0.08) 0%, transparent 60%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-inner { max-width: 780px; margin: 0 auto; }
+    .article-category {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.25);
+      color: var(--accent); font-size: 0.72rem; font-weight: 700;
+      padding: 4px 12px; border-radius: 99px; letter-spacing: 1px;
+      text-transform: uppercase; margin-bottom: 1.2rem;
+    }
+    .hero-article h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
+      letter-spacing: -1px; line-height: 1.15; margin-bottom: 1rem;
+    }
+    .article-meta { display: flex; align-items: center; gap: 1.5rem; color: var(--muted); font-size: 0.82rem; flex-wrap: wrap; }
+    .article-meta span { display: flex; align-items: center; gap: 5px; }
+
+    .article-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1.4rem; }
+    .tag {
+      background: var(--tag-bg); border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.72rem; font-weight: 500;
+      padding: 3px 10px; border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .article-content { max-width:1280px; margin:0 auto; padding:20px 5vw 100px; }
+
+    .article-content h2 {
+      font-size: 1.4rem; font-weight: 800; letter-spacing: -0.4px;
+      margin: 2.5rem 0 1rem; color: var(--text);
+      padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+    }
+    .article-content h3 { font-size: 1.05rem; font-weight: 700; margin: 1.8rem 0 0.7rem; color: var(--accent2); }
+    .article-content p { color: var(--muted); margin-bottom: 1.2rem; font-size: 0.97rem; }
+    .article-content strong { color: var(--text); }
+    .article-content ul, .article-content ol { margin: 0.5rem 0 1.2rem 1.5rem; }
+    .article-content li { color: var(--muted); font-size: 0.97rem; margin-bottom: 0.4rem; }
+    .article-content li strong { color: var(--text); }
+
+    .callout {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1.2rem 1.4rem; margin: 1.5rem 0;
+    }
+    .callout.green { border-left-color: var(--accent2); }
+    .callout.red { border-left-color: var(--accent3); }
+    .callout p { margin: 0; font-size: 0.92rem; }
+
+    .code-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.3rem 1.5rem;
+      margin: 1.2rem 0; overflow-x: auto;
+    }
+    .code-block code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; color: var(--accent2); line-height: 1.6;
+      white-space: pre;
+    }
+
+    .diagram {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2rem;
+      margin: 1.5rem 0; text-align: center;
+    }
+    .diagram-nodes { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin: 1rem 0; }
+    .node {
+      background: var(--tag-bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.7rem 1.2rem;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 500;
+    }
+    .node.accent { border-color: rgba(79,142,247,0.4); color: var(--accent); }
+    .node.green { border-color: rgba(6,214,160,0.4); color: var(--accent2); }
+    .node.red { border-color: rgba(247,37,133,0.4); color: var(--accent3); }
+    .arrow { color: var(--muted); font-size: 1.3rem; display: flex; align-items: center; }
+    .diagram-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.8rem; font-style: italic; }
+
+    .article-footer {
+      max-width: 780px; margin: 0 auto; padding: 0 5vw 60px;
+      border-top: 1px solid var(--border); padding-top: 2rem;
+    }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--accent); font-size: 0.87rem; font-weight: 600;
+      text-decoration: none; transition: gap 0.2s;
+    }
+    .back-link:hover { gap: 12px; }
+
+    footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); }
+
+    .lang-toggle {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--tag-bg); border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.78rem; font-weight: 600;
+      padding: 5px 12px; border-radius: 99px;
+      cursor: pointer; transition: all 0.2s;
+      font-family: 'Inter', sans-serif; letter-spacing: 0.3px;
+    }
+    .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="../index2.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index2.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" title="Switch language">
+    <span id="langFlag">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-layer-group"></i> <span lang="en">Software Architecture</span><span lang="pt" hidden>Arquitetura de Software</span></div>
+    <h1><span lang="en">Designing Scalable System Architectures</span><span lang="pt" hidden>Projetando Arquiteturas de Sistema Escaláveis</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> March 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">12 min read</span><span lang="pt" hidden>12 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">microservices</span>
+      <span class="tag">DDD</span>
+      <span class="tag">CQRS</span>
+      <span class="tag">event-driven</span>
+      <span class="tag">scalability</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">Scalability is one of the most misunderstood goals in software architecture. Teams often treat it as an afterthought — something to bolt on when the system is already under strain. In practice, the decisions made in the first few sprints determine whether your system can grow gracefully or requires a painful rewrite at scale.</span><span lang="pt" hidden>Escalabilidade é um dos objetivos mais mal compreendidos em arquitetura de software. Equipes frequentemente a tratam como uma reflexão tardia — algo a ser adicionado quando o sistema já está sob pressão. Na prática, as decisões tomadas nos primeiros sprints determinam se o sistema pode crescer de forma fluida ou se vai exigir uma reescrita dolorosa em escala.</span></p>
+
+  <p><span lang="en">This article walks through the core patterns and principles I've applied in production systems to design architectures that scale horizontally, remain maintainable under team growth, and tolerate the inevitable failure modes of distributed computing.</span><span lang="pt" hidden>Este artigo percorre os padrões e princípios fundamentais que apliquei em sistemas em produção para projetar arquiteturas que escalam horizontalmente, permanecem fáceis de manter com o crescimento da equipe, e toleram os inevitáveis modos de falha da computação distribuída.</span></p>
+
+  <h2><span lang="en">The Foundation: Understanding Your Scalability Axis</span><span lang="pt" hidden>A Base: Entendendo Seu Eixo de Escalabilidade</span></h2>
+
+  <p><span lang="en">Before choosing an architecture pattern, define <strong>what</strong> needs to scale. The three dimensions are:</span><span lang="pt" hidden>Antes de escolher um padrão de arquitetura, defina <strong>o que</strong> precisa escalar. As três dimensões são:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>X-axis scaling:</strong> Running multiple identical instances behind a load balancer. Simple, effective for stateless services.</span><span lang="pt" hidden><strong>Escalonamento no eixo X:</strong> Executar múltiplas instâncias idênticas atrás de um balanceador de carga. Simples, eficaz para serviços sem estado.</span></li>
+    <li><span lang="en"><strong>Y-axis scaling:</strong> Splitting by function — decomposing a monolith into services organized around business capabilities.</span><span lang="pt" hidden><strong>Escalonamento no eixo Y:</strong> Divisão por função — decompor um monólito em serviços organizados em torno de capacidades de negócio.</span></li>
+    <li><span lang="en"><strong>Z-axis scaling:</strong> Partitioning by data — sharding by customer ID, geography, or tenant. Requires careful key design.</span><span lang="pt" hidden><strong>Escalonamento no eixo Z:</strong> Particionamento por dados — sharding por ID do cliente, geografia ou tenant. Requer um design cuidadoso de chaves.</span></li>
+  </ul>
+
+  <div class="callout">
+    <p><span lang="en"><strong>Principle:</strong> Most teams jump to Y-axis (microservices) prematurely. Start with X-axis. Decompose only when you can draw a clean boundary around a business capability with independent data ownership.</span><span lang="pt" hidden><strong>Princípio:</strong> A maioria das equipes pula para o eixo Y (microsserviços) prematuramente. Comece com o eixo X. Decomponha apenas quando puder traçar uma fronteira clara em torno de uma capacidade de negócio com propriedade independente de dados.</span></p>
+  </div>
+
+  <h2><span lang="en">Domain-Driven Design as the Compass</span><span lang="pt" hidden>Domain-Driven Design como Bússola</span></h2>
+
+  <p><span lang="en">The hardest part of microservices is not the technology — it's identifying the right service boundaries. Domain-Driven Design (DDD) provides the tools to do this systematically.</span><span lang="pt" hidden>A parte mais difícil dos microsserviços não é a tecnologia — é identificar as fronteiras certas dos serviços. O Domain-Driven Design (DDD) fornece as ferramentas para fazer isso de forma sistemática.</span></p>
+
+  <h3><span lang="en">Bounded Contexts</span><span lang="pt" hidden>Contextos Delimitados</span></h3>
+  <p><span lang="en">A Bounded Context defines the scope within which a particular domain model applies. The same term ("Order") can mean very different things in <em>Billing</em>, <em>Logistics</em>, and <em>Customer Support</em>. Each context owns its model, its data, and its schema.</span><span lang="pt" hidden>Um Contexto Delimitado define o escopo no qual um modelo de domínio específico se aplica. O mesmo termo ("Pedido") pode significar coisas muito diferentes em <em>Faturamento</em>, <em>Logística</em> e <em>Suporte ao Cliente</em>. Cada contexto possui seu modelo, seus dados e seu schema.</span></p>
+
+  <div class="diagram">
+    <div class="diagram-nodes">
+      <div class="node accent">Order Service<br><small>lifecycle, status</small></div>
+      <div class="arrow">⟷</div>
+      <div class="node green">Billing Service<br><small>invoices, payments</small></div>
+      <div class="arrow">⟷</div>
+      <div class="node red">Logistics Service<br><small>shipment, tracking</small></div>
+    </div>
+    <div class="diagram-label"><span lang="en">Three Bounded Contexts — each owns its data model and communicates via events</span><span lang="pt" hidden>Três Contextos Delimitados — cada um possui seu modelo de dados e se comunica via eventos</span></div>
+  </div>
+
+  <h3><span lang="en">Aggregates and Invariants</span><span lang="pt" hidden>Agregados e Invariantes</span></h3>
+  <p><span lang="en">An Aggregate is the unit of transactional consistency. Operations that must happen atomically live within one Aggregate. Communication <em>between</em> Aggregates is always eventual — via domain events, never synchronous calls within a transaction.</span><span lang="pt" hidden>Um Agregado é a unidade de consistência transacional. Operações que devem acontecer atomicamente residem dentro de um Agregado. A comunicação <em>entre</em> Agregados é sempre eventual — via eventos de domínio, nunca chamadas síncronas dentro de uma transação.</span></p>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>Rule of thumb:</strong> If two entities must always be consistent at the same moment, they belong in the same Aggregate. If they can tolerate a few seconds of lag, they belong in separate Aggregates — potentially in separate services.</span><span lang="pt" hidden><strong>Regra geral:</strong> Se duas entidades precisam sempre ser consistentes ao mesmo tempo, elas pertencem ao mesmo Agregado. Se podem tolerar alguns segundos de defasagem, pertencem a Agregados separados — potencialmente em serviços separados.</span></p>
+  </div>
+
+  <h2><span lang="en">CQRS: Separating Reads from Writes</span><span lang="pt" hidden>CQRS: Separando Leituras de Escritas</span></h2>
+
+  <p><span lang="en">Command Query Responsibility Segregation (CQRS) is one of the highest-leverage patterns in distributed systems. The core idea is simple: the model used to update state does not need to be the same model used to read it.</span><span lang="pt" hidden>O CQRS (Command Query Responsibility Segregation) é um dos padrões de maior alavancagem em sistemas distribuídos. A ideia central é simples: o modelo usado para atualizar o estado não precisa ser o mesmo usado para lê-lo.</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Commands</strong> mutate state, enforce invariants, and are processed by the Aggregate.</span><span lang="pt" hidden><strong>Commands</strong> mutam o estado, impõem invariantes e são processados pelo Agregado.</span></li>
+    <li><span lang="en"><strong>Queries</strong> are read-only, can be served from a denormalized projection, and can be cached aggressively.</span><span lang="pt" hidden><strong>Queries</strong> são somente leitura, podem ser servidas a partir de uma projeção desnormalizada e podem ser cacheadas agressivamente.</span></li>
+  </ul>
+
+  <div class="code-block"><code># Command side — enforces business rules
+class PlaceOrderCommand:
+    customer_id: str
+    items: List[OrderItem]
+    payment_method: str
+
+# Query side — optimized read model (no joins needed)
+class OrderSummaryView:
+    order_id: str
+    customer_name: str
+    total_amount: Decimal
+    status: str
+    last_updated: datetime</code></div>
+
+  <p><span lang="en">The write side can use a normalized relational schema (optimized for consistency), while the read side uses a document store or a pre-computed projection table (optimized for query patterns). This allows each side to scale independently.</span><span lang="pt" hidden>O lado de escrita pode usar um schema relacional normalizado (otimizado para consistência), enquanto o lado de leitura usa um document store ou uma tabela de projeção pré-computada (otimizada para padrões de consulta). Isso permite que cada lado escale independentemente.</span></p>
+
+  <h2><span lang="en">Event-Driven Communication</span><span lang="pt" hidden>Comunicação Orientada a Eventos</span></h2>
+
+  <p><span lang="en">In a distributed system, synchronous REST calls between services create <strong>temporal coupling</strong> — if Service B is down, Service A fails too. Event-driven architecture breaks this dependency.</span><span lang="pt" hidden>Em um sistema distribuído, chamadas REST síncronas entre serviços criam <strong>acoplamento temporal</strong> — se o Serviço B estiver fora do ar, o Serviço A também falha. A arquitetura orientada a eventos quebra essa dependência.</span></p>
+
+  <h3><span lang="en">Domain Events vs. Integration Events</span><span lang="pt" hidden>Eventos de Domínio vs. Eventos de Integração</span></h3>
+  <ul>
+    <li><span lang="en"><strong>Domain Events</strong> record something that happened within a Bounded Context. They are facts: <code>OrderPlaced</code>, <code>PaymentProcessed</code>.</span><span lang="pt" hidden><strong>Eventos de Domínio</strong> registram algo que aconteceu dentro de um Contexto Delimitado. São fatos: <code>OrderPlaced</code>, <code>PaymentProcessed</code>.</span></li>
+    <li><span lang="en"><strong>Integration Events</strong> are published to a message broker (Kafka, RabbitMQ) so other services can react asynchronously. They are derived from Domain Events but are designed for external consumption.</span><span lang="pt" hidden><strong>Eventos de Integração</strong> são publicados em um message broker (Kafka, RabbitMQ) para que outros serviços possam reagir de forma assíncrona. São derivados de Eventos de Domínio, mas projetados para consumo externo.</span></li>
+  </ul>
+
+  <div class="code-block"><code># Integration event published to Kafka
+{
+  "eventType": "order.placed",
+  "eventVersion": "1.0",
+  "orderId": "ord_789xyz",
+  "customerId": "cust_123",
+  "totalAmount": 149.99,
+  "occurredAt": "2025-03-15T10:22:00Z"
+}</code></div>
+
+  <h3><span lang="en">Idempotency is Non-Negotiable</span><span lang="pt" hidden>Idempotência é Inegociável</span></h3>
+  <p><span lang="en">Message brokers guarantee <em>at-least-once</em> delivery. Your consumers will receive the same event twice. Design handlers to be idempotent: processing the same event twice must produce the same result as processing it once. The simplest mechanism is an <strong>idempotency key</strong> stored in a processed-events table.</span><span lang="pt" hidden>Message brokers garantem entrega <em>pelo menos uma vez</em>. Seus consumidores receberão o mesmo evento duas vezes. Projete handlers para serem idempotentes: processar o mesmo evento duas vezes deve produzir o mesmo resultado que processar uma vez. O mecanismo mais simples é uma <strong>chave de idempotência</strong> armazenada em uma tabela de eventos processados.</span></p>
+
+  <h2><span lang="en">The Strangler Fig: Migrating from Monolith to Services</span><span lang="pt" hidden>O Strangler Fig: Migrando do Monólito para Serviços</span></h2>
+
+  <p><span lang="en">Greenfield microservices are rare. Most engineers face the problem of extracting services from an existing monolith. The Strangler Fig pattern allows incremental migration without a big-bang rewrite:</span><span lang="pt" hidden>Microsserviços em projetos do zero são raros. A maioria dos engenheiros enfrenta o problema de extrair serviços de um monólito existente. O padrão Strangler Fig permite migração incremental sem uma reescrita completa de uma vez:</span></p>
+
+  <ol>
+    <li><span lang="en">Put a facade (API Gateway or reverse proxy) in front of the monolith.</span><span lang="pt" hidden>Coloque uma fachada (API Gateway ou proxy reverso) na frente do monólito.</span></li>
+    <li><span lang="en">Identify a bounded context to extract — ideally one with high change frequency and clear data ownership.</span><span lang="pt" hidden>Identifique um contexto delimitado para extrair — idealmente com alta frequência de mudanças e propriedade de dados clara.</span></li>
+    <li><span lang="en">Build the new service, implement the same API contract.</span><span lang="pt" hidden>Construa o novo serviço, implemente o mesmo contrato de API.</span></li>
+    <li><span lang="en">Route traffic to the new service via the facade. Keep the monolith code until metrics confirm stability.</span><span lang="pt" hidden>Roteie o tráfego para o novo serviço via fachada. Mantenha o código do monólito até que as métricas confirmem estabilidade.</span></li>
+    <li><span lang="en">Delete the monolith code for that context. Repeat.</span><span lang="pt" hidden>Exclua o código do monólito para aquele contexto. Repita.</span></li>
+  </ol>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>Lesson learned:</strong> Never try to extract a service and change its behavior at the same time. Extract first, validate parity, then evolve. Mixing both makes debugging production incidents nearly impossible.</span><span lang="pt" hidden><strong>Lição aprendida:</strong> Nunca tente extrair um serviço e mudar seu comportamento ao mesmo tempo. Extraia primeiro, valide a paridade, depois evolua. Misturar ambos torna a depuração de incidentes em produção quase impossível.</span></p>
+  </div>
+
+  <h2><span lang="en">Resilience Patterns</span><span lang="pt" hidden>Padrões de Resiliência</span></h2>
+
+  <p><span lang="en">Scalability without resilience is fragile. Three patterns every distributed system must implement:</span><span lang="pt" hidden>Escalabilidade sem resiliência é frágil. Três padrões que todo sistema distribuído deve implementar:</span></p>
+
+  <h3><span lang="en">Circuit Breaker</span><span lang="pt" hidden>Circuit Breaker</span></h3>
+  <p><span lang="en">Wraps calls to external services. When the failure rate exceeds a threshold, the circuit "opens" and subsequent calls fail immediately (fast fail) instead of waiting for a timeout. This prevents cascading failures across the system.</span><span lang="pt" hidden>Envolve chamadas a serviços externos. Quando a taxa de falhas ultrapassa um limiar, o circuito "abre" e chamadas subsequentes falham imediatamente (fast fail) em vez de aguardar um timeout. Isso previne falhas em cascata pelo sistema.</span></p>
+
+  <h3><span lang="en">Bulkhead</span><span lang="pt" hidden>Bulkhead</span></h3>
+  <p><span lang="en">Isolates critical resources using separate thread pools or connection pools per downstream dependency. A slow database call consuming all connections won't starve the thread pool handling user-facing requests.</span><span lang="pt" hidden>Isola recursos críticos usando thread pools ou connection pools separados por dependência downstream. Uma chamada lenta ao banco de dados consumindo todas as conexões não vai privar o thread pool que lida com requisições voltadas ao usuário.</span></p>
+
+  <h3><span lang="en">Retry with Exponential Backoff</span><span lang="pt" hidden>Retry com Backoff Exponencial</span></h3>
+  <p><span lang="en">Transient failures are normal in distributed systems. Retrying immediately can worsen an already overloaded downstream. Exponential backoff (with jitter) gives the downstream service time to recover without creating a thundering herd.</span><span lang="pt" hidden>Falhas transitórias são normais em sistemas distribuídos. Tentar novamente imediatamente pode piorar um downstream já sobrecarregado. O backoff exponencial (com jitter) dá tempo ao serviço downstream para se recuperar sem criar um efeito de manada.</span></p>
+
+  <div class="code-block"><code># Retry with jitter (pseudocode)
+def call_with_retry(fn, max_attempts=3):
+    for attempt in range(max_attempts):
+        try:
+            return fn()
+        except TransientError:
+            if attempt == max_attempts - 1:
+                raise
+            wait = (2 ** attempt) + random.uniform(0, 1)
+            time.sleep(wait)</code></div>
+
+  <h2><span lang="en">Observability: The Invisible Pillar</span><span lang="pt" hidden>Observabilidade: O Pilar Invisível</span></h2>
+
+  <p><span lang="en">A system you cannot observe is a system you cannot operate. The three pillars of observability are:</span><span lang="pt" hidden>Um sistema que você não pode observar é um sistema que você não pode operar. Os três pilares da observabilidade são:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Metrics:</strong> Quantitative signals (latency percentiles, error rates, throughput). Use RED method — Rate, Errors, Duration — per service.</span><span lang="pt" hidden><strong>Métricas:</strong> Sinais quantitativos (percentis de latência, taxas de erro, throughput). Use o método RED — Rate, Errors, Duration — por serviço.</span></li>
+    <li><span lang="en"><strong>Logs:</strong> Structured JSON logs with correlation IDs. Every request across service boundaries must carry the same trace ID.</span><span lang="pt" hidden><strong>Logs:</strong> Logs JSON estruturados com IDs de correlação. Toda requisição entre fronteiras de serviço deve carregar o mesmo trace ID.</span></li>
+    <li><span lang="en"><strong>Traces:</strong> Distributed tracing (OpenTelemetry + Jaeger/Zipkin) to visualize the full request path across services and pinpoint latency sources.</span><span lang="pt" hidden><strong>Traces:</strong> Rastreamento distribuído (OpenTelemetry + Jaeger/Zipkin) para visualizar o caminho completo da requisição entre serviços e identificar fontes de latência.</span></li>
+  </ul>
+
+  <div class="callout red">
+    <p><span lang="en"><strong>Anti-pattern:</strong> Treating logs as the only observability tool. Logs alone cannot help you understand which downstream call caused a p99 latency spike in a system with 15 services.</span><span lang="pt" hidden><strong>Anti-padrão:</strong> Tratar logs como a única ferramenta de observabilidade. Logs sozinhos não conseguem ajudá-lo a entender qual chamada downstream causou um pico de latência p99 em um sistema com 15 serviços.</span></p>
+  </div>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Conclusões Principais</span></h2>
+
+  <ul>
+    <li><span lang="en">Match your architecture to your team and traffic patterns — premature microservices are a liability.</span><span lang="pt" hidden>Alinhe sua arquitetura ao seu time e aos padrões de tráfego — microsserviços prematuros são um passivo.</span></li>
+    <li><span lang="en">Use DDD Bounded Contexts to find service boundaries; let data ownership guide decomposition.</span><span lang="pt" hidden>Use Contextos Delimitados do DDD para encontrar fronteiras de serviço; deixe a propriedade dos dados guiar a decomposição.</span></li>
+    <li><span lang="en">CQRS lets read and write sides evolve and scale independently — apply it where query patterns diverge from write patterns.</span><span lang="pt" hidden>CQRS permite que os lados de leitura e escrita evoluam e escalem independentemente — aplique-o onde os padrões de consulta divergem dos padrões de escrita.</span></li>
+    <li><span lang="en">Event-driven communication removes temporal coupling but requires idempotent consumers.</span><span lang="pt" hidden>A comunicação orientada a eventos remove o acoplamento temporal, mas requer consumidores idempotentes.</span></li>
+    <li><span lang="en">Instrument from day one: metrics, structured logs, and distributed traces are not optional in production.</span><span lang="pt" hidden>Instrumente desde o primeiro dia: métricas, logs estruturados e traces distribuídos não são opcionais em produção.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index2.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> <span lang="en">Back to all articles</span><span lang="pt" hidden>Voltar para todos os artigos</span></a>
+</div>
+
+<footer>
+  <p>&copy; 2025 Jefferson Valandro. Built with care.</p>
+</footer>
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>

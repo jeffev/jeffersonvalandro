@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Building Reliable Data Pipelines for ML — Jefferson Valandro</title>
+  <meta name="description" content="Design principles and engineering practices for building data pipelines that are reliable, testable, and production-ready for machine learning workloads.">
+  <meta name="author" content="Jefferson Valandro">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/515935cc24.js" crossorigin="anonymous"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #070d1a;
+      --surface: #0d1526;
+      --card:    #111e35;
+      --border:  #1e2d4a;
+      --accent:  #4f8ef7;
+      --accent2: #06d6a0;
+      --accent3: #f72585;
+      --text:    #e8edf5;
+      --muted:   #7a8aaa;
+      --tag-bg:  #162040;
+      --radius:  12px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 16px; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw; height: 64px;
+      background: rgba(7,13,26,0.9); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-weight: 700; font-size: 1.05rem; color: var(--text); text-decoration: none; letter-spacing: -0.5px; }
+    .nav-logo span { color: var(--accent); }
+    .nav-back { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.85rem; font-weight: 500; text-decoration: none; transition: color 0.2s; }
+    .nav-back:hover { color: var(--text); }
+
+    .hero-article {
+      padding: 120px 5vw 60px;
+      background: linear-gradient(180deg, rgba(6,214,160,0.07) 0%, transparent 60%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-inner { max-width: 780px; margin: 0 auto; }
+    .article-category {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(6,214,160,0.1); border: 1px solid rgba(6,214,160,0.25);
+      color: var(--accent2); font-size: 0.72rem; font-weight: 700;
+      padding: 4px 12px; border-radius: 99px; letter-spacing: 1px;
+      text-transform: uppercase; margin-bottom: 1.2rem;
+    }
+    .hero-article h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
+      letter-spacing: -1px; line-height: 1.15; margin-bottom: 1rem;
+    }
+    .article-meta { display: flex; align-items: center; gap: 1.5rem; color: var(--muted); font-size: 0.82rem; flex-wrap: wrap; }
+    .article-meta span { display: flex; align-items: center; gap: 5px; }
+    .article-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1.4rem; }
+    .tag { background: var(--tag-bg); border: 1px solid var(--border); color: var(--muted); font-size: 0.72rem; font-weight: 500; padding: 3px 10px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; }
+
+    .article-content { max-width:1280px; margin:0 auto; padding:20px 5vw 100px; }
+    .article-content h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.4px; margin: 2.5rem 0 1rem; color: var(--text); padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .article-content h3 { font-size: 1.05rem; font-weight: 700; margin: 1.8rem 0 0.7rem; color: var(--accent2); }
+    .article-content p { color: var(--muted); margin-bottom: 1.2rem; font-size: 0.97rem; }
+    .article-content strong { color: var(--text); }
+    .article-content ul, .article-content ol { margin: 0.5rem 0 1.2rem 1.5rem; }
+    .article-content li { color: var(--muted); font-size: 0.97rem; margin-bottom: 0.4rem; }
+    .article-content li strong { color: var(--text); }
+
+    .callout { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0; padding: 1.2rem 1.4rem; margin: 1.5rem 0; }
+    .callout.green { border-left-color: var(--accent2); }
+    .callout.red { border-left-color: var(--accent3); }
+    .callout p { margin: 0; font-size: 0.92rem; }
+
+    .code-block { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.3rem 1.5rem; margin: 1.2rem 0; overflow-x: auto; }
+    .code-block code { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--accent2); line-height: 1.6; white-space: pre; }
+
+    .pipeline { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin: 1.5rem 0; }
+    .pipeline-steps { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+    .pipeline-step { background: var(--tag-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 1rem; font-size: 0.8rem; font-weight: 600; font-family: 'JetBrains Mono', monospace; color: var(--text); }
+    .pipeline-step.active { border-color: rgba(6,214,160,0.4); color: var(--accent2); }
+    .pipeline-step.warn { border-color: rgba(244,162,97,0.4); color: #f4a261; }
+    .pipeline-arrow { color: var(--muted); font-size: 1rem; }
+    .pipeline-label { font-size: 0.72rem; color: var(--muted); margin-top: 0.8rem; font-style: italic; }
+
+    .article-footer { max-width: 780px; margin: 0 auto; padding: 0 5vw 60px; border-top: 1px solid var(--border); padding-top: 2rem; }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-size: 0.87rem; font-weight: 600; text-decoration: none; transition: gap 0.2s; }
+    .back-link:hover { gap: 12px; }
+    footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); }
+
+    .lang-toggle {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--tag-bg); border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.78rem; font-weight: 600;
+      padding: 5px 12px; border-radius: 99px;
+      cursor: pointer; transition: all 0.2s;
+      font-family: 'Inter', sans-serif; letter-spacing: 0.3px;
+    }
+    .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="../index2.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index2.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" title="Switch language">
+    <span id="langFlag">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-database"></i> <span lang="en">MLOps</span><span lang="pt" hidden>MLOps</span></div>
+    <h1><span lang="en">Building Reliable Data Pipelines for ML</span><span lang="pt" hidden>Construindo Pipelines de Dados Confiaveis para ML</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> February 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">12 min read</span><span lang="pt" hidden>12 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">data-engineering</span>
+      <span class="tag">airflow</span>
+      <span class="tag">dbt</span>
+      <span class="tag">delta-lake</span>
+      <span class="tag">data-quality</span>
+      <span class="tag">idempotency</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">Machine learning models are only as good as the data they train on — and only as reliable as the pipelines that deliver that data. Yet data pipelines are often the least engineered part of an ML system: written as one-off scripts, lacking tests, without retry logic, and impossible to debug when they fail silently at 3am.</span><span lang="pt" hidden>Modelos de machine learning são tão bons quanto os dados com que treinam — e tão confiáveis quanto os pipelines que entregam esses dados. No entanto, pipelines de dados são frequentemente a parte menos engenheirada de um sistema de ML: escritos como scripts avulsos, sem testes, sem lógica de retry e impossíveis de depurar quando falham silenciosamente às 3h da manhã.</span></p>
+
+  <p><span lang="en">This article applies software engineering principles to data pipelines: idempotency, testability, schema contracts, observability, and incremental processing. The goal is a pipeline you can trust at scale — one that fails loudly, recovers automatically, and is as easy to reason about as any well-structured service.</span><span lang="pt" hidden>Este artigo aplica princípios de engenharia de software a pipelines de dados: idempotência, testabilidade, contratos de schema, observabilidade e processamento incremental. O objetivo é um pipeline em que você pode confiar em escala — que falha barulhentamente, se recupera automaticamente e é tão fácil de raciocinar quanto qualquer serviço bem estruturado.</span></p>
+
+  <h2><span lang="en">The Core Properties of a Reliable Pipeline</span><span lang="pt" hidden>As Propriedades Fundamentais de um Pipeline Confiavel</span></h2>
+
+  <p><span lang="en">A pipeline is reliable when it satisfies four properties:</span><span lang="pt" hidden>Um pipeline é confiável quando satisfaz quatro propriedades:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Correctness:</strong> The output is accurate and complete. Data quality checks run at every stage boundary.</span><span lang="pt" hidden><strong>Corretude:</strong> O output é preciso e completo. Verificações de qualidade de dados rodam em cada fronteira de etapa.</span></li>
+    <li><span lang="en"><strong>Idempotency:</strong> Running the pipeline twice for the same time window produces the same result. Reruns do not create duplicates or leave partial state.</span><span lang="pt" hidden><strong>Idempotência:</strong> Executar o pipeline duas vezes para a mesma janela de tempo produz o mesmo resultado. Reruns não criam duplicatas nem deixam estado parcial.</span></li>
+    <li><span lang="en"><strong>Observability:</strong> You know when it ran, how long each step took, how many records were processed, and what failed — without digging through logs.</span><span lang="pt" hidden><strong>Observabilidade:</strong> Você sabe quando rodou, quanto tempo cada etapa levou, quantos registros foram processados e o que falhou — sem vasculhar logs.</span></li>
+    <li><span lang="en"><strong>Recoverability:</strong> When a step fails, you can rerun just that step, for a specific time window, without cascading side effects.</span><span lang="pt" hidden><strong>Recuperabilidade:</strong> Quando uma etapa falha, você pode reroda-la individualmente, para uma janela de tempo específica, sem efeitos colaterais em cascata.</span></li>
+  </ul>
+
+  <div class="callout red">
+    <p><span lang="en"><strong>The most common failure mode:</strong> A pipeline that is not idempotent. A failed run leaves partial state. The rerun appends to the partial state instead of replacing it. Two weeks later, your training dataset has double-counted records and you do not know it.</span><span lang="pt" hidden><strong>O modo de falha mais comum:</strong> Um pipeline que não é idempotente. Uma execução com falha deixa estado parcial. O rerun acrescenta ao estado parcial em vez de substituí-lo. Duas semanas depois, seu dataset de treinamento tem registros contados em duplicata e você não sabe.</span></p>
+  </div>
+
+  <h2><span lang="en">The Medallion Architecture</span><span lang="pt" hidden>A Arquitetura Medallion</span></h2>
+
+  <p><span lang="en">The most widely adopted pattern for organizing a data lakehouse is the Medallion Architecture: three layers with progressively higher data quality.</span><span lang="pt" hidden>O padrão mais amplamente adotado para organizar um data lakehouse é a Arquitetura Medallion: três camadas com qualidade de dados progressivamente maior.</span></p>
+
+  <div class="pipeline">
+    <div class="pipeline-steps">
+      <div class="pipeline-step warn">Bronze<br><small style="font-weight:400;font-size:0.72rem;">raw ingestion</small></div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step active">Silver<br><small style="font-weight:400;font-size:0.72rem;">cleaned &amp; validated</small></div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step active">Gold<br><small style="font-weight:400;font-size:0.72rem;">feature-ready</small></div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step" style="border-color:rgba(79,142,247,0.4);color:var(--accent);">ML Training<br><small style="font-weight:400;font-size:0.72rem;">model inputs</small></div>
+    </div>
+    <div class="pipeline-label"><span lang="en">Each layer is append-only, independently queryable, and reprocessable from the layer above</span><span lang="pt" hidden>Cada camada e somente de adicao, consultavel independentemente e reprocessavel a partir da camada acima</span></div>
+  </div>
+
+  <ul>
+    <li><span lang="en"><strong>Bronze:</strong> Raw data exactly as it arrived from the source — no transformations, no filtering. Stored immutably. If a source system sends bad data, you can reprocess from bronze after the fix.</span><span lang="pt" hidden><strong>Bronze:</strong> Dados brutos exatamente como chegaram da fonte — sem transformações, sem filtragem. Armazenados imutavelmente. Se um sistema de origem envia dados ruins, você pode reprocessar a partir do bronze após a correção.</span></li>
+    <li><span lang="en"><strong>Silver:</strong> Cleaned, deduplicated, type-cast, and schema-validated data. Failed records are quarantined in a dead letter table, not silently dropped.</span><span lang="pt" hidden><strong>Silver:</strong> Dados limpos, deduplicados, com tipos corretos e validados por schema. Registros com falha são quarentenados em uma tabela de dead letter, não descartados silenciosamente.</span></li>
+    <li><span lang="en"><strong>Gold:</strong> Business-ready aggregations and feature tables. Optimized for query patterns — the input layer for model training and batch inference.</span><span lang="pt" hidden><strong>Gold:</strong> Agregações e tabelas de features prontas para o negócio. Otimizadas para padrões de consulta — a camada de entrada para treinamento de modelos e inferência em batch.</span></li>
+  </ul>
+
+  <h2><span lang="en">Idempotency by Design</span><span lang="pt" hidden>Idempotencia por Design</span></h2>
+
+  <p><span lang="en">Every pipeline step should be designed to be safely rerun. The two most reliable techniques:</span><span lang="pt" hidden>Cada etapa do pipeline deve ser projetada para ser segura de reruns. As duas técnicas mais confiáveis:</span></p>
+
+  <h3><span lang="en">Overwrite, Don't Append</span><span lang="pt" hidden>Sobrescreva, Nao Anexe</span></h3>
+  <p><span lang="en">For batch pipelines, write results to a partition and overwrite that partition on rerun. With Delta Lake or Apache Iceberg, partition overwrite is atomic — the reader sees either the old data or the new data, never a partial state mid-write.</span><span lang="pt" hidden>Para pipelines batch, escreva os resultados em uma partição e sobrescreva essa partição no rerun. Com Delta Lake ou Apache Iceberg, a sobrescrita de partição é atômica — o leitor vê os dados antigos ou os novos, nunca um estado parcial durante a escrita.</span></p>
+
+  <div class="code-block"><code># PySpark — idempotent partition overwrite with Delta Lake
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.getOrCreate()
+spark.conf.set("spark.sql.sources.partitionOverwriteMode", "dynamic")
+
+df_silver = (
+    spark.read.format("delta").load("s3://lake/bronze/transactions")
+    .filter("event_date = '2025-02-15'")
+    .dropDuplicates(["transaction_id"])
+    .withColumn("amount_usd", col("amount_cents") / 100)
+)
+
+# Overwrite only the 2025-02-15 partition — safe to rerun
+(df_silver
+    .write
+    .format("delta")
+    .mode("overwrite")
+    .partitionBy("event_date")
+    .save("s3://lake/silver/transactions")
+)</code></div>
+
+  <h3><span lang="en">Upsert with Merge</span><span lang="pt" hidden>Upsert com Merge</span></h3>
+  <p><span lang="en">For slowly-changing data (user profiles, product catalog), use a MERGE statement. If the record already exists, update it. If it does not, insert it. Running twice produces the same final state.</span><span lang="pt" hidden>Para dados que mudam lentamente (perfis de usuário, catálogo de produtos), use uma instrução MERGE. Se o registro já existe, atualize-o. Se não existe, insira-o. Executar duas vezes produz o mesmo estado final.</span></p>
+
+  <div class="code-block"><code>-- Delta Lake MERGE — idempotent upsert
+MERGE INTO silver.users AS target
+USING bronze.users_staging AS source
+ON target.user_id = source.user_id
+WHEN MATCHED AND source.updated_at > target.updated_at THEN
+  UPDATE SET *
+WHEN NOT MATCHED THEN
+  INSERT *;</code></div>
+
+  <h2><span lang="en">Schema Contracts with dbt</span><span lang="pt" hidden>Contratos de Schema com dbt</span></h2>
+
+  <p><span lang="en"><strong>dbt</strong> (data build tool) brings software engineering practices to SQL transformations: version control, testing, documentation, and lineage tracking. Every transformation is a model; every model has tests.</span><span lang="pt" hidden>O <strong>dbt</strong> (data build tool) traz práticas de engenharia de software para transformações SQL: controle de versão, testes, documentação e rastreamento de linhagem. Cada transformação é um modelo; cada modelo tem testes.</span></p>
+
+  <div class="code-block"><code># models/silver/transactions.yml — schema contract
+version: 2
+
+models:
+  - name: silver_transactions
+    description: Cleaned and validated transaction records
+    columns:
+      - name: transaction_id
+        description: Unique transaction identifier
+        tests:
+          - unique
+          - not_null
+
+      - name: amount_usd
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "amount_usd > 0"
+
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('silver_customers')
+              field: customer_id</code></div>
+
+  <p><span lang="en">When <code>dbt test</code> fails, the pipeline halts. No silent corruption propagates to the gold layer or into training data. The failure is logged, alerted, and the run is marked as requiring manual review.</span><span lang="pt" hidden>Quando o <code>dbt test</code> falha, o pipeline para. Nenhuma corrupção silenciosa se propaga para a camada gold ou para os dados de treinamento. A falha é registrada, alertada e o run é marcado como necessitando de revisão manual.</span></p>
+
+  <h2><span lang="en">Orchestration with Apache Airflow</span><span lang="pt" hidden>Orquestracao com Apache Airflow</span></h2>
+
+  <p><span lang="en">Airflow orchestrates the sequence of pipeline tasks, handles retries, and provides a UI for monitoring run history. Key practices for production Airflow DAGs:</span><span lang="pt" hidden>O Airflow orquestra a sequência de tarefas do pipeline, gerencia retries e fornece uma UI para monitoramento do histórico de execuções. Práticas-chave para DAGs Airflow em produção:</span></p>
+
+  <div class="code-block"><code>from airflow.decorators import dag, task
+from airflow.utils.dates import days_ago
+from datetime import timedelta
+
+@dag(
+    schedule_interval="@daily",
+    start_date=days_ago(1),
+    catchup=False,           # Don't backfill missed runs on startup
+    max_active_runs=1,       # Prevent overlapping runs for the same DAG
+    default_args={
+        "retries": 3,
+        "retry_delay": timedelta(minutes=5),
+        "retry_exponential_backoff": True,
+        "execution_timeout": timedelta(hours=2),
+        "on_failure_callback": alert_slack,
+    }
+)
+def ml_feature_pipeline():
+
+    @task
+    def ingest_bronze(ds: str):
+        """Idempotent ingestion for logical_date=ds"""
+        run_ingestion(date=ds)
+
+    @task
+    def transform_silver(ds: str):
+        run_dbt_model("silver_transactions", date=ds)
+
+    @task
+    def build_gold_features(ds: str):
+        run_dbt_model("gold_churn_features", date=ds)
+
+    @task
+    def validate_features(ds: str):
+        run_great_expectations_suite("churn_features", date=ds)
+
+    bronze = ingest_bronze()
+    silver = transform_silver()
+    gold   = build_gold_features()
+    check  = validate_features()
+
+    bronze >> silver >> gold >> check
+
+dag = ml_feature_pipeline()</code></div>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>Key pattern:</strong> Pass the <code>ds</code> (logical date) explicitly to every task. This makes every task a pure function of its inputs and enables safe backfilling: you can rerun any historical date window independently without side effects on other dates.</span><span lang="pt" hidden><strong>Padrão chave:</strong> Passe o <code>ds</code> (data lógica) explicitamente para cada tarefa. Isso torna cada tarefa uma função pura de seus inputs e habilita backfilling seguro: você pode reroda qualquer janela de data histórica independentemente sem efeitos colaterais em outras datas.</span></p>
+  </div>
+
+  <h2><span lang="en">Handling Late-Arriving Data</span><span lang="pt" hidden>Tratando Dados com Atraso</span></h2>
+
+  <p><span lang="en">In real systems, data arrives late. A transaction that happened on Monday may only reach the data lake on Wednesday due to batch ETL delays, mobile app sync, or source system lag. Two strategies:</span><span lang="pt" hidden>Em sistemas reais, dados chegam atrasados. Uma transação que ocorreu na segunda-feira pode chegar ao data lake somente na quarta-feira devido a atrasos de ETL batch, sincronização de app mobile ou lag do sistema de origem. Duas estratégias:</span></p>
+
+  <h3><span lang="en">Watermark-based Processing (Streaming)</span><span lang="pt" hidden>Processamento por Watermark (Streaming)</span></h3>
+  <p><span lang="en">In streaming pipelines (Spark Structured Streaming, Flink), a <strong>watermark</strong> defines how late an event can arrive and still be included in a window computation. Events arriving after the watermark are either included in a late-data bucket or discarded — but never silently corrupt a closed window.</span><span lang="pt" hidden>Em pipelines de streaming (Spark Structured Streaming, Flink), um <strong>watermark</strong> define o quão tarde um evento pode chegar e ainda ser incluído no cálculo de uma janela. Eventos que chegam após o watermark são incluídos em um bucket de dados tardios ou descartados — mas nunca corrompem silenciosamente uma janela fechada.</span></p>
+
+  <h3><span lang="en">Reprocessing Windows (Batch)</span><span lang="pt" hidden>Janelas de Reprocessamento (Batch)</span></h3>
+  <p><span lang="en">For batch pipelines, always reprocess the last N days of data to catch late arrivals. On each daily run, overwrite not just today's partition but also the previous 3 days. This is safe because the write is idempotent — and it ensures late-arriving records are reflected in features used for training.</span><span lang="pt" hidden>Para pipelines batch, sempre reprocesse os últimos N dias de dados para capturar chegadas tardias. Em cada execução diária, sobrescreva não apenas a partição de hoje, mas também os 3 dias anteriores. Isso é seguro porque a escrita é idempotente — e garante que registros tardios sejam refletidos nas features usadas para treinamento.</span></p>
+
+  <div class="code-block"><code># Reprocess last 3 days to absorb late-arriving records
+from datetime import date, timedelta
+
+def get_reprocessing_dates(logical_date: date, lookback_days: int = 3):
+    return [logical_date - timedelta(days=i) for i in range(lookback_days + 1)]
+
+# Run transformation for each date window
+for process_date in get_reprocessing_dates(today):
+    run_silver_transform(date=process_date)</code></div>
+
+  <h2><span lang="en">Pipeline Observability</span><span lang="pt" hidden>Observabilidade do Pipeline</span></h2>
+
+  <p><span lang="en">Every production pipeline needs metrics surfaced to a dashboard. The minimum viable set:</span><span lang="pt" hidden>Todo pipeline de produção precisa de métricas expostas em um dashboard. O conjunto mínimo viável:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Record counts per layer:</strong> Bronze rows ingested, Silver rows after dedup/validation, Gold rows output. Sudden drops indicate upstream failures or schema changes.</span><span lang="pt" hidden><strong>Contagem de registros por camada:</strong> Linhas ingeridas no Bronze, linhas no Silver após dedup/validação, linhas de saída no Gold. Quedas repentinas indicam falhas upstream ou mudanças de schema.</span></li>
+    <li><span lang="en"><strong>Null rates per critical column:</strong> If <code>customer_id</code> goes from 0.1% null to 15% null overnight, a join broke upstream.</span><span lang="pt" hidden><strong>Taxas de nulo por coluna crítica:</strong> Se o <code>customer_id</code> vai de 0,1% nulo para 15% nulo da noite para o dia, um join quebrou upstream.</span></li>
+    <li><span lang="en"><strong>Pipeline duration by task:</strong> A task that normally takes 8 minutes taking 45 minutes signals a data volume spike or a performance regression.</span><span lang="pt" hidden><strong>Duração do pipeline por tarefa:</strong> Uma tarefa que normalmente leva 8 minutos levando 45 minutos sinaliza um pico de volume de dados ou uma regressão de performance.</span></li>
+    <li><span lang="en"><strong>Dead letter record counts:</strong> Records quarantined due to validation failures. A rising dead letter count is an early warning of schema drift at the source.</span><span lang="pt" hidden><strong>Contagem de registros dead letter:</strong> Registros quarentenados por falhas de validação. Uma contagem crescente de dead letters é um aviso antecipado de schema drift na fonte.</span></li>
+  </ul>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+
+  <ul>
+    <li><span lang="en">Design every pipeline step to be idempotent — use partition overwrite or MERGE, never append-only writes for reprocessable data.</span><span lang="pt" hidden>Projete cada etapa do pipeline para ser idempotente — use sobrescrita de partição ou MERGE, nunca escritas somente-append para dados reprocessáveis.</span></li>
+    <li><span lang="en">Adopt the Medallion Architecture to isolate raw ingestion from clean data and from feature-ready output.</span><span lang="pt" hidden>Adote a Arquitetura Medallion para isolar a ingestão bruta dos dados limpos e do output pronto para features.</span></li>
+    <li><span lang="en">Use dbt schema tests as quality gates — a failing test should halt the pipeline, not produce corrupted downstream data.</span><span lang="pt" hidden>Use testes de schema do dbt como quality gates — um teste falhando deve parar o pipeline, não produzir dados corrompidos downstream.</span></li>
+    <li><span lang="en">Pass logical dates explicitly through orchestration tasks to enable safe, isolated backfills.</span><span lang="pt" hidden>Passe datas lógicas explicitamente pelas tarefas de orquestração para habilitar backfills seguros e isolados.</span></li>
+    <li><span lang="en">Reprocess a lookback window on every run to absorb late-arriving records without special-case logic.</span><span lang="pt" hidden>Reprocesse uma janela de lookback em cada execução para absorver registros tardios sem lógica de caso especial.</span></li>
+    <li><span lang="en">Monitor record counts, null rates, and dead letter volumes — these catch data problems days before model degradation becomes visible.</span><span lang="pt" hidden>Monitore contagens de registros, taxas de nulo e volumes de dead letter — eles capturam problemas de dados dias antes que a degradação do modelo fique visível.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index2.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+
+<footer>
+  <p>&copy; 2025 Jefferson Valandro. Built with care.</p>
+</footer>
+
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>

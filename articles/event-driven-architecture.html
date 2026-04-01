@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Event-Driven Architecture with Apache Kafka — Jefferson Valandro</title>
+  <meta name="description" content="A practical guide to event-driven architecture using Apache Kafka: topics, consumer groups, event sourcing, CQRS, and patterns for building decoupled, resilient distributed systems.">
+  <meta name="author" content="Jefferson Valandro">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/515935cc24.js" crossorigin="anonymous"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #070d1a;
+      --surface: #0d1526;
+      --card:    #111e35;
+      --border:  #1e2d4a;
+      --accent:  #4f8ef7;
+      --accent2: #06d6a0;
+      --accent3: #f72585;
+      --text:    #e8edf5;
+      --muted:   #7a8aaa;
+      --tag-bg:  #162040;
+      --radius:  12px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 16px; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw; height: 64px;
+      background: rgba(7,13,26,0.9); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-weight: 700; font-size: 1.05rem; color: var(--text); text-decoration: none; letter-spacing: -0.5px; }
+    .nav-logo span { color: var(--accent); }
+    .nav-back { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.85rem; font-weight: 500; text-decoration: none; transition: color 0.2s; }
+    .nav-back:hover { color: var(--text); }
+
+    .hero-article {
+      padding: 120px 5vw 60px;
+      background: linear-gradient(180deg, rgba(247,37,133,0.06) 0%, transparent 60%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-inner { max-width: 780px; margin: 0 auto; }
+    .article-category {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(247,37,133,0.1); border: 1px solid rgba(247,37,133,0.25);
+      color: var(--accent3); font-size: 0.72rem; font-weight: 700;
+      padding: 4px 12px; border-radius: 99px; letter-spacing: 1px;
+      text-transform: uppercase; margin-bottom: 1.2rem;
+    }
+    .hero-article h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
+      letter-spacing: -1px; line-height: 1.15; margin-bottom: 1rem;
+    }
+    .article-meta { display: flex; align-items: center; gap: 1.5rem; color: var(--muted); font-size: 0.82rem; flex-wrap: wrap; }
+    .article-meta span { display: flex; align-items: center; gap: 5px; }
+    .article-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1.4rem; }
+    .tag { background: var(--tag-bg); border: 1px solid var(--border); color: var(--muted); font-size: 0.72rem; font-weight: 500; padding: 3px 10px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; }
+
+    .article-content { max-width:1280px; margin:0 auto; padding:20px 5vw 100px; }
+    .article-content h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.4px; margin: 2.5rem 0 1rem; color: var(--text); padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .article-content h3 { font-size: 1.05rem; font-weight: 700; margin: 1.8rem 0 0.7rem; color: var(--accent2); }
+    .article-content p { color: var(--muted); margin-bottom: 1.2rem; font-size: 0.97rem; }
+    .article-content strong { color: var(--text); }
+    .article-content ul, .article-content ol { margin: 0.5rem 0 1.2rem 1.5rem; }
+    .article-content li { color: var(--muted); font-size: 0.97rem; margin-bottom: 0.4rem; }
+    .article-content li strong { color: var(--text); }
+
+    .callout { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0; padding: 1.2rem 1.4rem; margin: 1.5rem 0; }
+    .callout.green { border-left-color: var(--accent2); }
+    .callout.red { border-left-color: var(--accent3); }
+    .callout p { margin: 0; font-size: 0.92rem; }
+
+    .code-block { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.3rem 1.5rem; margin: 1.2rem 0; overflow-x: auto; }
+    .code-block code { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--accent2); line-height: 1.6; white-space: pre; }
+
+    .diagram { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin: 1.5rem 0; }
+    .diagram-row { display: flex; align-items: center; justify-content: center; gap: 0.7rem; flex-wrap: wrap; margin: 0.5rem 0; }
+    .d-node { background: var(--tag-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 500; text-align: center; }
+    .d-node.blue { border-color: rgba(79,142,247,0.4); color: var(--accent); }
+    .d-node.green { border-color: rgba(6,214,160,0.4); color: var(--accent2); }
+    .d-node.red { border-color: rgba(247,37,133,0.4); color: var(--accent3); }
+    .d-arrow { color: var(--muted); font-size: 1.1rem; }
+    .diagram-label { font-size: 0.72rem; color: var(--muted); margin-top: 0.8rem; text-align: center; font-style: italic; }
+
+    .article-footer { max-width: 780px; margin: 0 auto; padding: 0 5vw 60px; border-top: 1px solid var(--border); padding-top: 2rem; }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-size: 0.87rem; font-weight: 600; text-decoration: none; transition: gap 0.2s; }
+    .back-link:hover { gap: 12px; }
+    footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); }
+
+    .lang-toggle {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--tag-bg); border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.78rem; font-weight: 600;
+      padding: 5px 12px; border-radius: 99px;
+      cursor: pointer; transition: all 0.2s;
+      font-family: 'Inter', sans-serif; letter-spacing: 0.3px;
+    }
+    .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="../index2.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index2.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" title="Switch language">
+    <span id="langFlag">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-stream"></i> <span lang="en">Software Architecture</span><span lang="pt" hidden>Arquitetura de Software</span></div>
+    <h1><span lang="en">Event-Driven Architecture with Apache Kafka</span><span lang="pt" hidden>Arquitetura Orientada a Eventos com Apache Kafka</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> January 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">13 min read</span><span lang="pt" hidden>13 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">kafka</span>
+      <span class="tag">event-sourcing</span>
+      <span class="tag">CQRS</span>
+      <span class="tag">microservices</span>
+      <span class="tag">distributed-systems</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">Event-driven architecture (EDA) has become the backbone of modern distributed systems, but it is also one of the most misapplied patterns in the industry. Teams reach for Kafka because "it's what everyone uses" and then build a system that is harder to understand than a monolith, with all the operational overhead of a distributed system and none of the benefits.</span><span lang="pt" hidden>A arquitetura orientada a eventos (EDA) se tornou a espinha dorsal dos sistemas distribuídos modernos, mas também é um dos padrões mais mal aplicados da indústria. Times adotam o Kafka porque "é o que todo mundo usa" e então constroem um sistema mais difícil de entender do que um monolito, com todo o overhead operacional de um sistema distribuído e nenhum dos benefícios.</span></p>
+
+  <p><span lang="en">This article explains how EDA works, when it is the right choice, and how to apply it correctly using Apache Kafka — covering topics, partitions, consumer groups, event sourcing, and the Outbox pattern for reliable event publishing.</span><span lang="pt" hidden>Este artigo explica como a EDA funciona, quando é a escolha certa e como aplicá-la corretamente usando o Apache Kafka — abordando tópicos, partições, grupos de consumidores, event sourcing e o padrão Outbox para publicação confiável de eventos.</span></p>
+
+  <h2><span lang="en">Why Events, Not Requests?</span><span lang="pt" hidden>Por Que Eventos e Não Requisições?</span></h2>
+
+  <p><span lang="en">In a request-driven architecture, Service A calls Service B synchronously. The communication is direct, but it creates tight coupling:</span><span lang="pt" hidden>Em uma arquitetura orientada a requisições, o Serviço A chama o Serviço B de forma síncrona. A comunicação é direta, mas cria um acoplamento forte:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Temporal coupling:</strong> If B is down, A fails. A must know B's address and availability.</span><span lang="pt" hidden><strong>Acoplamento temporal:</strong> Se B está fora do ar, A falha. A precisa conhecer o endereço e a disponibilidade de B.</span></li>
+    <li><span lang="en"><strong>Behavioral coupling:</strong> A must know what B does with the request. A change in B's behavior requires coordination with A.</span><span lang="pt" hidden><strong>Acoplamento comportamental:</strong> A precisa saber o que B faz com a requisição. Uma mudança no comportamento de B requer coordenação com A.</span></li>
+    <li><span lang="en"><strong>Scaling coupling:</strong> B must scale to handle A's request rate at peak.</span><span lang="pt" hidden><strong>Acoplamento de escala:</strong> B precisa escalar para suportar a taxa de requisições de A no pico.</span></li>
+  </ul>
+
+  <p><span lang="en">In an event-driven architecture, A publishes an event ("something happened") to a broker. B — and any other interested service — subscribes and reacts asynchronously. The producer does not know about the consumer. They are decoupled in time, behavior, and scale.</span><span lang="pt" hidden>Em uma arquitetura orientada a eventos, A publica um evento ("algo aconteceu") em um broker. B — e qualquer outro serviço interessado — assina e reage assincronamente. O produtor não conhece o consumidor. Eles são desacoplados no tempo, comportamento e escala.</span></p>
+
+  <div class="diagram">
+    <div class="diagram-row">
+      <div class="d-node blue">Order Service<br><small>producer</small></div>
+      <div class="d-arrow">→</div>
+      <div class="d-node" style="background:#0d1f3c; border-color: #3a5080; min-width:140px; text-align:center; padding: 1rem;">
+        <div style="font-size:0.7rem; color:var(--muted); margin-bottom:4px;">Kafka Topic</div>
+        <div style="font-family:'JetBrains Mono', monospace; color:var(--text); font-size:0.85rem;">order.placed</div>
+      </div>
+      <div class="d-arrow">→</div>
+      <div style="display:flex; flex-direction:column; gap:0.5rem;">
+        <div class="d-node green">Billing Service<br><small>consumer</small></div>
+        <div class="d-node red">Notification Service<br><small>consumer</small></div>
+        <div class="d-node blue">Analytics Service<br><small>consumer</small></div>
+      </div>
+    </div>
+    <div class="diagram-label"><span lang="en">One event, multiple independent consumers — no code change needed to add a new subscriber</span><span lang="pt" hidden>Um evento, múltiplos consumidores independentes — sem mudança de código para adicionar um novo assinante</span></div>
+  </div>
+
+  <h2><span lang="en">Kafka Fundamentals</span><span lang="pt" hidden>Fundamentos do Kafka</span></h2>
+
+  <h3><span lang="en">Topics and Partitions</span><span lang="pt" hidden>Tópicos e Partições</span></h3>
+  <p><span lang="en">A <strong>Topic</strong> is a named, durable log of events. Topics are split into <strong>Partitions</strong> — the unit of parallelism. Events within a partition are ordered. Events across partitions are not.</span><span lang="pt" hidden>Um <strong>Tópico</strong> é um log durável e nomeado de eventos. Os tópicos são divididos em <strong>Partições</strong> — a unidade de paralelismo. Eventos dentro de uma partição são ordenados. Eventos entre partições não são.</span></p>
+
+  <p><span lang="en">Partition assignment is controlled by the <strong>message key</strong>. All events with the same key go to the same partition, guaranteeing order for that key. For an order service, the key is typically the order ID — ensuring all events for a given order are processed in sequence.</span><span lang="pt" hidden>A atribuição de partições é controlada pela <strong>chave da mensagem</strong>. Todos os eventos com a mesma chave vão para a mesma partição, garantindo ordem para essa chave. Para um serviço de pedidos, a chave é tipicamente o ID do pedido — garantindo que todos os eventos de um pedido sejam processados em sequência.</span></p>
+
+  <div class="code-block"><code># Producer: publishing with a partition key (Java/Spring Boot)
+@Service
+public class OrderEventPublisher {
+
+    private final KafkaTemplate&lt;String, OrderEvent&gt; kafka;
+
+    public void publishOrderPlaced(Order order) {
+        OrderEvent event = OrderEvent.builder()
+            .eventType("order.placed")
+            .orderId(order.getId())
+            .customerId(order.getCustomerId())
+            .totalAmount(order.getTotal())
+            .occurredAt(Instant.now())
+            .build();
+
+        // Key = orderId → all events for this order go to the same partition
+        kafka.send("orders", order.getId(), event);
+    }
+}</code></div>
+
+  <h3><span lang="en">Consumer Groups</span><span lang="pt" hidden>Grupos de Consumidores</span></h3>
+  <p><span lang="en">A <strong>Consumer Group</strong> is a set of consumers that cooperatively process a topic. Kafka assigns each partition to exactly one consumer in the group — enabling horizontal scaling. If you have 12 partitions and 4 consumers, each consumer processes 3 partitions.</span><span lang="pt" hidden>Um <strong>Grupo de Consumidores</strong> é um conjunto de consumidores que processam cooperativamente um tópico. O Kafka atribui cada partição a exatamente um consumidor no grupo — habilitando escalabilidade horizontal. Se você tem 12 partições e 4 consumidores, cada consumidor processa 3 partições.</span></p>
+
+  <p><span lang="en">Different services consuming the same topic use different consumer groups. Each group maintains its own independent offset — Billing and Notifications both read every event, independently.</span><span lang="pt" hidden>Serviços diferentes consumindo o mesmo tópico usam grupos de consumidores diferentes. Cada grupo mantém seu próprio offset independente — Billing e Notifications leem cada evento de forma independente.</span></p>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>Sizing tip:</strong> The number of partitions is the ceiling on consumer group parallelism. You cannot have more active consumers in a group than partitions. Plan partition counts conservatively — they can be increased but never decreased without downtime.</span><span lang="pt" hidden><strong>Dica de dimensionamento:</strong> O número de partições é o teto do paralelismo do grupo de consumidores. Você não pode ter mais consumidores ativos num grupo do que partições. Planeje os contadores de partições de forma conservadora — eles podem ser aumentados, mas nunca reduzidos sem downtime.</span></p>
+  </div>
+
+  <h2><span lang="en">The Outbox Pattern: Reliable Event Publishing</span><span lang="pt" hidden>O Padrão Outbox: Publicação Confiável de Eventos</span></h2>
+
+  <p><span lang="en">One of the most common and damaging bugs in event-driven systems: the application saves to the database, then publishes the event, and crashes between the two. The database has the data but the event was never published. Downstream services never know the order was placed.</span><span lang="pt" hidden>Um dos bugs mais comuns e danosos em sistemas orientados a eventos: a aplicação salva no banco de dados, depois publica o evento, e trava entre os dois. O banco tem os dados mas o evento nunca foi publicado. Serviços downstream nunca ficam sabendo que o pedido foi feito.</span></p>
+
+  <p><span lang="en">The <strong>Outbox Pattern</strong> solves this with transactional guarantees:</span><span lang="pt" hidden>O <strong>Padrão Outbox</strong> resolve isso com garantias transacionais:</span></p>
+
+  <ol>
+    <li><span lang="en">In the same database transaction that updates application state, write the event to an <code>outbox</code> table.</span><span lang="pt" hidden>Na mesma transação do banco de dados que atualiza o estado da aplicação, escreva o evento em uma tabela <code>outbox</code>.</span></li>
+    <li><span lang="en">A separate relay process reads unprocessed rows from the outbox and publishes them to Kafka.</span><span lang="pt" hidden>Um processo relay separado lê as linhas não processadas do outbox e as publica no Kafka.</span></li>
+    <li><span lang="en">On successful publish, mark the row as processed.</span><span lang="pt" hidden>Após publicação bem-sucedida, marque a linha como processada.</span></li>
+  </ol>
+
+  <div class="code-block"><code>-- Outbox table schema
+CREATE TABLE outbox_events (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    aggregate_type VARCHAR(100) NOT NULL,  -- 'Order'
+    aggregate_id   VARCHAR(100) NOT NULL,  -- order ID
+    event_type     VARCHAR(100) NOT NULL,  -- 'order.placed'
+    payload        JSONB        NOT NULL,
+    occurred_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    published_at   TIMESTAMPTZ  -- NULL = not yet published
+);
+
+-- Application code: single transaction
+BEGIN;
+  INSERT INTO orders (...) VALUES (...);
+  INSERT INTO outbox_events (aggregate_type, aggregate_id, event_type, payload)
+    VALUES ('Order', $orderId, 'order.placed', $eventJson);
+COMMIT;</code></div>
+
+  <p><span lang="en">For high-volume systems, use <strong>Debezium</strong> — a CDC (Change Data Capture) tool that tails the database WAL log and publishes events to Kafka automatically, without polling overhead. The outbox table becomes the source of truth for all events.</span><span lang="pt" hidden>Para sistemas de alto volume, use o <strong>Debezium</strong> — uma ferramenta CDC (Change Data Capture) que monitora o log WAL do banco e publica eventos no Kafka automaticamente, sem overhead de polling. A tabela outbox se torna a fonte de verdade para todos os eventos.</span></p>
+
+  <h2><span lang="en">Event Sourcing</span><span lang="pt" hidden>Event Sourcing</span></h2>
+
+  <p><span lang="en">Event Sourcing takes the event log one step further: instead of storing the current state of an entity, you store the <strong>sequence of events</strong> that led to that state. Current state is a derived projection computed by replaying the event log.</span><span lang="pt" hidden>O Event Sourcing vai um passo além no log de eventos: em vez de armazenar o estado atual de uma entidade, você armazena a <strong>sequência de eventos</strong> que levou a esse estado. O estado atual é uma projeção derivada computada ao reproduzir o log de eventos.</span></p>
+
+  <div class="code-block"><code># Event store: the source of truth
+events = [
+    {"type": "OrderCreated",   "orderId": "123", "items": [...], "at": "10:00"},
+    {"type": "ItemAdded",      "orderId": "123", "item": {...},   "at": "10:05"},
+    {"type": "PaymentApplied", "orderId": "123", "amount": 99.9, "at": "10:06"},
+    {"type": "OrderShipped",   "orderId": "123", "trackingId": "T456", "at": "14:30"},
+]
+
+# Current state is derived by replaying
+def rebuild_order(events):
+    order = {}
+    for event in events:
+        match event["type"]:
+            case "OrderCreated":   order = {"id": event["orderId"], "status": "created", ...}
+            case "PaymentApplied": order["status"] = "paid"
+            case "OrderShipped":   order["status"] = "shipped"; order["trackingId"] = event["trackingId"]
+    return order</code></div>
+
+  <h3><span lang="en">When to Use Event Sourcing</span><span lang="pt" hidden>Quando Usar Event Sourcing</span></h3>
+  <p><span lang="en">Event Sourcing adds significant complexity. Apply it selectively:</span><span lang="pt" hidden>O Event Sourcing adiciona complexidade significativa. Aplique-o seletivamente:</span></p>
+  <ul>
+    <li><span lang="en"><strong>Use it when:</strong> you need a full audit trail, temporal queries ("what was the order status at 2pm yesterday?"), or the ability to replay events to build new projections.</span><span lang="pt" hidden><strong>Use quando:</strong> você precisar de uma trilha de auditoria completa, consultas temporais ("qual era o status do pedido às 14h de ontem?") ou a capacidade de reproduzir eventos para construir novas projeções.</span></li>
+    <li><span lang="en"><strong>Avoid it when:</strong> you just need async communication between services. For that, the Outbox pattern is sufficient.</span><span lang="pt" hidden><strong>Evite quando:</strong> você só precisa de comunicação assíncrona entre serviços. Para isso, o padrão Outbox é suficiente.</span></li>
+  </ul>
+
+  <div class="callout red">
+    <p><span lang="en"><strong>Anti-pattern:</strong> Using Event Sourcing for every entity in the system. The additional infrastructure, snapshot strategies, and projection management costs are only justified for aggregates where history truly matters.</span><span lang="pt" hidden><strong>Anti-padrão:</strong> Usar Event Sourcing para cada entidade no sistema. Os custos adicionais de infraestrutura, estratégias de snapshot e gerenciamento de projeções só são justificados para agregados onde o histórico realmente importa.</span></p>
+  </div>
+
+  <h2><span lang="en">Schema Evolution: Kafka Schema Registry</span><span lang="pt" hidden>Evolução de Schema: Kafka Schema Registry</span></h2>
+
+  <p><span lang="en">Events are contracts. Once published, consumers depend on the event structure. Changing an event schema without coordination breaks consumers. The Confluent Schema Registry enforces compatibility rules:</span><span lang="pt" hidden>Eventos são contratos. Uma vez publicados, os consumidores dependem da estrutura do evento. Alterar um schema de evento sem coordenação quebra os consumidores. O Confluent Schema Registry impõe regras de compatibilidade:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>BACKWARD:</strong> New consumers can read events written by old producers (add optional fields, remove fields).</span><span lang="pt" hidden><strong>BACKWARD:</strong> Novos consumidores podem ler eventos escritos por produtores antigos (adicionar campos opcionais, remover campos).</span></li>
+    <li><span lang="en"><strong>FORWARD:</strong> Old consumers can read events written by new producers.</span><span lang="pt" hidden><strong>FORWARD:</strong> Consumidores antigos podem ler eventos escritos por novos produtores.</span></li>
+    <li><span lang="en"><strong>FULL:</strong> Both. The safest but most restrictive.</span><span lang="pt" hidden><strong>FULL:</strong> Ambos. O mais seguro, mas também o mais restritivo.</span></li>
+  </ul>
+
+  <div class="code-block"><code># Avro schema for order.placed (v1)
+{
+  "type": "record",
+  "name": "OrderPlaced",
+  "namespace": "com.example.orders",
+  "fields": [
+    {"name": "orderId",    "type": "string"},
+    {"name": "customerId", "type": "string"},
+    {"name": "totalAmount","type": "double"},
+    {"name": "occurredAt", "type": "string"}
+  ]
+}
+
+# v2: adding an optional field (BACKWARD compatible)
+{"name": "currency", "type": ["null", "string"], "default": null}</code></div>
+
+  <h2><span lang="en">Dead Letter Topics</span><span lang="pt" hidden>Dead Letter Topics</span></h2>
+
+  <p><span lang="en">What happens when a consumer fails to process an event? Retrying indefinitely blocks the partition and prevents processing of newer events. The solution is a <strong>Dead Letter Topic (DLT)</strong>: after N retries, the event is moved to a <code>.DLT</code> topic for inspection and reprocessing.</span><span lang="pt" hidden>O que acontece quando um consumidor falha ao processar um evento? Tentar novamente indefinidamente bloqueia a partição e impede o processamento de eventos mais novos. A solução é um <strong>Dead Letter Topic (DLT)</strong>: após N tentativas, o evento é movido para um tópico <code>.DLT</code> para inspeção e reprocessamento.</span></p>
+
+  <p><span lang="en">Spring Kafka's <code>@RetryableTopic</code> handles this automatically, with configurable retry topics and exponential backoff between attempts before sending to the DLT.</span><span lang="pt" hidden>O <code>@RetryableTopic</code> do Spring Kafka lida com isso automaticamente, com tópicos de retry configuráveis e backoff exponencial entre tentativas antes de enviar ao DLT.</span></p>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+
+  <ul>
+    <li><span lang="en">Use EDA to eliminate temporal coupling between services — not just because it is fashionable.</span><span lang="pt" hidden>Use EDA para eliminar o acoplamento temporal entre serviços — não apenas porque está na moda.</span></li>
+    <li><span lang="en">Choose partition keys that guarantee order for business-critical event sequences (order ID, user ID).</span><span lang="pt" hidden>Escolha chaves de partição que garantam ordem para sequências de eventos críticas para o negócio (ID do pedido, ID do usuário).</span></li>
+    <li><span lang="en">Always use the Outbox Pattern or CDC (Debezium) to ensure atomicity between database writes and event publishing.</span><span lang="pt" hidden>Sempre use o Padrão Outbox ou CDC (Debezium) para garantir atomicidade entre escritas no banco e publicação de eventos.</span></li>
+    <li><span lang="en">Use the Schema Registry with BACKWARD compatibility to evolve events without breaking consumers.</span><span lang="pt" hidden>Use o Schema Registry com compatibilidade BACKWARD para evoluir eventos sem quebrar os consumidores.</span></li>
+    <li><span lang="en">Reserve Event Sourcing for aggregates where history and auditability are genuine requirements.</span><span lang="pt" hidden>Reserve o Event Sourcing para agregados onde histórico e auditabilidade são requisitos genuínos.</span></li>
+    <li><span lang="en">Always configure Dead Letter Topics — poison messages should never halt a consumer indefinitely.</span><span lang="pt" hidden>Configure sempre Dead Letter Topics — mensagens com problema nunca devem travar um consumidor indefinidamente.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index2.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+
+<footer>
+  <p>&copy; 2025 Jefferson Valandro. Built with care.</p>
+</footer>
+
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>

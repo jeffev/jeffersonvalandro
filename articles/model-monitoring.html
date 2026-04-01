@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Model Monitoring & Drift Detection in Production — Jefferson Valandro</title>
+  <meta name="description" content="Practical strategies for monitoring ML models in production: detecting data drift, concept drift, and performance degradation before they impact business outcomes.">
+  <meta name="author" content="Jefferson Valandro">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/515935cc24.js" crossorigin="anonymous"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #070d1a;
+      --surface: #0d1526;
+      --card:    #111e35;
+      --border:  #1e2d4a;
+      --accent:  #4f8ef7;
+      --accent2: #06d6a0;
+      --accent3: #f72585;
+      --text:    #e8edf5;
+      --muted:   #7a8aaa;
+      --tag-bg:  #162040;
+      --radius:  12px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 16px; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw; height: 64px;
+      background: rgba(7,13,26,0.9); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-weight: 700; font-size: 1.05rem; color: var(--text); text-decoration: none; letter-spacing: -0.5px; }
+    .nav-logo span { color: var(--accent); }
+    .nav-back { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.85rem; font-weight: 500; text-decoration: none; transition: color 0.2s; }
+    .nav-back:hover { color: var(--text); }
+
+    .hero-article {
+      padding: 120px 5vw 60px;
+      background: linear-gradient(180deg, rgba(79,142,247,0.07) 0%, transparent 60%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-inner { max-width: 780px; margin: 0 auto; }
+    .article-category {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.25);
+      color: var(--accent); font-size: 0.72rem; font-weight: 700;
+      padding: 4px 12px; border-radius: 99px; letter-spacing: 1px;
+      text-transform: uppercase; margin-bottom: 1.2rem;
+    }
+    .hero-article h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
+      letter-spacing: -1px; line-height: 1.15; margin-bottom: 1rem;
+    }
+    .article-meta { display: flex; align-items: center; gap: 1.5rem; color: var(--muted); font-size: 0.82rem; flex-wrap: wrap; }
+    .article-meta span { display: flex; align-items: center; gap: 5px; }
+    .article-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1.4rem; }
+    .tag { background: var(--tag-bg); border: 1px solid var(--border); color: var(--muted); font-size: 0.72rem; font-weight: 500; padding: 3px 10px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; }
+
+    .article-content { max-width:1280px; margin:0 auto; padding:20px 5vw 100px; }
+    .article-content h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.4px; margin: 2.5rem 0 1rem; color: var(--text); padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .article-content h3 { font-size: 1.05rem; font-weight: 700; margin: 1.8rem 0 0.7rem; color: var(--accent2); }
+    .article-content p { color: var(--muted); margin-bottom: 1.2rem; font-size: 0.97rem; }
+    .article-content strong { color: var(--text); }
+    .article-content ul, .article-content ol { margin: 0.5rem 0 1.2rem 1.5rem; }
+    .article-content li { color: var(--muted); font-size: 0.97rem; margin-bottom: 0.4rem; }
+    .article-content li strong { color: var(--text); }
+
+    .callout { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0; padding: 1.2rem 1.4rem; margin: 1.5rem 0; }
+    .callout.green { border-left-color: var(--accent2); }
+    .callout.red { border-left-color: var(--accent3); }
+    .callout p { margin: 0; font-size: 0.92rem; }
+
+    .code-block { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.3rem 1.5rem; margin: 1.2rem 0; overflow-x: auto; }
+    .code-block code { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--accent2); line-height: 1.6; white-space: pre; }
+
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .metric-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; }
+    .metric-label { font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem; }
+    .metric-value { font-size: 1.6rem; font-weight: 800; color: var(--accent2); font-family: 'JetBrains Mono', monospace; }
+    .metric-value.warn { color: #f4a261; }
+    .metric-value.danger { color: var(--accent3); }
+    .metric-desc { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+
+    .article-footer { max-width: 780px; margin: 0 auto; padding: 0 5vw 60px; border-top: 1px solid var(--border); padding-top: 2rem; }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-size: 0.87rem; font-weight: 600; text-decoration: none; transition: gap 0.2s; }
+    .back-link:hover { gap: 12px; }
+    footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); }
+
+    .lang-toggle {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--tag-bg); border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.78rem; font-weight: 600;
+      padding: 5px 12px; border-radius: 99px;
+      cursor: pointer; transition: all 0.2s;
+      font-family: 'Inter', sans-serif; letter-spacing: 0.3px;
+    }
+    .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="../index2.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index2.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" title="Switch language">
+    <span id="langFlag">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-chart-line"></i> <span lang="en">MLOps</span><span lang="pt" hidden>MLOps</span></div>
+    <h1><span lang="en">Model Monitoring &amp; Drift Detection in Production</span><span lang="pt" hidden>Monitoramento de Modelos e Deteccao de Drift em Producao</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> March 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">11 min read</span><span lang="pt" hidden>11 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">mlops</span>
+      <span class="tag">monitoring</span>
+      <span class="tag">data-drift</span>
+      <span class="tag">concept-drift</span>
+      <span class="tag">evidently</span>
+      <span class="tag">prometheus</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">Deploying a model to production is not the finish line — it is the starting gun for a continuous monitoring challenge. Unlike traditional software, ML models can degrade silently: no exceptions are thrown, no alerts fire, but the model is quietly making worse predictions because the world has changed.</span><span lang="pt" hidden>Fazer o deploy de um modelo em produção não é a linha de chegada — é o tiro de largada de um desafio contínuo de monitoramento. Ao contrário do software tradicional, modelos de ML podem se degradar silenciosamente: nenhuma exceção é lançada, nenhum alerta dispara, mas o modelo está fazendo predições cada vez piores porque o mundo mudou.</span></p>
+
+  <p><span lang="en">This article covers the full monitoring stack for production ML systems: what to measure, how to detect drift, how to set up alerting, and when to trigger automated retraining.</span><span lang="pt" hidden>Este artigo cobre a stack completa de monitoramento para sistemas de ML em produção: o que medir, como detectar drift, como configurar alertas e quando acionar o retreinamento automatizado.</span></p>
+
+  <h2><span lang="en">What Can Go Wrong in Production?</span><span lang="pt" hidden>O Que Pode Dar Errado em Produção?</span></h2>
+
+  <p><span lang="en">ML models fail in production for three distinct reasons:</span><span lang="pt" hidden>Modelos de ML falham em produção por três razões distintas:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Data drift (covariate shift):</strong> The distribution of input features changes. The model was trained on one distribution but is now scoring a different one. Example: a fraud detection model trained on pre-pandemic transaction patterns encounters pandemic-era spending.</span><span lang="pt" hidden><strong>Data drift (covariate shift):</strong> A distribuição das features de entrada muda. O modelo foi treinado em uma distribuição mas agora está pontuando outra. Exemplo: um modelo de detecção de fraude treinado em padrões de transações pré-pandemia encontra gastos da era pandêmica.</span></li>
+    <li><span lang="en"><strong>Concept drift:</strong> The relationship between features and the target changes. The model's assumptions about the world become invalid. Example: a credit scoring model trained on a period of economic growth encounters a recession.</span><span lang="pt" hidden><strong>Concept drift:</strong> A relação entre features e o alvo muda. As suposições do modelo sobre o mundo se tornam inválidas. Exemplo: um modelo de scoring de crédito treinado em um período de crescimento econômico encontra uma recessão.</span></li>
+    <li><span lang="en"><strong>Infrastructure failure:</strong> Upstream pipeline changes break feature computation. A feature that used to be <code>float</code> now arrives as <code>null</code>. A join that used to match starts missing 40% of records.</span><span lang="pt" hidden><strong>Falha de infraestrutura:</strong> Mudanças no pipeline upstream quebram a computação de features. Uma feature que era <code>float</code> agora chega como <code>null</code>. Um join que funcionava começa a perder 40% dos registros.</span></li>
+  </ul>
+
+  <div class="callout red">
+    <p><span lang="en"><strong>Lesson learned:</strong> In practice, infrastructure failures are the most common cause of model degradation and the hardest to detect if you're only monitoring model output metrics. Always monitor data quality at the pipeline entry point.</span><span lang="pt" hidden><strong>Lição aprendida:</strong> Na prática, falhas de infraestrutura são a causa mais comum de degradação de modelos e as mais difíceis de detectar se você só está monitorando métricas de saída do modelo. Sempre monitore a qualidade dos dados no ponto de entrada do pipeline.</span></p>
+  </div>
+
+  <h2><span lang="en">The Monitoring Stack</span><span lang="pt" hidden>A Stack de Monitoramento</span></h2>
+
+  <p><span lang="en">A complete monitoring setup has four layers:</span><span lang="pt" hidden>Uma configuração completa de monitoramento tem quatro camadas:</span></p>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label">Layer 1</div>
+      <div class="metric-value" style="font-size:1rem; color:var(--accent);"><span lang="en">Infrastructure</span><span lang="pt" hidden>Infraestrutura</span></div>
+      <div class="metric-desc">Latency, throughput, memory, CPU, error rates</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Layer 2</div>
+      <div class="metric-value" style="font-size:1rem; color:var(--accent2);"><span lang="en">Data Quality</span><span lang="pt" hidden>Qualidade de Dados</span></div>
+      <div class="metric-desc">Null rates, out-of-range values, schema violations</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Layer 3</div>
+      <div class="metric-value" style="font-size:1rem; color:#f4a261;"><span lang="en">Feature Drift</span><span lang="pt" hidden>Drift de Features</span></div>
+      <div class="metric-desc">Distribution shift vs training baseline</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Layer 4</div>
+      <div class="metric-value" style="font-size:1rem; color:var(--accent3);"><span lang="en">Model Performance</span><span lang="pt" hidden>Performance do Modelo</span></div>
+      <div class="metric-desc">Accuracy, AUC, precision, business KPIs</div>
+    </div>
+  </div>
+
+  <h2><span lang="en">Data Quality Monitoring</span><span lang="pt" hidden>Monitoramento de Qualidade de Dados</span></h2>
+
+  <p><span lang="en">Before checking if the model is drifting, check if the data pipeline is healthy. Great Expectations and Pydantic are excellent tools for defining and enforcing data quality contracts.</span><span lang="pt" hidden>Antes de verificar se o modelo está sofrendo drift, verifique se o pipeline de dados está saudável. Great Expectations e Pydantic são excelentes ferramentas para definir e aplicar contratos de qualidade de dados.</span></p>
+
+  <div class="code-block"><code>from great_expectations.core import ExpectationSuite
+import great_expectations as gx
+
+context = gx.get_context()
+
+# Define expectations on the incoming feature dataset
+suite = context.add_expectation_suite("features.production")
+
+# Validate expected schema and value ranges
+validator.expect_column_values_to_not_be_null("customer_age")
+validator.expect_column_values_to_be_between("transaction_amount", min_value=0, max_value=100000)
+validator.expect_column_values_to_be_in_set("country_code", ["BR", "US", "DE", "FR"])
+validator.expect_column_mean_to_be_between("credit_score", min_value=500, max_value=750)
+
+# Run validation
+results = validator.validate()
+if not results.success:
+    # Alert and halt pipeline
+    raise DataQualityException(f"Validation failed: {results.statistics}")</code></div>
+
+  <h2><span lang="en">Detecting Feature Drift with Statistical Tests</span><span lang="pt" hidden>Detectando Drift de Features com Testes Estatísticos</span></h2>
+
+  <p><span lang="en">Feature drift detection compares the current serving distribution against the training baseline using statistical tests. The most commonly used are:</span><span lang="pt" hidden>A detecção de drift de features compara a distribuição atual de serving com a linha de base de treinamento usando testes estatísticos. Os mais utilizados são:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Kolmogorov-Smirnov (KS) test:</strong> For continuous features. Tests whether two samples come from the same distribution. p-value below 0.05 indicates drift.</span><span lang="pt" hidden><strong>Teste de Kolmogorov-Smirnov (KS):</strong> Para features contínuas. Testa se duas amostras vêm da mesma distribuição. p-value abaixo de 0,05 indica drift.</span></li>
+    <li><span lang="en"><strong>Population Stability Index (PSI):</strong> Widely used in financial ML. PSI &lt; 0.1: stable. 0.1–0.2: monitor. &gt; 0.2: significant drift, investigate.</span><span lang="pt" hidden><strong>Population Stability Index (PSI):</strong> Amplamente usado em ML financeiro. PSI &lt; 0,1: estável. 0,1–0,2: monitorar. &gt; 0,2: drift significativo, investigar.</span></li>
+    <li><span lang="en"><strong>Chi-squared test:</strong> For categorical features. Tests whether observed vs expected frequencies differ significantly.</span><span lang="pt" hidden><strong>Teste chi-quadrado:</strong> Para features categóricas. Testa se as frequências observadas vs esperadas diferem significativamente.</span></li>
+    <li><span lang="en"><strong>Jensen-Shannon Divergence:</strong> A symmetric, bounded version of KL-divergence. Good for monitoring overall distribution shift.</span><span lang="pt" hidden><strong>Divergência de Jensen-Shannon:</strong> Uma versão simétrica e delimitada da divergência KL. Boa para monitorar a mudança geral de distribuição.</span></li>
+  </ul>
+
+  <div class="code-block"><code>from evidently.report import Report
+from evidently.metric_preset import DataDriftPreset, DataQualityPreset
+import pandas as pd
+
+# reference_data = training dataset or recent stable window
+# current_data   = last 24h of production data
+
+report = Report(metrics=[
+    DataDriftPreset(drift_share=0.3),  # alert if >30% features drift
+    DataQualityPreset(),
+])
+
+report.run(reference_data=reference_df, current_data=current_df)
+report.save_html("drift_report.html")
+
+# Extract drift summary
+result = report.as_dict()
+drifted_features = [
+    feat for feat, info in result["metrics"][0]["result"]["drift_by_columns"].items()
+    if info["drift_detected"]
+]
+
+if len(drifted_features) / total_features > 0.3:
+    send_alert(f"Drift detected in {len(drifted_features)} features: {drifted_features}")</code></div>
+
+  <h2><span lang="en">Model Performance Monitoring</span><span lang="pt" hidden>Monitoramento de Performance do Modelo</span></h2>
+
+  <h3><span lang="en">When Labels Are Available (Low Latency)</span><span lang="pt" hidden>Quando os Rótulos Estão Disponíveis (Baixa Latência)</span></h3>
+  <p><span lang="en">For models where ground truth labels arrive quickly — fraud detection (chargeback within hours), click prediction (feedback within seconds) — you can compute real-time performance metrics and compare against the champion model's baseline.</span><span lang="pt" hidden>Para modelos em que os rótulos verdadeiros chegam rapidamente — detecção de fraude (chargeback em horas), previsão de cliques (feedback em segundos) — você pode calcular métricas de performance em tempo real e comparar com a linha de base do modelo campeão.</span></p>
+
+  <div class="code-block"><code"># Prometheus metrics for model performance (Python)
+from prometheus_client import Gauge, Counter, Histogram
+
+PREDICTION_LATENCY = Histogram(
+    "model_prediction_duration_seconds",
+    "Time to generate a single prediction",
+    buckets=[0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5]
+)
+
+MODEL_AUC = Gauge("model_auc_score", "Rolling 24h AUC", ["model_version"])
+DRIFT_SCORE = Gauge("feature_drift_psi", "PSI score per feature", ["feature_name"])
+PREDICTION_ERRORS = Counter("model_prediction_errors_total", "Total prediction errors")
+
+# In the serving endpoint
+@PREDICTION_LATENCY.time()
+def predict(features):
+    return model.predict(features)</code></div>
+
+  <h3><span lang="en">When Labels Are Delayed (High Latency)</span><span lang="pt" hidden>Quando os Rótulos São Atrasados (Alta Latência)</span></h3>
+  <p><span lang="en">For models where ground truth is delayed — loan default (months), churn (quarterly) — you cannot wait for labels to know if the model is degrading. Instead, use <strong>proxy metrics</strong>:</span><span lang="pt" hidden>Para modelos em que o ground truth é atrasado — inadimplência de empréstimos (meses), churn (trimestral) — você não pode esperar pelos rótulos para saber se o modelo está se degradando. Em vez disso, use <strong>métricas proxy</strong>:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Prediction distribution shift:</strong> Compare the distribution of model output scores today vs training baseline. A shift in score distribution often precedes a shift in performance.</span><span lang="pt" hidden><strong>Mudança na distribuição de predições:</strong> Compare a distribuição dos scores de saída do modelo hoje vs a linha de base de treinamento. Uma mudança na distribuição de scores frequentemente precede uma mudança de performance.</span></li>
+    <li><span lang="en"><strong>Business metrics:</strong> Conversion rate, click-through rate, revenue per prediction. These reflect real-world model impact even without labels.</span><span lang="pt" hidden><strong>Métricas de negócio:</strong> Taxa de conversão, taxa de cliques, receita por predição. Estas refletem o impacto real do modelo mesmo sem rótulos.</span></li>
+    <li><span lang="en"><strong>Calibration:</strong> For probability models, check if predicted probabilities match observed frequencies (reliability diagram).</span><span lang="pt" hidden><strong>Calibração:</strong> Para modelos de probabilidade, verifique se as probabilidades previstas correspondem às frequências observadas (diagrama de confiabilidade).</span></li>
+  </ul>
+
+  <h2><span lang="en">Alerting and Thresholds</span><span lang="pt" hidden>Alertas e Limites</span></h2>
+
+  <p><span lang="en">Not all drift requires immediate action. Define tiered alert levels:</span><span lang="pt" hidden>Nem todo drift requer ação imediata. Defina níveis de alerta em camadas:</span></p>
+
+  <div class="code-block"><code"># Alerting thresholds (Prometheus alerting rules)
+groups:
+  - name: model_monitoring
+    rules:
+      - alert: FeatureDriftWarning
+        expr: feature_drift_psi{feature_name!=""} > 0.1
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "Feature {{ $labels.feature_name }} PSI={{ $value | humanize }}"
+
+      - alert: FeatureDriftCritical
+        expr: feature_drift_psi{feature_name!=""} > 0.25
+        for: 30m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical drift — retraining required"
+
+      - alert: ModelAUCDegraded
+        expr: model_auc_score < 0.78
+        for: 2h
+        labels:
+          severity: critical
+        annotations:
+          summary: "Model AUC {{ $value | humanize }} below threshold 0.78"</code></div>
+
+  <h2><span lang="en">Automated Retraining Triggers</span><span lang="pt" hidden>Gatilhos de Retreinamento Automático</span></h2>
+
+  <p><span lang="en">Manual retraining is reactive and slow. Build retraining triggers into the monitoring pipeline:</span><span lang="pt" hidden>O retreinamento manual é reativo e lento. Incorpore gatilhos de retreinamento ao pipeline de monitoramento:</span></p>
+
+  <ol>
+    <li><span lang="en"><strong>Schedule-based:</strong> Retrain weekly or monthly. Simple, predictable, but may retrain when unnecessary or fail to retrain fast enough.</span><span lang="pt" hidden><strong>Baseado em agenda:</strong> Retreine semanal ou mensalmente. Simples, previsível, mas pode retreinar desnecessariamente ou não retreinar rápido o suficiente.</span></li>
+    <li><span lang="en"><strong>Performance-based:</strong> Trigger retraining when AUC drops below threshold. Requires labeled feedback loop.</span><span lang="pt" hidden><strong>Baseado em performance:</strong> Acione o retreinamento quando o AUC cair abaixo do limite. Requer loop de feedback com rótulos.</span></li>
+    <li><span lang="en"><strong>Drift-based:</strong> Trigger retraining when PSI exceeds threshold for a sustained period. Works without labels — suitable for high-latency feedback models.</span><span lang="pt" hidden><strong>Baseado em drift:</strong> Acione o retreinamento quando o PSI exceder o limite por um período sustentado. Funciona sem rótulos — adequado para modelos com feedback de alta latência.</span></li>
+  </ol>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>Best practice:</strong> Combine all three triggers with an AND logic for high-stakes models: retrain only when drift is detected AND it has persisted for more than 48 hours AND the weekly schedule is due. This prevents unnecessary retraining on transient anomalies.</span><span lang="pt" hidden><strong>Melhor prática:</strong> Combine os três gatilhos com lógica AND para modelos de alto risco: retreine somente quando drift for detectado E persistir por mais de 48 horas E a agenda semanal estiver vencida. Isso evita retreinamento desnecessário em anomalias transitórias.</span></p>
+  </div>
+
+  <h2><span lang="en">The Monitoring Dashboard</span><span lang="pt" hidden>O Dashboard de Monitoramento</span></h2>
+
+  <p><span lang="en">A Grafana dashboard for ML models should surface at a glance:</span><span lang="pt" hidden>Um dashboard Grafana para modelos de ML deve mostrar de relance:</span></p>
+
+  <ul>
+    <li><span lang="en">Prediction volume over time (sudden drops = upstream pipeline failure)</span><span lang="pt" hidden>Volume de predições ao longo do tempo (quedas repentinas = falha no pipeline upstream)</span></li>
+    <li><span lang="en">Prediction score distribution heatmap (shifts indicate drift)</span><span lang="pt" hidden>Heatmap de distribuição de scores de predição (mudanças indicam drift)</span></li>
+    <li><span lang="en">Per-feature PSI scores with threshold bands</span><span lang="pt" hidden>Scores PSI por feature com faixas de limite</span></li>
+    <li><span lang="en">Rolling performance metrics (AUC, precision@K, calibration error)</span><span lang="pt" hidden>Métricas de performance rolling (AUC, precision@K, erro de calibração)</span></li>
+    <li><span lang="en">Data quality pass rate by feature and pipeline stage</span><span lang="pt" hidden>Taxa de aprovação de qualidade de dados por feature e etapa do pipeline</span></li>
+    <li><span lang="en">Retraining history and model version deployment timeline</span><span lang="pt" hidden>Histórico de retreinamento e linha do tempo de deploy das versões do modelo</span></li>
+  </ul>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+
+  <ul>
+    <li><span lang="en">Monitor in four layers: infrastructure, data quality, feature drift, and model performance.</span><span lang="pt" hidden>Monitore em quatro camadas: infraestrutura, qualidade de dados, drift de features e performance do modelo.</span></li>
+    <li><span lang="en">Data quality monitoring is your first line of defense — pipeline failures are the most common cause of degradation.</span><span lang="pt" hidden>O monitoramento de qualidade de dados é sua primeira linha de defesa — falhas de pipeline são a causa mais comum de degradação.</span></li>
+    <li><span lang="en">Use PSI and KS tests for drift detection; set tiered alert thresholds to avoid alert fatigue.</span><span lang="pt" hidden>Use testes PSI e KS para detecção de drift; defina limites de alerta em camadas para evitar fadiga de alertas.</span></li>
+    <li><span lang="en">For delayed-label models, monitor prediction distribution and business KPIs as proxy metrics.</span><span lang="pt" hidden>Para modelos com rótulos atrasados, monitore a distribuição de predições e KPIs de negócio como métricas proxy.</span></li>
+    <li><span lang="en">Automate retraining triggers based on drift persistence, not just point-in-time anomalies.</span><span lang="pt" hidden>Automatize os gatilhos de retreinamento com base na persistência do drift, não apenas em anomalias pontuais.</span></li>
+    <li><span lang="en">Track every model version, deployment date, and retraining event in a central registry.</span><span lang="pt" hidden>Registre cada versão do modelo, data de deploy e evento de retreinamento em um registro central.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index2.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+
+<footer>
+  <p>&copy; 2025 Jefferson Valandro. Built with care.</p>
+</footer>
+
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>

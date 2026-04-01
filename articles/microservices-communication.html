@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Microservices Communication Patterns — Jefferson Valandro</title>
+  <meta name="description" content="Synchronous vs asynchronous communication, API Gateway, Service Mesh, gRPC, and the Saga pattern for managing distributed transactions across microservices.">
+  <meta name="author" content="Jefferson Valandro">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/515935cc24.js" crossorigin="anonymous"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #070d1a;
+      --surface: #0d1526;
+      --card:    #111e35;
+      --border:  #1e2d4a;
+      --accent:  #4f8ef7;
+      --accent2: #06d6a0;
+      --accent3: #f72585;
+      --text:    #e8edf5;
+      --muted:   #7a8aaa;
+      --tag-bg:  #162040;
+      --radius:  12px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 16px; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw; height: 64px;
+      background: rgba(7,13,26,0.9); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-weight: 700; font-size: 1.05rem; color: var(--text); text-decoration: none; letter-spacing: -0.5px; }
+    .nav-logo span { color: var(--accent); }
+    .nav-back { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.85rem; font-weight: 500; text-decoration: none; transition: color 0.2s; }
+    .nav-back:hover { color: var(--text); }
+
+    .hero-article {
+      padding: 120px 5vw 60px;
+      background: linear-gradient(180deg, rgba(79,142,247,0.08) 0%, transparent 60%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-inner { max-width: 780px; margin: 0 auto; }
+    .article-category {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.25);
+      color: var(--accent); font-size: 0.72rem; font-weight: 700;
+      padding: 4px 12px; border-radius: 99px; letter-spacing: 1px;
+      text-transform: uppercase; margin-bottom: 1.2rem;
+    }
+    .hero-article h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
+      letter-spacing: -1px; line-height: 1.15; margin-bottom: 1rem;
+    }
+    .article-meta { display: flex; align-items: center; gap: 1.5rem; color: var(--muted); font-size: 0.82rem; flex-wrap: wrap; }
+    .article-meta span { display: flex; align-items: center; gap: 5px; }
+    .article-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1.4rem; }
+    .tag { background: var(--tag-bg); border: 1px solid var(--border); color: var(--muted); font-size: 0.72rem; font-weight: 500; padding: 3px 10px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; }
+
+    .article-content { max-width:1280px; margin:0 auto; padding:20px 5vw 100px; }
+    .article-content h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.4px; margin: 2.5rem 0 1rem; color: var(--text); padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .article-content h3 { font-size: 1.05rem; font-weight: 700; margin: 1.8rem 0 0.7rem; color: var(--accent2); }
+    .article-content p { color: var(--muted); margin-bottom: 1.2rem; font-size: 0.97rem; }
+    .article-content strong { color: var(--text); }
+    .article-content ul, .article-content ol { margin: 0.5rem 0 1.2rem 1.5rem; }
+    .article-content li { color: var(--muted); font-size: 0.97rem; margin-bottom: 0.4rem; }
+    .article-content li strong { color: var(--text); }
+
+    .callout { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0; padding: 1.2rem 1.4rem; margin: 1.5rem 0; }
+    .callout.green { border-left-color: var(--accent2); }
+    .callout.red { border-left-color: var(--accent3); }
+    .callout p { margin: 0; font-size: 0.92rem; }
+
+    .code-block { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.3rem 1.5rem; margin: 1.2rem 0; overflow-x: auto; }
+    .code-block code { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--accent2); line-height: 1.6; white-space: pre; }
+
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+    .compare-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.3rem; }
+    .compare-card h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.8rem; }
+    .compare-card h4.blue { color: var(--accent); }
+    .compare-card h4.green { color: var(--accent2); }
+    .compare-card ul { margin-left: 1rem; }
+    .compare-card li { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.3rem; }
+
+    .diagram { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin: 1.5rem 0; }
+    .diagram-row { display: flex; align-items: center; justify-content: center; gap: 0.7rem; flex-wrap: wrap; margin: 0.4rem 0; }
+    .d-node { background: var(--tag-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.55rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 500; text-align: center; white-space: nowrap; }
+    .d-node.blue { border-color: rgba(79,142,247,0.4); color: var(--accent); }
+    .d-node.green { border-color: rgba(6,214,160,0.4); color: var(--accent2); }
+    .d-node.red { border-color: rgba(247,37,133,0.4); color: var(--accent3); }
+    .d-arrow { color: var(--muted); font-size: 1.1rem; }
+    .diagram-label { font-size: 0.72rem; color: var(--muted); margin-top: 0.8rem; text-align: center; font-style: italic; }
+
+    .article-footer { max-width: 780px; margin: 0 auto; padding: 0 5vw 60px; border-top: 1px solid var(--border); padding-top: 2rem; }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-size: 0.87rem; font-weight: 600; text-decoration: none; transition: gap 0.2s; }
+    .back-link:hover { gap: 12px; }
+    footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); }
+
+    @media (max-width: 600px) { .compare-grid { grid-template-columns: 1fr; } }
+
+    .lang-toggle {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--tag-bg); border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.78rem; font-weight: 600;
+      padding: 5px 12px; border-radius: 99px;
+      cursor: pointer; transition: all 0.2s;
+      font-family: 'Inter', sans-serif; letter-spacing: 0.3px;
+    }
+    .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="../index2.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index2.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" title="Switch language">
+    <span id="langFlag">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-network-wired"></i> <span lang="en">Software Architecture</span><span lang="pt" hidden>Arquitetura de Software</span></div>
+    <h1><span lang="en">Microservices Communication Patterns</span><span lang="pt" hidden>Padroes de Comunicacao em Microsservicos</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> March 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">13 min read</span><span lang="pt" hidden>13 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">microservices</span>
+      <span class="tag">gRPC</span>
+      <span class="tag">API gateway</span>
+      <span class="tag">service mesh</span>
+      <span class="tag">saga pattern</span>
+      <span class="tag">REST</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">When you split a monolith into microservices, you trade intra-process method calls for network calls. That shift changes everything: you now deal with latency, partial failures, retries, service discovery, and distributed transactions. How services communicate is one of the most consequential architectural decisions you will make — and one of the least carefully considered.</span><span lang="pt" hidden>Quando você divide um monolito em microsserviços, troca chamadas de método intra-processo por chamadas de rede. Essa mudança altera tudo: agora você lida com latência, falhas parciais, retries, service discovery e transações distribuídas. Como os serviços se comunicam é uma das decisões arquiteturais mais consequentes que você tomará — e uma das menos cuidadosamente consideradas.</span></p>
+
+  <p><span lang="en">This article maps out the communication patterns available, when to apply each, and how to avoid the traps that turn a microservices architecture into a distributed monolith with all the downsides of both worlds.</span><span lang="pt" hidden>Este artigo mapeia os padrões de comunicação disponíveis, quando aplicar cada um e como evitar as armadilhas que transformam uma arquitetura de microsserviços em um monolito distribuído com todas as desvantagens dos dois mundos.</span></p>
+
+  <h2><span lang="en">Synchronous vs. Asynchronous: The Core Trade-off</span><span lang="pt" hidden>Sincrono vs. Assincrono: O Dilema Central</span></h2>
+
+  <p><span lang="en">Every service-to-service interaction falls into one of two categories:</span><span lang="pt" hidden>Cada interação serviço-a-serviço se encaixa em uma de duas categorias:</span></p>
+
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h4 class="blue">Synchronous (Request/Response)</h4>
+      <ul>
+        <li><span lang="en">Caller waits for the response</span><span lang="pt" hidden>O chamador espera pela resposta</span></li>
+        <li><span lang="en">Strong consistency guarantees</span><span lang="pt" hidden>Garantias de consistência forte</span></li>
+        <li><span lang="en">Simple to reason about</span><span lang="pt" hidden>Simples de raciocinar</span></li>
+        <li><span lang="en">Temporal coupling — caller fails if callee is down</span><span lang="pt" hidden>Acoplamento temporal — chamador falha se o receptor estiver fora</span></li>
+        <li><span lang="en">Cascading failures under load</span><span lang="pt" hidden>Falhas em cascata sob carga</span></li>
+        <li><span lang="en">Tools: REST/HTTP, gRPC</span><span lang="pt" hidden>Ferramentas: REST/HTTP, gRPC</span></li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <h4 class="green">Asynchronous (Event/Message)</h4>
+      <ul>
+        <li><span lang="en">Caller fires and forgets</span><span lang="pt" hidden>O chamador dispara e esquece</span></li>
+        <li><span lang="en">Eventual consistency</span><span lang="pt" hidden>Consistência eventual</span></li>
+        <li><span lang="en">Services are temporally decoupled</span><span lang="pt" hidden>Serviços são desacoplados temporalmente</span></li>
+        <li><span lang="en">Higher operational complexity</span><span lang="pt" hidden>Maior complexidade operacional</span></li>
+        <li><span lang="en">Requires idempotent consumers</span><span lang="pt" hidden>Requer consumidores idempotentes</span></li>
+        <li><span lang="en">Tools: Kafka, RabbitMQ, SQS</span><span lang="pt" hidden>Ferramentas: Kafka, RabbitMQ, SQS</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p><span lang="en"><strong>Decision rule:</strong> Use synchronous when the caller needs the result to continue its work (e.g., fetching user data to build a response). Use asynchronous when the caller just needs to notify that something happened and can continue regardless of what other services do with that notification.</span><span lang="pt" hidden><strong>Regra de decisão:</strong> Use síncrono quando o chamador precisa do resultado para continuar seu trabalho (ex: buscar dados do usuário para construir uma resposta). Use assíncrono quando o chamador só precisa notificar que algo aconteceu e pode continuar independentemente do que outros serviços fazem com essa notificação.</span></p>
+  </div>
+
+  <h2><span lang="en">REST vs. gRPC</span><span lang="pt" hidden>REST vs. gRPC</span></h2>
+
+  <p><span lang="en">For synchronous communication, REST over HTTP/1.1 is the default — but it is not always the right choice. gRPC offers significant advantages in internal service-to-service communication.</span><span lang="pt" hidden>Para comunicação síncrona, REST sobre HTTP/1.1 é o padrão — mas nem sempre é a escolha certa. O gRPC oferece vantagens significativas na comunicação interna entre serviços.</span></p>
+
+  <h3><span lang="en">REST: When and Why</span><span lang="pt" hidden>REST: Quando e Por Que</span></h3>
+  <p><span lang="en">REST remains the best choice for <strong>external-facing APIs</strong> and any scenario where human readability, broad client compatibility, or browser support matters. JSON is universally understood, tooling is mature, and debugging with curl or Postman is trivial.</span><span lang="pt" hidden>O REST continua sendo a melhor escolha para <strong>APIs externas</strong> e qualquer cenário onde legibilidade humana, ampla compatibilidade de clientes ou suporte a navegadores importa. JSON é universalmente compreendido, as ferramentas são maduras e depurar com curl ou Postman é trivial.</span></p>
+
+  <h3><span lang="en">gRPC: When and Why</span><span lang="pt" hidden>gRPC: Quando e Por Que</span></h3>
+  <p><span lang="en">gRPC uses Protocol Buffers (binary serialization) over HTTP/2 and generates strongly typed client/server stubs from a schema definition. The advantages for internal communication are measurable:</span><span lang="pt" hidden>O gRPC usa Protocol Buffers (serialização binária) sobre HTTP/2 e gera stubs de cliente/servidor fortemente tipados a partir de uma definição de schema. As vantagens para comunicação interna são mensuráveis:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Performance:</strong> Protobuf payloads are 3–10x smaller than equivalent JSON. Ideal for high-frequency internal calls.</span><span lang="pt" hidden><strong>Performance:</strong> Payloads Protobuf são 3–10x menores que o JSON equivalente. Ideal para chamadas internas de alta frequência.</span></li>
+    <li><span lang="en"><strong>Streaming:</strong> Bi-directional streaming is a first-class citizen — not a workaround with WebSockets.</span><span lang="pt" hidden><strong>Streaming:</strong> Streaming bidirecional é cidadão de primeira classe — não um workaround com WebSockets.</span></li>
+    <li><span lang="en"><strong>Contract-first:</strong> The <code>.proto</code> file is the contract. Client stubs are generated automatically — no manual SDK maintenance.</span><span lang="pt" hidden><strong>Contract-first:</strong> O arquivo <code>.proto</code> é o contrato. Stubs de cliente são gerados automaticamente — sem manutenção manual de SDK.</span></li>
+    <li><span lang="en"><strong>Deadlines:</strong> Every gRPC call carries a deadline. Clients and servers both honor it. This prevents runaway requests from consuming resources indefinitely.</span><span lang="pt" hidden><strong>Deadlines:</strong> Cada chamada gRPC carrega um deadline. Clientes e servidores o respeitam. Isso evita que requisições descontroladas consumam recursos indefinidamente.</span></li>
+  </ul>
+
+  <div class="code-block"><code>// order_service.proto — contract-first API definition
+syntax = "proto3";
+package orders;
+
+service OrderService {
+  rpc PlaceOrder (PlaceOrderRequest) returns (PlaceOrderResponse);
+  rpc StreamOrderUpdates (OrderId) returns (stream OrderEvent);
+}
+
+message PlaceOrderRequest {
+  string customer_id = 1;
+  repeated OrderItem items = 2;
+  string payment_method = 3;
+}
+
+message PlaceOrderResponse {
+  string order_id = 1;
+  string status   = 2;
+  int64  estimated_delivery_unix = 3;
+}</code></div>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>Pattern:</strong> Use REST for your public API Gateway layer. Use gRPC for internal service-to-service calls. The protocol boundary at the gateway gives you the best of both: broad client compatibility externally and performance + type safety internally.</span><span lang="pt" hidden><strong>Padrão:</strong> Use REST para sua camada de API Gateway pública. Use gRPC para chamadas internas serviço-a-serviço. A fronteira de protocolo no gateway oferece o melhor dos dois mundos: ampla compatibilidade de clientes externamente e performance + segurança de tipos internamente.</span></p>
+  </div>
+
+  <h2><span lang="en">API Gateway</span><span lang="pt" hidden>API Gateway</span></h2>
+
+  <p><span lang="en">Clients should not call individual microservices directly. An <strong>API Gateway</strong> is the single entry point for all external traffic. It handles cross-cutting concerns that would otherwise be duplicated across every service:</span><span lang="pt" hidden>Clientes não devem chamar microsserviços individuais diretamente. Um <strong>API Gateway</strong> é o ponto de entrada único para todo tráfego externo. Ele lida com concerns transversais que de outra forma seriam duplicados em cada serviço:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Authentication &amp; Authorization:</strong> Validate JWT tokens or API keys once, at the edge. Services downstream trust the gateway.</span><span lang="pt" hidden><strong>Autenticação e Autorização:</strong> Valide tokens JWT ou API keys uma vez, na borda. Os serviços downstream confiam no gateway.</span></li>
+    <li><span lang="en"><strong>Rate Limiting:</strong> Protect services from abusive clients without each service implementing its own throttling.</span><span lang="pt" hidden><strong>Limitação de Taxa:</strong> Proteja os serviços de clientes abusivos sem que cada serviço implemente seu próprio throttling.</span></li>
+    <li><span lang="en"><strong>Request routing:</strong> Route <code>/orders/**</code> to Order Service, <code>/catalog/**</code> to Catalog Service.</span><span lang="pt" hidden><strong>Roteamento de requisições:</strong> Roteie <code>/orders/**</code> para o Order Service, <code>/catalog/**</code> para o Catalog Service.</span></li>
+    <li><span lang="en"><strong>Protocol translation:</strong> Accept REST externally, translate to gRPC internally.</span><span lang="pt" hidden><strong>Tradução de protocolo:</strong> Aceite REST externamente, traduza para gRPC internamente.</span></li>
+    <li><span lang="en"><strong>Response aggregation (BFF pattern):</strong> Aggregate responses from multiple services into a single payload optimized for the client.</span><span lang="pt" hidden><strong>Agregação de respostas (padrão BFF):</strong> Agregue respostas de múltiplos serviços em um único payload otimizado para o cliente.</span></li>
+  </ul>
+
+  <div class="diagram">
+    <div class="diagram-row">
+      <div class="d-node" style="color:var(--muted);">Mobile App</div>
+      <div class="d-node" style="color:var(--muted);">Web App</div>
+      <div class="d-node" style="color:var(--muted);">Third-party</div>
+    </div>
+    <div class="diagram-row"><div class="d-arrow" style="font-size:1.5rem;">↓</div></div>
+    <div class="diagram-row">
+      <div class="d-node blue" style="padding: 0.8rem 2rem; font-size: 0.9rem;">API Gateway<br><small style="font-size:0.7rem;color:var(--muted);">auth · rate-limit · routing</small></div>
+    </div>
+    <div class="diagram-row"><div class="d-arrow" style="font-size:1.5rem;">↓</div></div>
+    <div class="diagram-row">
+      <div class="d-node green">Order Service</div>
+      <div class="d-node green">Catalog Service</div>
+      <div class="d-node green">User Service</div>
+      <div class="d-node green">Payment Service</div>
+    </div>
+    <div class="diagram-label"><span lang="en">All external traffic enters through the Gateway — downstream services only see authenticated, validated requests</span><span lang="pt" hidden>Todo trafego externo passa pelo Gateway — servicos internos so recebem requisicoes autenticadas e validadas</span></div>
+  </div>
+
+  <h2><span lang="en">Service Mesh</span><span lang="pt" hidden>Service Mesh</span></h2>
+
+  <p><span lang="en">A Service Mesh (Istio, Linkerd) takes the cross-cutting concerns one step further — to the <em>infrastructure</em> layer. A sidecar proxy (Envoy) is injected alongside every service container and intercepts all inbound/outbound traffic transparently.</span><span lang="pt" hidden>Um Service Mesh (Istio, Linkerd) leva os concerns transversais um passo adiante — para a camada de <em>infraestrutura</em>. Um proxy sidecar (Envoy) é injetado ao lado de cada container de serviço e intercepta todo o tráfego de entrada/saída de forma transparente.</span></p>
+
+  <p><span lang="en">This gives you, without any application code changes:</span><span lang="pt" hidden>Isso oferece, sem nenhuma mudança no código da aplicação:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>mTLS everywhere:</strong> All service-to-service traffic is encrypted and mutually authenticated automatically.</span><span lang="pt" hidden><strong>mTLS em todo lugar:</strong> Todo tráfego serviço-a-serviço é criptografado e mutuamente autenticado automaticamente.</span></li>
+    <li><span lang="en"><strong>Traffic management:</strong> Canary releases, traffic splitting, and fault injection through configuration — not code.</span><span lang="pt" hidden><strong>Gerenciamento de tráfego:</strong> Canary releases, divisão de tráfego e injeção de falhas por configuração — não código.</span></li>
+    <li><span lang="en"><strong>Observability:</strong> Distributed traces, per-route latency histograms, and error rates — automatically collected at the proxy layer.</span><span lang="pt" hidden><strong>Observabilidade:</strong> Traces distribuídos, histogramas de latência por rota e taxas de erro — coletados automaticamente na camada do proxy.</span></li>
+    <li><span lang="en"><strong>Retry and timeout policies:</strong> Defined as mesh policy, applied consistently across all services.</span><span lang="pt" hidden><strong>Políticas de retry e timeout:</strong> Definidas como política do mesh, aplicadas consistentemente em todos os serviços.</span></li>
+  </ul>
+
+  <div class="callout red">
+    <p><span lang="en"><strong>Caveat:</strong> A service mesh adds significant operational complexity. It is justified when you have 10+ services with complex traffic management needs. For smaller systems, handle retries and timeouts in application code or at the gateway — do not over-engineer.</span><span lang="pt" hidden><strong>Cuidado:</strong> Um service mesh adiciona complexidade operacional significativa. É justificado quando você tem 10+ serviços com necessidades complexas de gerenciamento de tráfego. Para sistemas menores, trate retries e timeouts no código da aplicação ou no gateway — não sobrengenhe.</span></p>
+  </div>
+
+  <h2><span lang="en">The Saga Pattern: Distributed Transactions</span><span lang="pt" hidden>O Padrao Saga: Transacoes Distribuidas</span></h2>
+
+  <p><span lang="en">In a monolith, a database transaction guarantees ACID properties across multiple operations. In microservices, each service owns its data. There is no global transaction manager. When a business operation spans multiple services — place order, reserve inventory, charge payment, send confirmation — how do you ensure consistency?</span><span lang="pt" hidden>Em um monolito, uma transação de banco de dados garante propriedades ACID em múltiplas operações. Em microsserviços, cada serviço possui seus dados. Não há gerenciador de transações global. Quando uma operação de negócio abrange múltiplos serviços — fazer pedido, reservar estoque, cobrar pagamento, enviar confirmação — como garantir consistência?</span></p>
+
+  <p><span lang="en">The <strong>Saga pattern</strong> replaces a distributed transaction with a sequence of local transactions, each publishing an event or command that triggers the next step. If a step fails, compensating transactions roll back the preceding steps.</span><span lang="pt" hidden>O <strong>padrão Saga</strong> substitui uma transação distribuída por uma sequência de transações locais, cada uma publicando um evento ou comando que aciona o próximo passo. Se uma etapa falha, transações compensatórias desfazem as etapas anteriores.</span></p>
+
+  <h3><span lang="en">Choreography-based Saga</span><span lang="pt" hidden>Saga Baseada em Coreografia</span></h3>
+  <p><span lang="en">Each service listens for events and decides what to do next. There is no central coordinator.</span><span lang="pt" hidden>Cada serviço escuta eventos e decide o que fazer a seguir. Não há coordenador central.</span></p>
+
+  <div class="code-block"><code># Choreography Saga — order placement flow
+
+# 1. Order Service
+OrderPlaced event → published to Kafka
+
+# 2. Inventory Service listens
+on OrderPlaced:
+  if stock_available:
+    reserve_items()
+    publish InventoryReserved
+  else:
+    publish InventoryReservationFailed
+
+# 3. Payment Service listens
+on InventoryReserved:
+  if charge_succeeds:
+    publish PaymentCharged
+  else:
+    publish PaymentFailed  ← triggers compensation
+
+# 4. Order Service listens
+on PaymentFailed:
+  update_order_status(CANCELLED)  ← compensating transaction
+  publish OrderCancelled
+
+# 5. Inventory Service listens
+on OrderCancelled:
+  release_reserved_items()  ← compensating transaction</code></div>
+
+  <h3><span lang="en">Orchestration-based Saga</span><span lang="pt" hidden>Saga Baseada em Orquestracao</span></h3>
+  <p><span lang="en">A central <strong>Saga Orchestrator</strong> coordinates the flow by sending commands to each service and handling the responses. The business logic lives in one place, making it easier to understand and debug.</span><span lang="pt" hidden>Um <strong>Orquestrador de Saga</strong> central coordena o fluxo enviando comandos para cada serviço e tratando as respostas. A lógica de negócio fica em um lugar, tornando mais fácil entender e depurar.</span></p>
+
+  <div class="code-block"><code>// Orchestrator (Java/Spring State Machine)
+@SagaOrchestrator
+public class PlaceOrderSaga {
+
+    @StartSaga
+    @SagaEventHandler(associationProperty = "orderId")
+    public void on(OrderCreatedEvent event) {
+        commandGateway.send(new ReserveInventoryCommand(event.getOrderId(), event.getItems()));
+    }
+
+    @SagaEventHandler(associationProperty = "orderId")
+    public void on(InventoryReservedEvent event) {
+        commandGateway.send(new ChargePaymentCommand(event.getOrderId(), event.getAmount()));
+    }
+
+    @SagaEventHandler(associationProperty = "orderId")
+    public void on(PaymentFailedEvent event) {
+        // Compensate: release inventory
+        commandGateway.send(new ReleaseInventoryCommand(event.getOrderId()));
+        commandGateway.send(new CancelOrderCommand(event.getOrderId()));
+    }
+
+    @EndSaga
+    @SagaEventHandler(associationProperty = "orderId")
+    public void on(PaymentChargedEvent event) {
+        commandGateway.send(new ConfirmOrderCommand(event.getOrderId()));
+    }
+}</code></div>
+
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h4 class="blue">Choreography</h4>
+      <ul>
+        <li><span lang="en">No single point of failure</span><span lang="pt" hidden>Sem ponto único de falha</span></li>
+        <li><span lang="en">Services are fully decoupled</span><span lang="pt" hidden>Serviços são totalmente desacoplados</span></li>
+        <li><span lang="en">Hard to track overall flow</span><span lang="pt" hidden>Difícil rastrear o fluxo geral</span></li>
+        <li><span lang="en">Cyclic dependencies risk</span><span lang="pt" hidden>Risco de dependências cíclicas</span></li>
+        <li><span lang="en">Best for simple, short sagas</span><span lang="pt" hidden>Melhor para sagas simples e curtas</span></li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <h4 class="green">Orchestration</h4>
+      <ul>
+        <li><span lang="en">Business logic in one place</span><span lang="pt" hidden>Lógica de negócio em um lugar</span></li>
+        <li><span lang="en">Easier to test and debug</span><span lang="pt" hidden>Mais fácil de testar e depurar</span></li>
+        <li><span lang="en">Central point of failure</span><span lang="pt" hidden>Ponto central de falha</span></li>
+        <li><span lang="en">Orchestrator can become a god object</span><span lang="pt" hidden>O orquestrador pode se tornar um god object</span></li>
+        <li><span lang="en">Best for complex, multi-step flows</span><span lang="pt" hidden>Melhor para fluxos complexos e de múltiplas etapas</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <h2><span lang="en">Service Discovery</span><span lang="pt" hidden>Service Discovery</span></h2>
+
+  <p><span lang="en">In a dynamic environment where service instances scale up and down, hardcoding IP addresses is not viable. Service discovery solves this in two ways:</span><span lang="pt" hidden>Em um ambiente dinâmico onde instâncias de serviços sobem e descem, hardcodar endereços IP não é viável. O service discovery resolve isso de duas formas:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Client-side discovery:</strong> The client queries a service registry (Consul, Eureka) and picks an instance. The client owns the load-balancing logic (Ribbon, Spring Cloud LoadBalancer).</span><span lang="pt" hidden><strong>Service discovery no lado do cliente:</strong> O cliente consulta um registro de serviços (Consul, Eureka) e escolhe uma instância. O cliente possui a lógica de balanceamento de carga (Ribbon, Spring Cloud LoadBalancer).</span></li>
+    <li><span lang="en"><strong>Server-side discovery:</strong> The client calls a load balancer (AWS ALB, Kubernetes Service). The load balancer queries the registry and routes. Simpler from the client's perspective — the default in Kubernetes-native architectures.</span><span lang="pt" hidden><strong>Service discovery no lado do servidor:</strong> O cliente chama um load balancer (AWS ALB, Kubernetes Service). O load balancer consulta o registro e roteia. Mais simples do ponto de vista do cliente — o padrão em arquiteturas Kubernetes-nativas.</span></li>
+  </ul>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+
+  <ul>
+    <li><span lang="en">Choose synchronous communication when the caller needs the result immediately; async when it just needs to notify.</span><span lang="pt" hidden>Escolha comunicação síncrona quando o chamador precisa do resultado imediatamente; assíncrona quando só precisa notificar.</span></li>
+    <li><span lang="en">Use REST for external APIs; use gRPC for internal service calls where performance and type safety matter.</span><span lang="pt" hidden>Use REST para APIs externas; use gRPC para chamadas internas entre serviços onde performance e segurança de tipos importam.</span></li>
+    <li><span lang="en">Put an API Gateway in front of all external traffic — never expose individual services directly.</span><span lang="pt" hidden>Coloque um API Gateway na frente de todo tráfego externo — nunca exponha serviços individuais diretamente.</span></li>
+    <li><span lang="en">Introduce a Service Mesh only when the operational complexity is justified by traffic management needs at scale.</span><span lang="pt" hidden>Introduza um Service Mesh apenas quando a complexidade operacional for justificada pelas necessidades de gerenciamento de tráfego em escala.</span></li>
+    <li><span lang="en">Use the Saga pattern for distributed transactions: choreography for simple flows, orchestration for complex ones.</span><span lang="pt" hidden>Use o padrão Saga para transações distribuídas: coreografia para fluxos simples, orquestração para os complexos.</span></li>
+    <li><span lang="en">Always design compensating transactions — in a distributed system, partial failures are a guarantee, not an edge case.</span><span lang="pt" hidden>Sempre projete transações compensatórias — em um sistema distribuído, falhas parciais são uma certeza, não um caso especial.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index2.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+
+<footer>
+  <p>&copy; 2025 Jefferson Valandro. Built with care.</p>
+</footer>
+
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>
