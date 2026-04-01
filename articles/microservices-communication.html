@@ -12,116 +12,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://kit.fontawesome.com/515935cc24.js" crossorigin="anonymous"></script>
-
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg:      #070d1a;
-      --surface: #0d1526;
-      --card:    #111e35;
-      --border:  #1e2d4a;
-      --accent:  #4f8ef7;
-      --accent2: #06d6a0;
-      --accent3: #f72585;
-      --text:    #e8edf5;
-      --muted:   #7a8aaa;
-      --tag-bg:  #162040;
-      --radius:  12px;
-    }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 16px; }
-
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 5vw; height: 64px;
-      background: rgba(7,13,26,0.9); backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo { font-weight: 700; font-size: 1.05rem; color: var(--text); text-decoration: none; letter-spacing: -0.5px; }
-    .nav-logo span { color: var(--accent); }
-    .nav-back { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.85rem; font-weight: 500; text-decoration: none; transition: color 0.2s; }
-    .nav-back:hover { color: var(--text); }
-
-    .hero-article {
-      padding: 120px 5vw 60px;
-      background: linear-gradient(180deg, rgba(79,142,247,0.08) 0%, transparent 60%);
-      border-bottom: 1px solid var(--border);
-    }
-    .hero-inner { max-width: 780px; margin: 0 auto; }
-    .article-category {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.25);
-      color: var(--accent); font-size: 0.72rem; font-weight: 700;
-      padding: 4px 12px; border-radius: 99px; letter-spacing: 1px;
-      text-transform: uppercase; margin-bottom: 1.2rem;
-    }
-    .hero-article h1 {
-      font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
-      letter-spacing: -1px; line-height: 1.15; margin-bottom: 1rem;
-    }
-    .article-meta { display: flex; align-items: center; gap: 1.5rem; color: var(--muted); font-size: 0.82rem; flex-wrap: wrap; }
-    .article-meta span { display: flex; align-items: center; gap: 5px; }
-    .article-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1.4rem; }
-    .tag { background: var(--tag-bg); border: 1px solid var(--border); color: var(--muted); font-size: 0.72rem; font-weight: 500; padding: 3px 10px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; }
-
-    .article-content { max-width:1280px; margin:0 auto; padding:20px 5vw 100px; }
-    .article-content h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.4px; margin: 2.5rem 0 1rem; color: var(--text); padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
-    .article-content h3 { font-size: 1.05rem; font-weight: 700; margin: 1.8rem 0 0.7rem; color: var(--accent2); }
-    .article-content p { color: var(--muted); margin-bottom: 1.2rem; font-size: 0.97rem; }
-    .article-content strong { color: var(--text); }
-    .article-content ul, .article-content ol { margin: 0.5rem 0 1.2rem 1.5rem; }
-    .article-content li { color: var(--muted); font-size: 0.97rem; margin-bottom: 0.4rem; }
-    .article-content li strong { color: var(--text); }
-
-    .callout { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0; padding: 1.2rem 1.4rem; margin: 1.5rem 0; }
-    .callout.green { border-left-color: var(--accent2); }
-    .callout.red { border-left-color: var(--accent3); }
-    .callout p { margin: 0; font-size: 0.92rem; }
-
-    .code-block { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.3rem 1.5rem; margin: 1.2rem 0; overflow-x: auto; }
-    .code-block code { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--accent2); line-height: 1.6; white-space: pre; }
-
-    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
-    .compare-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.3rem; }
-    .compare-card h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.8rem; }
-    .compare-card h4.blue { color: var(--accent); }
-    .compare-card h4.green { color: var(--accent2); }
-    .compare-card ul { margin-left: 1rem; }
-    .compare-card li { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.3rem; }
-
-    .diagram { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin: 1.5rem 0; }
-    .diagram-row { display: flex; align-items: center; justify-content: center; gap: 0.7rem; flex-wrap: wrap; margin: 0.4rem 0; }
-    .d-node { background: var(--tag-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.55rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 500; text-align: center; white-space: nowrap; }
-    .d-node.blue { border-color: rgba(79,142,247,0.4); color: var(--accent); }
-    .d-node.green { border-color: rgba(6,214,160,0.4); color: var(--accent2); }
-    .d-node.red { border-color: rgba(247,37,133,0.4); color: var(--accent3); }
-    .d-arrow { color: var(--muted); font-size: 1.1rem; }
-    .diagram-label { font-size: 0.72rem; color: var(--muted); margin-top: 0.8rem; text-align: center; font-style: italic; }
-
-    .article-footer { max-width: 780px; margin: 0 auto; padding: 0 5vw 60px; border-top: 1px solid var(--border); padding-top: 2rem; }
-    .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-size: 0.87rem; font-weight: 600; text-decoration: none; transition: gap 0.2s; }
-    .back-link:hover { gap: 12px; }
-    footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); }
-
-    @media (max-width: 600px) { .compare-grid { grid-template-columns: 1fr; } }
-
-    .lang-toggle {
-      display: flex; align-items: center; gap: 6px;
-      background: var(--tag-bg); border: 1px solid var(--border);
-      color: var(--muted); font-size: 0.78rem; font-weight: 600;
-      padding: 5px 12px; border-radius: 99px;
-      cursor: pointer; transition: all 0.2s;
-      font-family: 'Inter', sans-serif; letter-spacing: 0.3px;
-    }
-    .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
-  </style>
+
+  <link rel="stylesheet" href="../css/articles.css">
 </head>
 <body>
 
 <nav>
-  <a href="../index2.html" class="nav-logo">Jefferson<span>.</span></a>
-  <a href="../index2.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
   <button class="lang-toggle" id="langToggle" onclick="toggleLang()" title="Switch language">
     <span id="langFlag">🇧🇷</span>
     <span id="langLabel">PT</span>
@@ -394,7 +292,7 @@ public class PlaceOrderSaga {
 </article>
 
 <div class="article-footer">
-  <a href="../index2.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+  <a href="../index.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
 </div>
 
 <footer>

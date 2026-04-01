@@ -1290,4 +1290,22 @@ input[type="text"] {
   opacity: 0;
 }
 
+/* ── Project tag (shared across project cards) ──────── */
+.project-tag {
+  background: var(--tag-bg);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 0.8rem;
+}
+
 /*# sourceMappingURL=style.css.map */
