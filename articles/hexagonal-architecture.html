@@ -6,10 +6,17 @@
   <title>Hexagonal Architecture in Practice — Jefferson Valandro</title>
   <meta name="description" content="A practical guide to Hexagonal Architecture (Ports & Adapters): structuring Java Spring Boot applications for testability, flexibility, and long-term maintainability.">
   <meta name="author" content="Jefferson Valandro">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/articles/hexagonal-architecture.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/articles/hexagonal-architecture.html">
+  <meta property="og:title" content="Hexagonal Architecture in Practice — Jefferson Valandro">
+  <meta property="og:description" content="A practical guide to Hexagonal Architecture (Ports & Adapters): structuring Spring Boot apps for testability, flexibility, and long-term maintainability.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/cover_bg_3.png">
+  <meta name="theme-color" content="#070d1a">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://kit.fontawesome.com/515935cc24.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="../css/articles.css">
 </head>
 <body>
@@ -17,8 +24,8 @@
 <nav>
   <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
   <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
-  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" title="Switch language">
-    <span id="langFlag">🇧🇷</span>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" aria-label="Switch to Portuguese">
+    <span id="langFlag" aria-hidden="true">🇧🇷</span>
     <span id="langLabel">PT</span>
   </button>
 </nav>

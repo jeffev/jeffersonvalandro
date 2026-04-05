@@ -11,11 +11,50 @@
   <meta property="og:title" content="Jefferson Valandro — Software Engineer">
   <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/">
   <meta property="og:description" content="Senior Software Engineer & Tech Lead with 10+ years building scalable systems, APIs, and cloud-native architectures.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/user-3.jpg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Jefferson Valandro — Software Engineer">
+  <meta name="twitter:description" content="Senior Software Engineer & Tech Lead with 10+ years building scalable systems, APIs, and cloud-native architectures.">
+  <meta name="twitter:image" content="https://jeffev.github.io/jeffersonvalandro/images/user-3.jpg">
+  <meta name="theme-color" content="#070d1a">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://kit.fontawesome.com/515935cc24.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://jeffev.github.io/jeffersonvalandro/#person",
+        "name": "Jefferson Valandro",
+        "url": "https://jeffev.github.io/jeffersonvalandro/",
+        "image": "https://jeffev.github.io/jeffersonvalandro/images/user-3.jpg",
+        "jobTitle": "Senior Software Engineer & Tech Lead",
+        "description": "Senior Software Engineer with 10+ years of experience in backend development, system architecture, microservices, and MLOps.",
+        "email": "jeffev123@gmail.com",
+        "address": { "@type": "PostalAddress", "addressCountry": "BR" },
+        "sameAs": [
+          "https://www.linkedin.com/in/jefferson-valandro",
+          "https://github.com/jeffev",
+          "https://www.kaggle.com/jeffersonvalandro"
+        ],
+        "knowsAbout": ["Java", "Spring Boot", "Microservices", "MLOps", "React", "Docker", "PostgreSQL", "System Architecture"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://jeffev.github.io/jeffersonvalandro/#website",
+        "url": "https://jeffev.github.io/jeffersonvalandro/",
+        "name": "Jefferson Valandro — Software Engineer",
+        "author": { "@id": "https://jeffev.github.io/jeffersonvalandro/#person" }
+      }
+    ]
+  }
+  </script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -92,12 +131,12 @@
     .hero-inner { position: relative; max-width: 720px; }
 
     .hero-avatar {
-      width: 110px; height: 110px;
+      width: 150px; height: 150px;
       border-radius: 50%;
       object-fit: cover;
       border: 3px solid var(--accent);
       margin-bottom: 1.5rem;
-      box-shadow: 0 0 0 6px rgba(79,142,247,0.15);
+      box-shadow: 0 0 0 8px rgba(79,142,247,0.15);
     }
 
     .hero-badge {
@@ -520,14 +559,76 @@
     /* ── SCROLL ANIMATIONS ───────────────────────────── */
     .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
     .fade-in.visible { opacity: 1; transform: none; }
+
+    /* ── SKIP LINK ───────────────────────────────────── */
+    .skip-link {
+      position: absolute; top: -999px; left: 1rem;
+      background: var(--accent); color: #fff;
+      padding: 8px 16px; border-radius: 0 0 8px 8px;
+      font-weight: 700; font-size: 0.85rem;
+      text-decoration: none; z-index: 999;
+      transition: top 0.2s;
+    }
+    .skip-link:focus { top: 0; }
+
+    /* ── FOCUS STYLES ────────────────────────────────── */
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* ── HAMBURGER ───────────────────────────────────── */
+    .hamburger {
+      display: none;
+      background: none; border: 1px solid var(--border);
+      color: var(--muted); width: 38px; height: 38px;
+      border-radius: 8px; cursor: pointer;
+      align-items: center; justify-content: center;
+      font-size: 1rem; transition: all 0.2s;
+    }
+    .hamburger:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── MOBILE NAV DRAWER ───────────────────────────── */
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      .nav-links {
+        display: flex !important;
+        position: fixed; top: 64px; left: 0; right: 0;
+        flex-direction: column; gap: 0;
+        background: rgba(7,13,26,0.97);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 0;
+        transform: translateY(-110%);
+        transition: transform 0.3s ease;
+        z-index: 99;
+      }
+      .nav-links.open { transform: translateY(0); }
+      .nav-links a {
+        padding: 0.8rem 5vw;
+        font-size: 1rem;
+        display: block;
+      }
+    }
+
+    /* ── ARTICLE THUMB (lazy placeholder) ────────────── */
+    .article-thumb[data-bg], .project-thumb[data-bg] {
+      background-image: none !important;
+    }
+    .article-thumb[data-bg].loaded, .project-thumb[data-bg].loaded {
+      background-image: var(--thumb-url) !important;
+    }
   </style>
 </head>
 <body>
 
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
 <!-- NAV -->
-<nav>
-  <div class="nav-logo">JV<span>.</span></div>
-  <ul class="nav-links">
+<nav role="navigation" aria-label="Main navigation">
+  <a href="#hero" class="nav-logo" aria-label="Jefferson Valandro — Home">JV<span>.</span></a>
+  <ul class="nav-links" id="navLinks" role="list">
     <li><a href="#about" data-i18n="nav.about">About</a></li>
     <li><a href="#skills" data-i18n="nav.skills">Skills</a></li>
     <li><a href="#experience" data-i18n="nav.experience">Experience</a></li>
@@ -535,11 +636,18 @@
     <li><a href="#articles" data-i18n="nav.articles">Articles</a></li>
     <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
   </ul>
-  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" title="Switch language">
-    <span id="langFlag">🇧🇷</span>
-    <span id="langLabel">PT</span>
-  </button>
+  <div style="display:flex;align-items:center;gap:0.7rem;">
+    <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+      <i class="fas fa-bars" aria-hidden="true"></i>
+    </button>
+    <button class="lang-toggle" id="langToggle" aria-label="Switch to Portuguese" onclick="toggleLang()">
+      <span id="langFlag" aria-hidden="true">🇧🇷</span>
+      <span id="langLabel">PT</span>
+    </button>
+  </div>
 </nav>
+
+<main id="main-content">
 
 <!-- HERO -->
 <section id="hero">
@@ -565,10 +673,10 @@
       <a href="#experience" class="btn btn-primary"><i class="fas fa-briefcase"></i> <span data-i18n="hero.btnExp">View Experience</span></a>
       <a href="#contact" class="btn btn-ghost"><i class="fas fa-envelope"></i> <span data-i18n="hero.btnContact">Get in touch</span></a>
     </div>
-    <div class="hero-socials">
-      <a href="https://www.linkedin.com/in/jefferson-valandro" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-      <a href="https://github.com/jeffev" title="GitHub"><i class="fab fa-github"></i></a>
-      <a href="https://www.kaggle.com/jeffersonvalandro" title="Kaggle"><i class="fab fa-kaggle"></i></a>
+    <div class="hero-socials" role="list" aria-label="Social profiles">
+      <a href="https://www.linkedin.com/in/jefferson-valandro" aria-label="LinkedIn profile" rel="noopener noreferrer" target="_blank" role="listitem"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+      <a href="https://github.com/jeffev" aria-label="GitHub profile" rel="noopener noreferrer" target="_blank" role="listitem"><i class="fab fa-github" aria-hidden="true"></i></a>
+      <a href="https://www.kaggle.com/jeffersonvalandro" aria-label="Kaggle profile" rel="noopener noreferrer" target="_blank" role="listitem"><i class="fab fa-kaggle" aria-hidden="true"></i></a>
     </div>
   </div>
 </section>
@@ -1014,7 +1122,7 @@
     <div class="projects-grid fade-in">
 
       <div class="project-card">
-        <div class="project-thumb" style="background-image: url(images/analise_acoes.png);">
+        <div class="project-thumb" data-bg="images/analise_acoes.png" role="img" aria-label="InvestLink project preview">
           <div class="project-thumb-overlay"></div>
         </div>
         <div class="project-body">
@@ -1026,7 +1134,7 @@
       </div>
 
       <div class="project-card">
-        <div class="project-thumb" style="background-image: url(images/ghost-doc.png); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: var(--tag-bg);">
+        <div class="project-thumb" data-bg="images/ghost-doc.png" style="background-size: contain; background-repeat: no-repeat; background-position: center; background-color: var(--tag-bg);" role="img" aria-label="Ghost Doc project preview">
           <div class="project-thumb-overlay"></div>
         </div>
         <div class="project-body">
@@ -1038,7 +1146,7 @@
       </div>
 
       <div class="project-card">
-        <div class="project-thumb" style="background-image: url(images/machine-learning.png);">
+        <div class="project-thumb" data-bg="images/machine-learning.png" role="img" aria-label="Vizion AI-Powered BI project preview">
           <div class="project-thumb-overlay"></div>
         </div>
         <div class="project-body">
@@ -1050,7 +1158,7 @@
       </div>
 
       <div class="project-card">
-        <div class="project-thumb" style="background-image: url(images/cover_bg_7.png); background-color: #0d1526;">
+        <div class="project-thumb" data-bg="images/cover_bg_7.png" style="background-color: #0d1526;" role="img" aria-label="Cloud Native Task Platform project preview">
           <div class="project-thumb-overlay"></div>
         </div>
         <div class="project-body">
@@ -1069,7 +1177,7 @@
       </div>
 
       <div class="project-card">
-        <div class="project-thumb" style="background-image: url(images/Analisando_Inflacao_Brasil.png);">
+        <div class="project-thumb" data-bg="images/Analisando_Inflacao_Brasil.png" role="img" aria-label="Food Prices vs IPCA project preview">
           <div class="project-thumb-overlay"></div>
         </div>
         <div class="project-body">
@@ -1081,7 +1189,7 @@
       </div>
 
       <div class="project-card">
-        <div class="project-thumb" style="background-image: url(images/Credit_Card_Fraud_Detection.png);">
+        <div class="project-thumb" data-bg="images/Credit_Card_Fraud_Detection.png" role="img" aria-label="Credit Card Fraud Detection project preview">
           <div class="project-thumb-overlay"></div>
         </div>
         <div class="project-body">
@@ -1093,7 +1201,7 @@
       </div>
 
       <div class="project-card">
-        <div class="project-thumb" style="background-image: url(images/House_price_prediction.png);">
+        <div class="project-thumb" data-bg="images/House_price_prediction.png" role="img" aria-label="House Price Prediction project preview">
           <div class="project-thumb-overlay"></div>
         </div>
         <div class="project-body">
@@ -1105,7 +1213,7 @@
       </div>
 
       <div class="project-card">
-        <div class="project-thumb" style="background-image: url(images/Comparacao_Investimentos.png);">
+        <div class="project-thumb" data-bg="images/Comparacao_Investimentos.png" role="img" aria-label="Long-Term Investment Comparison project preview">
           <div class="project-thumb-overlay"></div>
         </div>
         <div class="project-body">
@@ -1131,9 +1239,9 @@
     <div class="articles-grid fade-in">
 
       <div class="article-card">
-        <div class="article-thumb" style="background-image: url('images/cover_bg_5.png'); background-color: #0d1526;"></div>
+        <div class="article-thumb" data-bg="images/cover_bg_5.png" style="background-color: #0d1526;" role="img" aria-label="Designing Scalable System Architectures article cover"></div>
         <div class="article-body">
-          <div class="article-date">March 2025 &nbsp;·&nbsp; 12 min read</div>
+          <div class="article-date"><time datetime="2025-03">March 2025</time> &nbsp;·&nbsp; 12 min read</div>
           <div class="article-title"><a href="articles/scalable-architectures.html">Designing Scalable System Architectures</a></div>
           <p class="article-desc" data-i18n="articles.scalable.desc">Microservices, DDD Bounded Contexts, CQRS, event-driven communication, and resilience patterns for systems that grow without breaking.</p>
           <a href="articles/scalable-architectures.html" class="article-link" data-i18n="articles.readLink">Read article <i class="fas fa-arrow-right"></i></a>
@@ -1141,7 +1249,7 @@
       </div>
 
       <div class="article-card">
-        <div class="article-thumb" style="background-image: url('images/machine-learning.png'); background-size: cover; background-color: #0d1526;"></div>
+        <div class="article-thumb" data-bg="images/machine-learning.png" style="background-color: #0d1526;" role="img" aria-label="MLOps: Deploying ML Models in Production article cover"></div>
         <div class="article-body">
           <div class="article-date">February 2025 &nbsp;·&nbsp; 14 min read</div>
           <div class="article-title"><a href="articles/mlops-deployment.html">MLOps: Deploying ML Models in Production</a></div>
@@ -1151,7 +1259,7 @@
       </div>
 
       <div class="article-card">
-        <div class="article-thumb" style="background-image: url('images/cover_bg_7.png'); background-color: #0d1526;"></div>
+        <div class="article-thumb" data-bg="images/cover_bg_7.png" style="background-color: #0d1526;" role="img" aria-label="Event-Driven Architecture with Apache Kafka article cover"></div>
         <div class="article-body">
           <div class="article-date">January 2025 &nbsp;·&nbsp; 13 min read</div>
           <div class="article-title"><a href="articles/event-driven-architecture.html">Event-Driven Architecture with Apache Kafka</a></div>
@@ -1161,7 +1269,7 @@
       </div>
 
       <div class="article-card">
-        <div class="article-thumb" style="background-image: url('images/avaliacao_modelso.png'); background-size: cover; background-color: #0d1526;"></div>
+        <div class="article-thumb" data-bg="images/avaliacao_modelso.png" style="background-color: #0d1526;" role="img" aria-label="Model Monitoring and Drift Detection article cover"></div>
         <div class="article-body">
           <div class="article-date">March 2025 &nbsp;·&nbsp; 11 min read</div>
           <div class="article-title"><a href="articles/model-monitoring.html">Model Monitoring &amp; Drift Detection in Production</a></div>
@@ -1171,7 +1279,7 @@
       </div>
 
       <div class="article-card">
-        <div class="article-thumb" style="background-image: url('images/cover_bg_4.jpg'); background-color: #0d1526;"></div>
+        <div class="article-thumb" data-bg="images/cover_bg_4.jpg" style="background-color: #0d1526;" role="img" aria-label="Microservices Communication Patterns article cover"></div>
         <div class="article-body">
           <div class="article-date">March 2025 &nbsp;·&nbsp; 13 min read</div>
           <div class="article-title"><a href="articles/microservices-communication.html">Microservices Communication Patterns</a></div>
@@ -1181,7 +1289,7 @@
       </div>
 
       <div class="article-card">
-        <div class="article-thumb" style="background-image: url('images/tipo_dados.png'); background-size: cover; background-color: #0d1526;"></div>
+        <div class="article-thumb" data-bg="images/tipo_dados.png" style="background-color: #0d1526;" role="img" aria-label="Building Reliable Data Pipelines for ML article cover"></div>
         <div class="article-body">
           <div class="article-date">February 2025 &nbsp;·&nbsp; 12 min read</div>
           <div class="article-title"><a href="articles/data-pipelines-ml.html">Building Reliable Data Pipelines for ML</a></div>
@@ -1191,7 +1299,7 @@
       </div>
 
       <div class="article-card">
-        <div class="article-thumb" style="background-image: url('images/cover_bg_3.png'); background-color: #0d1526;"></div>
+        <div class="article-thumb" data-bg="images/cover_bg_3.png" style="background-color: #0d1526;" role="img" aria-label="Hexagonal Architecture in Practice article cover"></div>
         <div class="article-body">
           <div class="article-date">March 2025 &nbsp;·&nbsp; 11 min read</div>
           <div class="article-title"><a href="articles/hexagonal-architecture.html">Hexagonal Architecture in Practice</a></div>
@@ -1201,7 +1309,7 @@
       </div>
 
       <div class="article-card">
-        <div class="article-thumb" style="background-image: url('images/cover_bg_1.jpg'); background-color: #0d1526;"></div>
+        <div class="article-thumb" data-bg="images/cover_bg_1.jpg" style="background-color: #0d1526;" role="img" aria-label="API Design Best Practices article cover"></div>
         <div class="article-body">
           <div class="article-date">February 2025 &nbsp;·&nbsp; 12 min read</div>
           <div class="article-title"><a href="articles/api-design-best-practices.html">API Design Best Practices</a></div>
@@ -1211,9 +1319,9 @@
       </div>
 
       <div class="article-card">
-        <div class="article-thumb" style="background-image: url('images/cover_bg_5.png'); background-color: #0d1526;"></div>
+        <div class="article-thumb" data-bg="images/cover_bg_5.png" style="background-color: #0d1526;" role="img" aria-label="CI/CD Pipelines for Backend Systems article cover"></div>
         <div class="article-body">
-          <div class="article-date">January 2025 &nbsp;·&nbsp; 12 min read</div>
+          <div class="article-date"><time datetime="2025-01">January 2025</time> &nbsp;·&nbsp; 12 min read</div>
           <div class="article-title"><a href="articles/cicd-pipelines-backend.html">CI/CD Pipelines for Backend Systems</a></div>
           <p class="article-desc" data-i18n="articles.cicd.desc">Pipeline stages, quality gates with SonarQube, Testcontainers, multi-stage Docker builds, GitOps with ArgoCD, and deployment strategies for production.</p>
           <a href="articles/cicd-pipelines-backend.html" class="article-link" data-i18n="articles.readLink">Read article <i class="fas fa-arrow-right"></i></a>
@@ -1292,6 +1400,8 @@
     </div>
   </div>
 </section>
+
+</main>
 
 <!-- FOOTER -->
 <footer>
@@ -1530,6 +1640,8 @@
     document.getElementById('langFlag').textContent = lang === 'en' ? '🇧🇷' : '🇺🇸';
     document.getElementById('langLabel').textContent = lang === 'en' ? 'PT' : 'EN';
     document.documentElement.lang = lang === 'en' ? 'en' : 'pt-BR';
+    const btn = document.getElementById('langToggle');
+    btn.setAttribute('aria-label', lang === 'en' ? 'Switch to Portuguese' : 'Switch to English');
   }
 
   function toggleLang() {
@@ -1539,22 +1651,57 @@
   // Apply on load
   setLanguage(currentLang);
 
+  // ── HAMBURGER MENU ─────────────────────────────────
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  hamburger.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    hamburger.setAttribute('aria-expanded', isOpen);
+    hamburger.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+    hamburger.querySelector('i').className = isOpen ? 'fas fa-times' : 'fas fa-bars';
+  });
+  // Close nav when a link is clicked
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      hamburger.setAttribute('aria-label', 'Open menu');
+      hamburger.querySelector('i').className = 'fas fa-bars';
+    });
+  });
+
   // ── SCROLL ANIMATIONS ──────────────────────────────
-  const observer = new IntersectionObserver((entries) => {
+  const fadeObserver = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.08 });
-  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
 
-  // Active nav link highlight on scroll
+  // ── LAZY LOAD BACKGROUND IMAGES ────────────────────
+  const thumbObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const el = e.target;
+        const bg = el.getAttribute('data-bg');
+        if (bg) {
+          el.style.backgroundImage = `url(${bg})`;
+          el.removeAttribute('data-bg');
+          thumbObserver.unobserve(el);
+        }
+      }
+    });
+  }, { rootMargin: '200px' });
+  document.querySelectorAll('[data-bg]').forEach(el => thumbObserver.observe(el));
+
+  // ── ACTIVE NAV LINK ────────────────────────────────
   const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-links a');
+  const navAnchors = document.querySelectorAll('.nav-links a');
   window.addEventListener('scroll', () => {
     let current = '';
     sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.id; });
-    navLinks.forEach(a => {
+    navAnchors.forEach(a => {
       a.style.color = a.getAttribute('href') === '#' + current ? 'var(--text)' : '';
     });
-  });
+  }, { passive: true });
 </script>
 
 </body>

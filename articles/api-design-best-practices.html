@@ -6,10 +6,17 @@
   <title>API Design Best Practices — Jefferson Valandro</title>
   <meta name="description" content="Practical guide to designing robust REST APIs: versioning, error handling, pagination, security, rate limiting, and documentation standards for production systems.">
   <meta name="author" content="Jefferson Valandro">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/articles/api-design-best-practices.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/articles/api-design-best-practices.html">
+  <meta property="og:title" content="API Design Best Practices — Jefferson Valandro">
+  <meta property="og:description" content="Practical guide to designing robust REST APIs: versioning, error handling, pagination, rate limiting, and documentation standards for production systems.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/cover_bg_1.jpg">
+  <meta name="theme-color" content="#070d1a">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://kit.fontawesome.com/515935cc24.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="../css/articles.css">
   <style>:root { --ar:247; --ag:37; --ab:133; --article-accent:var(--accent3); }</style>
 </head>
@@ -18,8 +25,8 @@
 <nav>
   <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
   <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
-  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" title="Switch language">
-    <span id="langFlag">🇧🇷</span>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" aria-label="Switch to Portuguese">
+    <span id="langFlag" aria-hidden="true">🇧🇷</span>
     <span id="langLabel">PT</span>
   </button>
 </nav>

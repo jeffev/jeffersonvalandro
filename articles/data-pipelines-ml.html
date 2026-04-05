@@ -7,12 +7,19 @@
   <title>Building Reliable Data Pipelines for ML — Jefferson Valandro</title>
   <meta name="description" content="Design principles and engineering practices for building data pipelines that are reliable, testable, and production-ready for machine learning workloads.">
   <meta name="author" content="Jefferson Valandro">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/articles/data-pipelines-ml.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/articles/data-pipelines-ml.html">
+  <meta property="og:title" content="Building Reliable Data Pipelines for ML — Jefferson Valandro">
+  <meta property="og:description" content="Design principles and engineering practices for building data pipelines that are reliable, testable, and production-ready for ML workloads.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/tipo_dados.png">
+  <meta name="theme-color" content="#070d1a">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://kit.fontawesome.com/515935cc24.js" crossorigin="anonymous"></script>
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
   <link rel="stylesheet" href="../css/articles.css">
   <style>:root { --ar:6; --ag:214; --ab:160; --article-accent:var(--accent2); }</style>
 </head>
@@ -21,8 +28,8 @@
 <nav>
   <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
   <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
-  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" title="Switch language">
-    <span id="langFlag">🇧🇷</span>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" aria-label="Switch to Portuguese">
+    <span id="langFlag" aria-hidden="true">🇧🇷</span>
     <span id="langLabel">PT</span>
   </button>
 </nav>
