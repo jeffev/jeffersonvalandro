@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI for Developers: Power, Pitfalls, and How to Use It Right — Jefferson Valandro</title>
+  <meta name="description" content="An honest assessment of AI in software development: what it gets right, what hallucinations really cost, how agents and skills work, and the mental model that prevents over-reliance.">
+  <meta name="author" content="Jefferson Valandro">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/articles/ai-for-developers.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/articles/ai-for-developers.html">
+  <meta property="og:title" content="AI for Developers: Power, Pitfalls, and How to Use It Right — Jefferson Valandro">
+  <meta property="og:description" content="What AI genuinely accelerates, where hallucinations silently destroy trust, how agents work, and the discipline required to use AI without losing your engineering judgment.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/cover_bg_7.png">
+  <meta name="theme-color" content="#070d1a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../css/articles.css">
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" aria-label="Switch to Portuguese">
+    <span id="langFlag" aria-hidden="true">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-robot"></i> <span lang="en">AI &amp; Developer Productivity</span><span lang="pt" hidden>IA &amp; Produtividade</span></div>
+    <h1><span lang="en">AI for Developers: Power, Pitfalls, and How to Use It Right</span><span lang="pt" hidden>IA para Devs: Potencial, Armadilhas e Como Usar do Jeito Certo</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> April 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">14 min read</span><span lang="pt" hidden>14 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">AI</span>
+      <span class="tag">LLM</span>
+      <span class="tag">agents</span>
+      <span class="tag">hallucinations</span>
+      <span class="tag">productivity</span>
+      <span class="tag">developer tools</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">The productivity shift is real. Developers using AI assistants consistently close tasks faster, explore unfamiliar codebases more quickly, and write boilerplate that used to consume hours in minutes. The tools work. But the conversation around them has two blind spots that I think are genuinely dangerous: what happens when the AI is confidently wrong, and what happens to the engineer who stops thinking for themselves.</span><span lang="pt" hidden>A mudança de produtividade é real. Desenvolvedores que usam assistentes de IA consistentemente fecham tarefas mais rápido, exploram codebases desconhecidas com mais agilidade e escrevem boilerplate que antes consumia horas em minutos. As ferramentas funcionam. Mas a conversa ao redor delas tem dois pontos cegos que considero genuinamente perigosos: o que acontece quando a IA está errada com confiança, e o que acontece com o engenheiro que para de pensar por si mesmo.</span></p>
+
+  <p><span lang="en">This article is not about whether to use AI. That ship has sailed. It's about the mental model and habits that separate engineers who get compounding gains from AI from those who accumulate invisible technical debt — and occasionally ship bugs that a junior dev with Stack Overflow would have caught.</span><span lang="pt" hidden>Este artigo não é sobre usar ou não IA. Esse barco já partiu. É sobre o modelo mental e os hábitos que separam engenheiros que obtêm ganhos compostos com IA daqueles que acumulam dívida técnica invisível — e ocasionalmente entregam bugs que um dev júnior com Stack Overflow teria pegado.</span></p>
+
+  <h2><span lang="en">What AI Genuinely Gets Right</span><span lang="pt" hidden>O Que a IA Genuinamente Acerta</span></h2>
+
+  <p><span lang="en">Before the criticism, let's be precise about where the gains are real and significant:</span><span lang="pt" hidden>Antes das críticas, vamos ser precisos sobre onde os ganhos são reais e significativos:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Boilerplate elimination.</strong> CRUD endpoints, DTO mappings, migration scripts, Dockerfile templates, test fixtures — the category of work where the pattern is known and the output is verifiable. AI is genuinely excellent here. The code is usually correct and reviewing it takes a fraction of the time writing it would have.</span><span lang="pt" hidden><strong>Eliminação de boilerplate.</strong> Endpoints CRUD, mapeamentos de DTO, scripts de migration, templates de Dockerfile, fixtures de teste — a categoria de trabalho onde o padrão é conhecido e o output é verificável. A IA é genuinamente excelente aqui. O código costuma estar correto e revisá-lo leva uma fração do tempo que escrevê-lo levaria.</span></li>
+    <li><span lang="en"><strong>Codebase navigation.</strong> "Where is the rate limiting logic applied?" "What's the relationship between these two models?" Asking an AI that has read your entire codebase is faster than grep for anything requiring reasoning about relationships — not just text matches.</span><span lang="pt" hidden><strong>Navegação em codebases.</strong> "Onde é aplicada a lógica de rate limiting?" "Qual é a relação entre esses dois modelos?" Perguntar a uma IA que leu todo o seu codebase é mais rápido que grep para qualquer coisa que exige raciocínio sobre relacionamentos — não apenas correspondências de texto.</span></li>
+    <li><span lang="en"><strong>First-draft acceleration.</strong> Producing a working starting point for a feature, a migration plan, or a system design sketch is dramatically faster. The AI removes the blank-page problem. The engineer's job becomes editing and validating rather than generating from scratch.</span><span lang="pt" hidden><strong>Aceleração do primeiro rascunho.</strong> Produzir um ponto de partida funcional para uma feature, um plano de migration ou um esboço de design de sistema é dramaticamente mais rápido. A IA remove o problema da página em branco. O trabalho do engenheiro vira editar e validar em vez de gerar do zero.</span></li>
+    <li><span lang="en"><strong>Unfamiliar territory.</strong> Working in a language, framework, or domain you've never touched before is faster with AI than with documentation alone. You can ask "why", not just "how".</span><span lang="pt" hidden><strong>Território desconhecido.</strong> Trabalhar em uma linguagem, framework ou domínio que você nunca tocou é mais rápido com IA do que apenas com documentação. Você pode perguntar "por quê", não só "como".</span></li>
+  </ul>
+
+  <h2><span lang="en">Hallucinations: The Silent Trust Killer</span><span lang="pt" hidden>Alucinações: O Destruidor Silencioso de Confiança</span></h2>
+
+  <p><span lang="en">A hallucination is when an AI produces output that is fluent, confident, and wrong. Not "maybe wrong" — stated with the same tone as correct information. This is the single most dangerous property of current LLMs for professional use, and it's dangerous precisely because the signal for "I'm making this up" looks identical to the signal for "I know this for certain".</span><span lang="pt" hidden>Uma alucinação é quando a IA produz output fluente, confiante e errado. Não "talvez errado" — afirmado com o mesmo tom que informações corretas. Essa é a propriedade mais perigosa dos LLMs atuais para uso profissional, e é perigosa precisamente porque o sinal de "estou inventando isso" parece idêntico ao sinal de "sei isso com certeza".</span></p>
+
+  <div class="callout">
+    <p><span lang="en"><strong>What hallucinations look like in practice:</strong> a non-existent library method with a plausible name; a security configuration that looks correct but has a subtle flaw; a database query that returns the right shape but has an off-by-one edge case; a dependency version that was yanked two releases ago; a code pattern sourced from a deprecated API that was replaced with a breaking change.</span><span lang="pt" hidden><strong>Como alucinações aparecem na prática:</strong> um método de biblioteca inexistente com nome plausível; uma configuração de segurança que parece correta mas tem uma falha sutil; uma query de banco que retorna o shape certo mas tem um caso de borda off-by-one; uma versão de dependência que foi removida duas releases atrás; um padrão de código retirado de uma API depreciada que foi substituída com breaking change.</span></p>
+  </div>
+
+  <p><span lang="en">The distribution of hallucinations is not uniform. They cluster in specific conditions:</span><span lang="pt" hidden>A distribuição de alucinações não é uniforme. Elas se concentram em condições específicas:</span></p>
+
+  <div class="code-block" lang="en"><code>High hallucination risk:
+  - Specific library versions and their exact APIs
+  - Recent changes (anything after the model's training cutoff)
+  - Niche or less-documented frameworks
+  - Security configurations with many valid-looking variations
+  - Cross-library interactions (e.g. "how does X work with Y")
+  - Numerical calculations in prose explanations
+
+Lower hallucination risk:
+  - Well-established algorithms and data structures
+  - Standard library usage in popular languages
+  - General architectural patterns and trade-offs
+  - Code transformation (refactoring, translating between languages)
+  - Explaining code you provide as context</code></div>
+  <div class="code-block" lang="pt" hidden><code>Alto risco de alucinação:
+  - Versões específicas de bibliotecas e suas APIs exatas
+  - Mudanças recentes (qualquer coisa após o corte de treino do modelo)
+  - Frameworks de nicho ou pouco documentados
+  - Configurações de segurança com muitas variações de aparência válida
+  - Interações entre bibliotecas (ex: "como X funciona com Y")
+  - Cálculos numéricos em explicações em prosa
+
+Menor risco de alucinação:
+  - Algoritmos e estruturas de dados bem estabelecidos
+  - Uso de biblioteca padrão em linguagens populares
+  - Padrões arquiteturais gerais e trade-offs
+  - Transformação de código (refatoração, tradução entre linguagens)
+  - Explicação de código que você fornece como contexto</code></div>
+
+  <p><span lang="en">The operational implication: your verification effort should be proportional to risk zone, not uniform. Code the AI generates from a well-known pattern deserves a quick read. A security configuration or dependency version deserves a deliberate check against the primary source.</span><span lang="pt" hidden>A implicação operacional: seu esforço de verificação deve ser proporcional à zona de risco, não uniforme. Código que a IA gera a partir de um padrão bem conhecido merece uma leitura rápida. Uma configuração de segurança ou versão de dependência merece uma verificação deliberada na fonte primária.</span></p>
+
+  <h2><span lang="en">Agents: What They Actually Are</span><span lang="pt" hidden>Agentes: O Que São de Verdade</span></h2>
+
+  <p><span lang="en">An AI agent is an LLM that can take actions — read files, run commands, call APIs, write code, open browsers — and loop: observe the result of an action, reason about the next step, act again. The loop continues until the task is done or the agent gets stuck.</span><span lang="pt" hidden>Um agente de IA é um LLM que pode tomar ações — ler arquivos, rodar comandos, chamar APIs, escrever código, abrir browsers — e fazer loops: observar o resultado de uma ação, raciocinar sobre o próximo passo, agir novamente. O loop continua até a tarefa ser concluída ou o agente travar.</span></p>
+
+  <div class="diagram">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+      <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;justify-content:center;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1.25rem;font-size:0.82rem;font-weight:600;color:var(--accent);">Task / Goal</div>
+        <div style="color:var(--muted);">→</div>
+        <div style="background:var(--card);border:2px solid var(--accent);border-radius:8px;padding:0.75rem 1.25rem;font-size:0.82rem;font-weight:700;color:var(--text);">LLM (Reason)</div>
+        <div style="color:var(--muted);">→</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1.25rem;font-size:0.82rem;font-weight:600;color:var(--accent2);">Tools / Actions</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;margin-top:0.4rem;">
+        <div style="color:var(--muted);font-size:0.8rem;text-align:center;">↑ loop until done ↓</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;justify-content:center;margin-top:0.3rem;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:0.6rem 1rem;font-size:0.75rem;color:var(--muted);">read_file</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:0.6rem 1rem;font-size:0.75rem;color:var(--muted);">run_command</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:0.6rem 1rem;font-size:0.75rem;color:var(--muted);">write_file</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:0.6rem 1rem;font-size:0.75rem;color:var(--muted);">call_api</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:0.6rem 1rem;font-size:0.75rem;color:var(--muted);">browse_web</div>
+      </div>
+    </div>
+    <div class="diagram-label"><span lang="en">An agent loops between reasoning and action until the goal is reached — each action's result feeds the next reasoning step</span><span lang="pt" hidden>Um agente faz loop entre raciocínio e ação até o objetivo ser atingido — o resultado de cada ação alimenta o próximo passo de raciocínio</span></div>
+  </div>
+
+  <p><span lang="en">This is qualitatively different from a chat assistant. A chat assistant responds to your prompt. An agent acts autonomously over multiple steps to complete a task — and it can compound errors. If the LLM's reasoning at step 3 is wrong, steps 4 through 10 might execute confidently in the wrong direction.</span><span lang="pt" hidden>Isso é qualitativamente diferente de um assistente de chat. Um assistente de chat responde ao seu prompt. Um agente age autonomamente em múltiplos passos para completar uma tarefa — e pode compor erros. Se o raciocínio do LLM no passo 3 estiver errado, os passos 4 a 10 podem executar com confiança na direção errada.</span></p>
+
+  <h3><span lang="en">Skills: Reusable Behavioral Packages</span><span lang="pt" hidden>Skills: Pacotes de Comportamento Reutilizáveis</span></h3>
+
+  <p><span lang="en">Skills (also called tools, functions, or capabilities depending on the platform) are the specific actions an agent can take. They bridge the gap between the LLM's reasoning and the real world. A skill is essentially a function the agent can call: it has a name, a description of what it does, a defined set of parameters, and it returns a result the agent can act on.</span><span lang="pt" hidden>Skills (também chamadas de tools, functions ou capabilities dependendo da plataforma) são as ações específicas que um agente pode tomar. Elas fazem a ponte entre o raciocínio do LLM e o mundo real. Uma skill é essencialmente uma função que o agente pode chamar: tem nome, descrição do que faz, conjunto definido de parâmetros e retorna um resultado sobre o qual o agente pode agir.</span></p>
+
+  <div class="code-block"><code>// Example: a skill definition for an agent
+{
+  "name": "run_tests",
+  "description": "Runs the test suite and returns pass/fail counts and failing test names",
+  "parameters": {
+    "path": {
+      "type": "string",
+      "description": "Directory or specific test file to run"
+    },
+    "filter": {
+      "type": "string",
+      "description": "Optional test name filter"
+    }
+  }
+}
+
+// The agent can then reason:
+// "I just wrote a new function. I should run the tests to verify it works.
+//  Let me call run_tests({ path: 'src/payment' }) and check the output."</code></div>
+
+  <p><span lang="en">Skills make agents powerful — and risky. A skill that can write to a database, push a git commit, send an email, or call a payment API is a skill that can do real damage if the agent's reasoning is wrong. The capability gap between an agent with read-only skills and one with write skills is enormous.</span><span lang="pt" hidden>Skills tornam os agentes poderosos — e arriscados. Uma skill que pode escrever em um banco de dados, fazer push de um commit git, enviar um e-mail ou chamar uma API de pagamento é uma skill que pode causar dano real se o raciocínio do agente estiver errado. A diferença de capacidade entre um agente com skills somente de leitura e um com skills de escrita é enorme.</span></p>
+
+  <h2><span lang="en">The Vibe Coding Trap</span><span lang="pt" hidden>A Armadilha do Vibe Coding</span></h2>
+
+  <p><span lang="en">"Vibe coding" — generating code by vibes, accepting what the AI produces without deep comprehension, iterating by prompting rather than understanding — has a seductive short-term appeal. Tasks close fast. The developer feels productive. The feedback loop is immediate.</span><span lang="pt" hidden>"Vibe coding" — gerar código por intuição, aceitar o que a IA produz sem compreensão profunda, iterar por prompts em vez de entendimento — tem um apelo de curto prazo sedutor. As tarefas fecham rápido. O desenvolvedor se sente produtivo. O loop de feedback é imediato.</span></p>
+
+  <p><span lang="en">The debt accumulates in invisible ways:</span><span lang="pt" hidden>A dívida se acumula de formas invisíveis:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>You cannot review what you don't understand.</strong> If you didn't understand the code well enough to write it, you don't understand it well enough to catch the bug the AI introduced. Code review becomes a formality rather than a filter.</span><span lang="pt" hidden><strong>Você não consegue revisar o que não entende.</strong> Se você não entendeu o código bem o suficiente para escrevê-lo, não o entende bem o suficiente para pegar o bug que a IA introduziu. A revisão de código vira formalidade em vez de filtro.</span></li>
+    <li><span lang="en"><strong>The codebase becomes unownable.</strong> If nobody on the team can confidently explain why a section works the way it does, adding to it is archaeology, and changing it is russian roulette. Teams that vibe-code their way through features end up with codebases that only AI can navigate — and that's a dependency, not a feature.</span><span lang="pt" hidden><strong>O codebase fica sem dono.</strong> Se ninguém no time consegue explicar com confiança por que uma seção funciona do jeito que funciona, adicionar nela é arqueologia e mudar é roleta-russa. Times que fazem vibe coding nas features acabam com codebases que só a IA consegue navegar — e isso é dependência, não feature.</span></li>
+    <li><span lang="en"><strong>Debugging regresses.</strong> Debugging requires a mental model of the system. Vibe coding produces code without mental models. When production breaks at 2am, "ask the AI" is not a debugging strategy — it's a prayer.</span><span lang="pt" hidden><strong>O debugging regride.</strong> Debugar exige um modelo mental do sistema. Vibe coding produz código sem modelos mentais. Quando a produção quebra às 2h da manhã, "perguntar à IA" não é uma estratégia de debugging — é uma prece.</span></li>
+  </ul>
+
+  <div class="callout">
+    <p><span lang="en"><strong>The test:</strong> If you can't explain, in plain language, why the AI-generated code works — what invariant it maintains, what edge cases it handles, what it would break if you changed line 7 — you don't own that code. You're renting it from the model, and the lease can be recalled at any incident.</span><span lang="pt" hidden><strong>O teste:</strong> Se você não consegue explicar, em linguagem simples, por que o código gerado pela IA funciona — que invariante mantém, quais casos de borda trata, o que quebraria se você mudasse a linha 7 — você não é dono desse código. Você está alugando do modelo, e o contrato pode ser rescindido em qualquer incidente.</span></p>
+  </div>
+
+  <h2><span lang="en">The Skill Atrophy Risk</span><span lang="pt" hidden>O Risco de Atrofia de Habilidades</span></h2>
+
+  <p><span lang="en">There's a subtler, longer-term cost that doesn't show up in sprint velocity: the erosion of the ability to work without AI assistance. Skills that aren't practiced degrade. If you've spent two years never debugging without AI, never designing a system without AI generating the first proposal, never reading documentation because the AI summarized it — you've been trading long-term capability for short-term throughput.</span><span lang="pt" hidden>Há um custo mais sutil e de longo prazo que não aparece na velocity do sprint: a erosão da capacidade de trabalhar sem assistência de IA. Habilidades que não são praticadas degradam. Se você passou dois anos nunca debugando sem IA, nunca desenhando um sistema sem a IA gerar a primeira proposta, nunca lendo documentação porque a IA resumiu — você trocou capacidade de longo prazo por throughput de curto prazo.</span></p>
+
+  <p><span lang="en">This matters because AI tools are not always available, not always accurate, and not always appropriate. The engineer who can function without them is resilient. The engineer who can't is fragile — and in high-stakes moments (production incidents, security audits, architecture reviews), fragility is expensive.</span><span lang="pt" hidden>Isso importa porque ferramentas de IA não estão sempre disponíveis, nem sempre são precisas e nem sempre são apropriadas. O engenheiro que consegue funcionar sem elas é resiliente. O que não consegue é frágil — e em momentos de alto risco (incidentes de produção, auditorias de segurança, revisões de arquitetura), fragilidade é cara.</span></p>
+
+  <h2><span lang="en">How to Use AI Correctly: A Practical Mental Model</span><span lang="pt" hidden>Como Usar IA do Jeito Certo: Um Modelo Mental Prático</span></h2>
+
+  <p><span lang="en">The mental model that works: <strong>AI is a fast, knowledgeable, sometimes overconfident colleague who needs review.</strong> You wouldn't merge a PR from a senior engineer without reading it. You wouldn't deploy a config a colleague sent on Slack without checking it. The same standard applies to AI output — and the review burden scales with the risk of the change.</span><span lang="pt" hidden>O modelo mental que funciona: <strong>IA é um colega rápido, bem informado e às vezes excessivamente confiante que precisa de revisão.</strong> Você não faria merge de um PR de um engenheiro sênior sem ler. Não faria deploy de uma config que um colega mandou no Slack sem conferir. O mesmo padrão se aplica ao output da IA — e a carga de revisão escala com o risco da mudança.</span></p>
+
+  <h3><span lang="en">Rule 1 — Match the verification effort to the risk</span><span lang="pt" hidden>Regra 1 — Calibre o esforço de verificação ao risco</span></h3>
+
+  <div class="code-block" lang="en"><code>Low risk → quick read:
+  - Boilerplate, repetitive code, test fixtures
+  - Refactoring with clear intent
+  - Code transformation (e.g. Python → TypeScript)
+
+Medium risk → careful read + run the tests:
+  - Business logic implementation
+  - Database queries
+  - API integration code
+
+High risk → verify against primary source:
+  - Security configurations (auth, CORS, encryption)
+  - Dependency versions and their changelog
+  - Infrastructure as code (IAC) that touches production
+  - Any code handling money, PII, or access control</code></div>
+  <div class="code-block" lang="pt" hidden><code>Baixo risco → leitura rápida:
+  - Boilerplate, código repetitivo, fixtures de teste
+  - Refatoração com intenção clara
+  - Transformação de código (ex: Python → TypeScript)
+
+Risco médio → leitura cuidadosa + rodar os testes:
+  - Implementação de lógica de negócio
+  - Queries de banco de dados
+  - Código de integração com API
+
+Alto risco → verificar na fonte primária:
+  - Configurações de segurança (auth, CORS, criptografia)
+  - Versões de dependências e seus changelogs
+  - Infrastructure as code (IAC) que toca produção
+  - Qualquer código que lida com dinheiro, PII ou controle de acesso</code></div>
+
+  <h3><span lang="en">Rule 2 — Use AI to accelerate understanding, not to bypass it</span><span lang="pt" hidden>Regra 2 — Use IA para acelerar o entendimento, não para contorná-lo</span></h3>
+
+  <p><span lang="en">The most effective pattern: use AI to get to a working first draft quickly, then make sure you understand it before shipping. "Explain this code to me" and "What could go wrong with this approach?" are power prompts that force the AI to expose its reasoning — and expose gaps and risks you can then address.</span><span lang="pt" hidden>O padrão mais eficaz: use IA para chegar a um primeiro rascunho funcional rapidamente, depois garanta que você o entende antes de entregar. "Explique esse código para mim" e "O que poderia dar errado com essa abordagem?" são prompts poderosos que forçam a IA a expor seu raciocínio — e expõem lacunas e riscos que você pode endereçar.</span></p>
+
+  <h3><span lang="en">Rule 3 — Give agents the minimum necessary permissions</span><span lang="pt" hidden>Regra 3 — Dê aos agentes as permissões mínimas necessárias</span></h3>
+
+  <p><span lang="en">The principle of least privilege applies to AI agents exactly as it does to service accounts. An agent that needs to read your codebase to answer questions doesn't need write access. An agent that can run tests doesn't need to push to main. Design agent permission sets deliberately:</span><span lang="pt" hidden>O princípio do privilégio mínimo se aplica a agentes de IA exatamente como se aplica a service accounts. Um agente que precisa ler o codebase para responder perguntas não precisa de acesso de escrita. Um agente que pode rodar testes não precisa de push para main. Projete os conjuntos de permissões de agentes deliberadamente:</span></p>
+
+  <div class="code-block"><code>// Tier 1 — Read-only agents (safest for exploration tasks)
+permissions: [read_files, search_code, read_docs]
+
+// Tier 2 — Write-in-sandbox agents (safe for development loops)
+permissions: [read_files, write_files, run_tests, run_linter]
+constraints: [no_git_push, no_external_api_calls, no_db_writes]
+
+// Tier 3 — Full-action agents (require explicit confirmation per step)
+permissions: [all]
+constraints: [require_human_approval_for: [git_push, db_write, api_call]]</code></div>
+
+  <h3><span lang="en">Rule 4 — Deliberate practice outside of AI assistance</span><span lang="pt" hidden>Regra 4 — Prática deliberada fora da IA</span></h3>
+
+  <p><span lang="en">Treat your core engineering skills like a muscle that needs deliberate exercise. Periodically solve problems without AI — not because AI is bad, but because your ability to recognize when AI is wrong depends on your ability to reason correctly without it. The engineers who get the most out of AI are the ones who remain capable without it.</span><span lang="pt" hidden>Trate suas habilidades essenciais de engenharia como um músculo que precisa de exercício deliberado. Periodicamente resolva problemas sem IA — não porque IA é ruim, mas porque sua capacidade de reconhecer quando a IA está errada depende da sua capacidade de raciocinar corretamente sem ela. Os engenheiros que mais tiram proveito da IA são os que permanecem capazes sem ela.</span></p>
+
+  <h2><span lang="en">Prompting Patterns That Actually Work</span><span lang="pt" hidden>Padrões de Prompt Que Realmente Funcionam</span></h2>
+
+  <p><span lang="en">The quality of AI output is highly sensitive to how you frame the request. These patterns consistently produce better results:</span><span lang="pt" hidden>A qualidade do output da IA é altamente sensível a como você formula a solicitação. Esses padrões consistentemente produzem resultados melhores:</span></p>
+
+  <div class="code-block" lang="en"><code>// ❌ Too vague — leaves critical decisions implicit
+"Write a function to process payments"
+
+// ✓ Constrained — explicit requirements, stack, and edge cases
+"Write a TypeScript function that processes a payment using the Stripe SDK.
+ It should accept a customerId and amountInCents, return { success, transactionId }
+ on success and throw a PaymentFailedError with the reason on failure.
+ Use stripe@14. Handle network timeouts and idempotency."
+
+// ✓ Review mode — expose AI reasoning for critique
+"Here is my implementation of the payment processor [paste code].
+ What edge cases am I missing? What could fail in production?"
+
+// ✓ Risk surfacing — force the AI to think adversarially
+"This is my auth middleware [paste code].
+ Assume a malicious user is trying to bypass it. What attack vectors exist?"
+
+// ✓ Verification prompt — catch hallucinations in library usage
+"You suggested using axios.get() with an { onUploadProgress } option.
+ Does that option actually exist on GET requests? Show me the docs reference."</code></div>
+  <div class="code-block" lang="pt" hidden><code>// ❌ Vago demais — deixa decisões críticas implícitas
+"Escreva uma função para processar pagamentos"
+
+// ✓ Com restrições — requisitos, stack e casos de borda explícitos
+"Escreva uma função TypeScript que processa um pagamento usando o Stripe SDK.
+ Deve aceitar customerId e amountInCents, retornar { success, transactionId }
+ em caso de sucesso e lançar um PaymentFailedError com o motivo em caso de falha.
+ Use stripe@14. Trate timeouts de rede e idempotência."
+
+// ✓ Modo revisão — exponha o raciocínio da IA para crítica
+"Aqui está minha implementação do processador de pagamento [cole o código].
+ Quais casos de borda estou deixando passar? O que pode falhar em produção?"
+
+// ✓ Levantamento de riscos — force a IA a pensar adversarialmente
+"Este é meu middleware de auth [cole o código].
+ Assuma que um usuário malicioso está tentando contorná-lo. Quais vetores de ataque existem?"
+
+// ✓ Prompt de verificação — pegue alucinações no uso de bibliotecas
+"Você sugeriu usar axios.get() com a opção { onUploadProgress }.
+ Essa opção realmente existe em requisições GET? Me mostre a referência na documentação."</code></div>
+
+  <h2><span lang="en">A Realistic Picture of AI in a Production Team</span><span lang="pt" hidden>Um Quadro Realista de IA em um Time de Produção</span></h2>
+
+  <p><span lang="en">The teams that use AI most effectively aren't the ones that automate the most — they're the ones that apply AI selectively and maintain strong engineering judgment about when to trust the output. Concretely:</span><span lang="pt" hidden>Os times que usam IA de forma mais eficaz não são os que mais automatizam — são os que aplicam IA seletivamente e mantêm julgamento de engenharia forte sobre quando confiar no output. Concretamente:</span></p>
+
+  <ul>
+    <li><span lang="en">They use AI to write the first 80% of a feature fast, then slow down to review and own the remaining 20% — which is where the complexity lives.</span><span lang="pt" hidden>Usam IA para escrever os primeiros 80% de uma feature rapidamente, depois desaceleram para revisar e ser dono dos 20% restantes — onde a complexidade mora.</span></li>
+    <li><span lang="en">They have a rule: if you can't explain it in PR review, it doesn't merge. AI-generated code is held to the same standard as human-generated code.</span><span lang="pt" hidden>Têm uma regra: se você não consegue explicar na revisão do PR, não faz merge. Código gerado por IA é tratado com o mesmo padrão que código gerado por humanos.</span></li>
+    <li><span lang="en">They treat agents as automation with guardrails, not as autonomous actors. Every agent action that touches shared state has a human confirmation step until trust is established through repeated correct behavior.</span><span lang="pt" hidden>Tratam agentes como automação com guardrails, não como atores autônomos. Toda ação de agente que toca estado compartilhado tem uma etapa de confirmação humana até que a confiança seja estabelecida por comportamento correto repetido.</span></li>
+    <li><span lang="en">They track AI-introduced bugs in postmortems — not to blame the tool, but to build intuition for which categories of AI output require the most verification in their specific stack.</span><span lang="pt" hidden>Rastreiam bugs introduzidos por IA em postmortems — não para culpar a ferramenta, mas para construir intuição sobre quais categorias de output de IA exigem mais verificação em sua stack específica.</span></li>
+  </ul>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>The compounding gain:</strong> Engineers who use AI to handle the mechanical parts of their work — boilerplate, lookup, first drafts — free up cognitive bandwidth for the parts that actually require judgment: architecture, edge cases, security, maintainability. That's the right trade. Using AI to bypass the judgment parts is the wrong trade, and the debt it creates is real.</span><span lang="pt" hidden><strong>O ganho composto:</strong> Engenheiros que usam IA para lidar com as partes mecânicas do trabalho — boilerplate, consulta, primeiros rascunhos — liberam largura de banda cognitiva para as partes que realmente exigem julgamento: arquitetura, casos de borda, segurança, manutenibilidade. Essa é a troca certa. Usar IA para contornar as partes de julgamento é a troca errada, e a dívida que cria é real.</span></p>
+  </div>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+  <ul>
+    <li><span lang="en">AI is genuinely productive for boilerplate, codebase navigation, first drafts, and unfamiliar territory — use it there without hesitation.</span><span lang="pt" hidden>IA é genuinamente produtiva para boilerplate, navegação de codebase, primeiros rascunhos e território desconhecido — use sem hesitação nesses casos.</span></li>
+    <li><span lang="en">Hallucinations cluster around specific API versions, recent changes, niche frameworks, and security configurations — calibrate your verification effort accordingly.</span><span lang="pt" hidden>Alucinações se concentram em versões específicas de API, mudanças recentes, frameworks de nicho e configurações de segurança — calibre seu esforço de verificação de acordo.</span></li>
+    <li><span lang="en">Agents amplify both capability and error. Give them minimum necessary permissions and require human approval for actions that touch shared state.</span><span lang="pt" hidden>Agentes amplificam tanto a capacidade quanto o erro. Dê a eles as permissões mínimas necessárias e exija aprovação humana para ações que tocam estado compartilhado.</span></li>
+    <li><span lang="en">Vibe coding — accepting AI output without understanding it — produces code you can't debug, review, or maintain. If you can't explain it, you don't own it.</span><span lang="pt" hidden>Vibe coding — aceitar output de IA sem entendê-lo — produz código que você não consegue debugar, revisar nem manter. Se não consegue explicar, não é seu.</span></li>
+    <li><span lang="en">Skills degrade without practice. Use AI to go faster, not to avoid thinking — your ability to catch AI errors depends on your ability to reason without it.</span><span lang="pt" hidden>Habilidades degradam sem prática. Use IA para ir mais rápido, não para evitar pensar — sua capacidade de pegar erros de IA depende da sua capacidade de raciocinar sem ela.</span></li>
+    <li><span lang="en">The best mental model: AI is a fast, knowledgeable, overconfident colleague. Review its work, hold it to the same standard as human code, and you'll capture the gain without the debt.</span><span lang="pt" hidden>O melhor modelo mental: IA é um colega rápido, bem informado e excessivamente confiante. Revise seu trabalho, exija o mesmo padrão que código humano e você capturará o ganho sem a dívida.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+<footer><p>&copy; 2025 Jefferson Valandro. Built with care.</p></footer>
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>

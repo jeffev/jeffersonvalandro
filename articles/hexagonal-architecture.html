@@ -60,25 +60,97 @@
 
   <p><span lang="en">The application is organized in three concentric layers:</span><span lang="pt" hidden>A aplicação é organizada em três camadas concêntricas:</span></p>
 
-  <div class="diagram">
-    <div class="hex-ring">
-      <div class="hex-adapter">REST Controller<br><small>Driving Adapter</small></div>
-      <div class="hex-adapter">Kafka Consumer<br><small>Driving Adapter</small></div>
-      <div class="hex-adapter">CLI<br><small>Driving Adapter</small></div>
+  <div class="diagram" style="padding:1.75rem 1.25rem; overflow-x:auto;">
+    <div style="min-width:560px;">
+
+      <!-- Zone labels -->
+      <div style="display:grid; grid-template-columns:1fr 60px 1fr 60px 1fr; gap:0.5rem; margin-bottom:0.6rem;">
+        <div style="text-align:center; font-size:0.65rem; font-weight:700; color:#f72585; text-transform:uppercase; letter-spacing:0.07em;">
+          <span lang="en">Driving Side</span><span lang="pt" hidden>Lado Condutor</span>
+        </div>
+        <div></div>
+        <div style="text-align:center; font-size:0.65rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.07em;">
+          <span lang="en">Application Core</span><span lang="pt" hidden>Núcleo da Aplicação</span>
+        </div>
+        <div></div>
+        <div style="text-align:center; font-size:0.65rem; font-weight:700; color:#f72585; text-transform:uppercase; letter-spacing:0.07em;">
+          <span lang="en">Driven Side</span><span lang="pt" hidden>Lado Conduzido</span>
+        </div>
+      </div>
+
+      <!-- Main flow row -->
+      <div style="display:grid; grid-template-columns:1fr 60px 1fr 60px 1fr; gap:0.5rem; align-items:center;">
+
+        <!-- Driving adapters -->
+        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+          <div style="background:rgba(247,37,133,0.08); border:1px solid rgba(247,37,133,0.3); border-radius:8px; padding:0.6rem 0.8rem; text-align:center; font-size:0.78rem; font-weight:600; color:#f87db0;">
+            REST Controller<br><span style="font-size:0.67rem; font-weight:400; color:var(--muted);">HTTP request</span>
+          </div>
+          <div style="background:rgba(247,37,133,0.08); border:1px solid rgba(247,37,133,0.3); border-radius:8px; padding:0.6rem 0.8rem; text-align:center; font-size:0.78rem; font-weight:600; color:#f87db0;">
+            Kafka Consumer<br><span style="font-size:0.67rem; font-weight:400; color:var(--muted);">event trigger</span>
+          </div>
+          <div style="background:rgba(247,37,133,0.08); border:1px solid rgba(247,37,133,0.3); border-radius:8px; padding:0.6rem 0.8rem; text-align:center; font-size:0.78rem; font-weight:600; color:#f87db0;">
+            CLI<br><span style="font-size:0.67rem; font-weight:400; color:var(--muted);">command</span>
+          </div>
+        </div>
+
+        <!-- Arrow + Input Port -->
+        <div style="display:flex; flex-direction:column; align-items:center; gap:0.4rem;">
+          <div style="font-size:1.3rem; color:var(--accent2); line-height:1;">→</div>
+          <div style="background:rgba(6,214,160,0.1); border:1px dashed rgba(6,214,160,0.5); border-radius:6px; padding:0.45rem 0.4rem; text-align:center; font-size:0.67rem; font-weight:700; color:var(--accent2); line-height:1.3;">
+            Input<br>Port
+          </div>
+          <div style="font-size:0.58rem; color:var(--muted); text-align:center; line-height:1.3;">«interface»</div>
+        </div>
+
+        <!-- Domain Core -->
+        <div style="background:rgba(79,142,247,0.12); border:2px solid rgba(79,142,247,0.45); border-radius:12px; padding:1.25rem 0.75rem; text-align:center;">
+          <div style="font-size:0.95rem; font-weight:700; color:var(--accent); line-height:1.3;">
+            <span lang="en">Domain<br>Core</span><span lang="pt" hidden>Núcleo<br>de Domínio</span>
+          </div>
+          <div style="font-size:0.65rem; color:var(--muted); margin-top:0.4rem; line-height:1.4;">
+            <span lang="en">Entities · Use Cases<br>Domain Services</span><span lang="pt" hidden>Entidades · Casos de Uso<br>Serviços de Domínio</span>
+          </div>
+          <div style="margin-top:0.6rem; font-size:0.6rem; background:rgba(79,142,247,0.15); border-radius:4px; padding:0.25rem 0.5rem; color:var(--accent); display:inline-block;">
+            <span lang="en">no framework imports</span><span lang="pt" hidden>sem imports de framework</span>
+          </div>
+        </div>
+
+        <!-- Output Port + Arrow -->
+        <div style="display:flex; flex-direction:column; align-items:center; gap:0.4rem;">
+          <div style="font-size:1.3rem; color:var(--accent2); line-height:1;">→</div>
+          <div style="background:rgba(6,214,160,0.1); border:1px dashed rgba(6,214,160,0.5); border-radius:6px; padding:0.45rem 0.4rem; text-align:center; font-size:0.67rem; font-weight:700; color:var(--accent2); line-height:1.3;">
+            Output<br>Port
+          </div>
+          <div style="font-size:0.58rem; color:var(--muted); text-align:center; line-height:1.3;">«interface»</div>
+        </div>
+
+        <!-- Driven adapters -->
+        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+          <div style="background:rgba(247,37,133,0.08); border:1px solid rgba(247,37,133,0.3); border-radius:8px; padding:0.6rem 0.8rem; text-align:center; font-size:0.78rem; font-weight:600; color:#f87db0;">
+            JPA Repository<br><span style="font-size:0.67rem; font-weight:400; color:var(--muted);">database</span>
+          </div>
+          <div style="background:rgba(247,37,133,0.08); border:1px solid rgba(247,37,133,0.3); border-radius:8px; padding:0.6rem 0.8rem; text-align:center; font-size:0.78rem; font-weight:600; color:#f87db0;">
+            Kafka Producer<br><span style="font-size:0.67rem; font-weight:400; color:var(--muted);">messaging</span>
+          </div>
+          <div style="background:rgba(247,37,133,0.08); border:1px solid rgba(247,37,133,0.3); border-radius:8px; padding:0.6rem 0.8rem; text-align:center; font-size:0.78rem; font-weight:600; color:#f87db0;">
+            REST Client<br><span style="font-size:0.67rem; font-weight:400; color:var(--muted);">external API</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Dependency direction indicator -->
+      <div style="margin-top:1.1rem; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+        <div style="flex:1; height:1px; background:linear-gradient(to left, transparent, rgba(79,142,247,0.4));"></div>
+        <div style="font-size:0.65rem; color:var(--accent); font-weight:600; white-space:nowrap; padding:0.3rem 0.7rem; border:1px solid rgba(79,142,247,0.3); border-radius:20px;">
+          ← <span lang="en">dependency flows inward only</span><span lang="pt" hidden>dependência flui somente para dentro</span> →
+        </div>
+        <div style="flex:1; height:1px; background:linear-gradient(to right, transparent, rgba(79,142,247,0.4));"></div>
+      </div>
+
     </div>
-    <div style="color:var(--muted);font-size:0.8rem;">↓ calls input ports ↓</div>
-    <div class="hex-ring">
-      <div class="hex-port">Input Port<br><small>UseCase interface</small></div>
-      <div class="hex-core">Domain<br>Application Core</div>
-      <div class="hex-port">Output Port<br><small>Repository interface</small></div>
-    </div>
-    <div style="color:var(--muted);font-size:0.8rem;">↓ calls output ports ↓</div>
-    <div class="hex-ring">
-      <div class="hex-adapter">JPA Repository<br><small>Driven Adapter</small></div>
-      <div class="hex-adapter">Kafka Producer<br><small>Driven Adapter</small></div>
-      <div class="hex-adapter">REST Client<br><small>Driven Adapter</small></div>
-    </div>
-    <div class="diagram-label"><span lang="en">The core defines interfaces (ports); adapters implement them — dependency always points inward</span><span lang="pt" hidden>O nucleo define interfaces (portas); adaptadores as implementam — a dependencia sempre aponta para dentro</span></div>
+    <div class="diagram-label" style="margin-top:0.75rem;"><span lang="en">The core defines interfaces (ports); adapters implement them — dependency always points inward</span><span lang="pt" hidden>O núcleo define interfaces (portas); adaptadores as implementam — a dependência sempre aponta para dentro</span></div>
   </div>
 
   <ul>

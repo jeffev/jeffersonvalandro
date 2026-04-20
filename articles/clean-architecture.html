@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clean Architecture in Practice — Jefferson Valandro</title>
+  <meta name="description" content="A practical guide to Clean Architecture: structuring TypeScript applications with the Dependency Rule, use cases, entities, and interface adapters for long-term maintainability.">
+  <meta name="author" content="Jefferson Valandro">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/articles/clean-architecture.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/articles/clean-architecture.html">
+  <meta property="og:title" content="Clean Architecture in Practice — Jefferson Valandro">
+  <meta property="og:description" content="A practical guide to Clean Architecture: Dependency Rule, use cases, entities, and interface adapters for building maintainable TypeScript applications.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/cover_bg_5.png">
+  <meta name="theme-color" content="#070d1a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../css/articles.css">
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" aria-label="Switch to Portuguese">
+    <span id="langFlag" aria-hidden="true">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-layer-group"></i> <span lang="en">Software Architecture</span><span lang="pt" hidden>Arquitetura de Software</span></div>
+    <h1><span lang="en">Clean Architecture in Practice</span><span lang="pt" hidden>Clean Architecture na Prática</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> April 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">12 min read</span><span lang="pt" hidden>12 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">clean architecture</span>
+      <span class="tag">dependency rule</span>
+      <span class="tag">use cases</span>
+      <span class="tag">TypeScript</span>
+      <span class="tag">Node.js</span>
+      <span class="tag">testability</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">Robert C. Martin's Clean Architecture is one of those ideas that looks almost too simple on paper — four concentric circles, one rule about dependencies — yet consistently proves to be one of the most effective structural decisions you can make on a long-lived codebase. The payoff isn't elegance; it's the ability to defer infrastructure decisions, swap frameworks without rewriting business logic, and test the entire application core without spinning up a database or HTTP server.</span><span lang="pt" hidden>A Clean Architecture de Robert C. Martin é uma dessas ideias que parecem simples demais no papel — quatro círculos concêntricos, uma regra sobre dependências — mas consistentemente se provam como uma das decisões estruturais mais eficazes para codebases de longa duração. O retorno não é elegância; é a capacidade de adiar decisões de infraestrutura, trocar frameworks sem reescrever lógica de negócio e testar todo o core da aplicação sem subir banco de dados ou servidor HTTP.</span></p>
+
+  <p><span lang="en">In this article, I'll build a concrete TypeScript example — a payment processing module — to show exactly how each layer works, where the boundaries sit, and what discipline is required to keep the dependency rule from eroding over time.</span><span lang="pt" hidden>Neste artigo, vou construir um exemplo TypeScript concreto — um módulo de processamento de pagamentos — para mostrar exatamente como cada camada funciona, onde ficam os limites e qual disciplina é necessária para evitar que a regra de dependência se deteriore com o tempo.</span></p>
+
+  <h2><span lang="en">The One Rule That Matters</span><span lang="pt" hidden>A Única Regra que Importa</span></h2>
+
+  <p><span lang="en">Clean Architecture is built on a single constraint called the <strong>Dependency Rule</strong>: source code dependencies can only point inward. Nothing in an inner circle can know anything about something in an outer circle.</span><span lang="pt" hidden>A Clean Architecture é construída sobre uma única restrição chamada <strong>Regra de Dependência</strong>: as dependências de código-fonte só podem apontar para dentro. Nada em um círculo interno pode saber nada sobre algo em um círculo externo.</span></p>
+
+  <div class="diagram">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0.6rem;">
+      <div style="background:var(--tag-bg);border:2px solid #f72585;border-radius:50%;width:320px;height:320px;display:flex;align-items:center;justify-content:center;position:relative;">
+        <div style="position:absolute;top:0.6rem;left:50%;transform:translateX(-50%);font-size:0.72rem;color:#f72585;font-weight:600;white-space:nowrap;">Frameworks &amp; Drivers</div>
+        <div style="background:var(--surface);border:2px solid #4f8ef7;border-radius:50%;width:230px;height:230px;display:flex;align-items:center;justify-content:center;position:relative;">
+          <div style="position:absolute;top:0.6rem;left:50%;transform:translateX(-50%);font-size:0.72rem;color:#4f8ef7;font-weight:600;white-space:nowrap;">Interface Adapters</div>
+          <div style="background:var(--bg);border:2px solid #06d6a0;border-radius:50%;width:148px;height:148px;display:flex;align-items:center;justify-content:center;position:relative;">
+            <div style="position:absolute;top:0.5rem;left:50%;transform:translateX(-50%);font-size:0.68rem;color:#06d6a0;font-weight:600;white-space:nowrap;">Use Cases</div>
+            <div style="background:var(--card);border:2px solid #ffd166;border-radius:50%;width:72px;height:72px;display:flex;align-items:center;justify-content:center;text-align:center;">
+              <span style="font-size:0.62rem;color:#ffd166;font-weight:700;line-height:1.2;">Entities</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="color:var(--muted);font-size:0.75rem;margin-top:0.25rem;">← dependencies point inward only →</div>
+    </div>
+    <div class="diagram-label"><span lang="en">The four layers of Clean Architecture — each circle can only depend on circles inside it</span><span lang="pt" hidden>As quatro camadas da Clean Architecture — cada círculo só pode depender dos círculos internos</span></div>
+  </div>
+
+  <ul>
+    <li><span lang="en"><strong>Entities:</strong> Enterprise-wide business rules. Pure objects encoding invariants that would exist even if there were no software — a <code>Payment</code> with a positive amount, a <code>User</code> that must have a valid email. No framework imports, no I/O.</span><span lang="pt" hidden><strong>Entities:</strong> Regras de negócio da empresa. Objetos puros que codificam invariantes que existiriam mesmo sem software — um <code>Payment</code> com valor positivo, um <code>User</code> que deve ter e-mail válido. Sem imports de framework, sem I/O.</span></li>
+    <li><span lang="en"><strong>Use Cases:</strong> Application-specific business rules. Each use case is a single, named operation (<code>ProcessPayment</code>, <code>RefundOrder</code>). Orchestrates entities and calls output boundaries (interfaces) to reach the outside world.</span><span lang="pt" hidden><strong>Use Cases:</strong> Regras de negócio específicas da aplicação. Cada caso de uso é uma operação única e nomeada (<code>ProcessPayment</code>, <code>RefundOrder</code>). Orquestra entidades e chama boundaries de saída (interfaces) para alcançar o mundo externo.</span></li>
+    <li><span lang="en"><strong>Interface Adapters:</strong> Controllers, presenters, gateways. Convert data between the format convenient for use cases and entities, and the format convenient for the web or database. This is where Express routes, Prisma repositories, and request/response DTOs live.</span><span lang="pt" hidden><strong>Interface Adapters:</strong> Controllers, presenters, gateways. Convertem dados entre o formato conveniente para casos de uso/entidades e o formato conveniente para a web ou banco de dados. É aqui que ficam as rotas Express, repositórios Prisma e DTOs de request/response.</span></li>
+    <li><span lang="en"><strong>Frameworks &amp; Drivers:</strong> The outermost ring. Express, PostgreSQL, Redis, Stripe SDK. Glue code that plugs into the adapters. Should contain as little custom logic as possible.</span><span lang="pt" hidden><strong>Frameworks &amp; Drivers:</strong> O círculo mais externo. Express, PostgreSQL, Redis, Stripe SDK. Código de cola que conecta os adaptadores. Deve conter o mínimo de lógica customizada possível.</span></li>
+  </ul>
+
+  <h2><span lang="en">Project Structure</span><span lang="pt" hidden>Estrutura de Projeto</span></h2>
+
+  <div class="code-block"><code>src/
+├── domain/
+│   └── entities/
+│       ├── Payment.ts          # Enterprise business rules
+│       ├── Money.ts            # Value object
+│       └── PaymentStatus.ts
+│
+├── application/
+│   ├── use-cases/
+│   │   ├── ProcessPayment.ts   # Use case implementation
+│   │   └── RefundPayment.ts
+│   └── ports/
+│       ├── PaymentRepository.ts  # Output boundary (interface)
+│       └── PaymentGateway.ts     # Output boundary (interface)
+│
+├── adapters/
+│   ├── controllers/
+│   │   └── PaymentController.ts  # HTTP → use case
+│   ├── presenters/
+│   │   └── PaymentPresenter.ts   # Use case result → HTTP response
+│   └── gateways/
+│       ├── PrismaPaymentRepository.ts  # Implements PaymentRepository
+│       └── StripePaymentGateway.ts     # Implements PaymentGateway
+│
+└── infrastructure/
+    ├── http/
+    │   └── server.ts           # Express setup
+    └── database/
+        └── prisma.ts           # Prisma client setup</code></div>
+
+  <h2><span lang="en">Entities: Pure Business Rules</span><span lang="pt" hidden>Entities: Regras de Negócio Puras</span></h2>
+
+  <p><span lang="en">Entities encode invariants — rules that are always true regardless of the application context. A <code>Payment</code> must always have a positive amount. This check belongs here, not in the use case or the controller.</span><span lang="pt" hidden>Entities codificam invariantes — regras que são sempre verdadeiras independentemente do contexto da aplicação. Um <code>Payment</code> deve sempre ter um valor positivo. Essa verificação pertence aqui, não no caso de uso nem no controller.</span></p>
+
+  <div class="code-block"><code>// domain/entities/Money.ts
+export class Money {
+  private constructor(
+    readonly amount: number,
+    readonly currency: string
+  ) {}
+
+  static of(amount: number, currency: string): Money {
+    if (amount <= 0) throw new Error("Amount must be positive");
+    if (!currency.match(/^[A-Z]{3}$/)) throw new Error("Invalid currency code");
+    return new Money(amount, currency);
+  }
+
+  add(other: Money): Money {
+    if (this.currency !== other.currency) throw new Error("Currency mismatch");
+    return Money.of(this.amount + other.amount, this.currency);
+  }
+
+  equals(other: Money): boolean {
+    return this.amount === other.amount && this.currency === other.currency;
+  }
+}
+
+// domain/entities/Payment.ts
+import { Money } from "./Money";
+import { PaymentStatus } from "./PaymentStatus";
+
+export class Payment {
+  private status: PaymentStatus = PaymentStatus.PENDING;
+
+  private constructor(
+    readonly id: string,
+    readonly customerId: string,
+    readonly amount: Money,
+    readonly createdAt: Date
+  ) {}
+
+  static create(customerId: string, amount: Money): Payment {
+    return new Payment(
+      crypto.randomUUID(),
+      customerId,
+      amount,
+      new Date()
+    );
+  }
+
+  authorize(): void {
+    if (this.status !== PaymentStatus.PENDING)
+      throw new Error("Only pending payments can be authorized");
+    this.status = PaymentStatus.AUTHORIZED;
+  }
+
+  fail(reason: string): void {
+    if (this.status !== PaymentStatus.PENDING)
+      throw new Error("Only pending payments can fail");
+    this.status = PaymentStatus.FAILED;
+    this._failureReason = reason;
+  }
+
+  getStatus(): PaymentStatus { return this.status; }
+  private _failureReason?: string;
+  getFailureReason(): string | undefined { return this._failureReason; }
+}</code></div>
+
+  <h2><span lang="en">Use Cases: Application Business Rules</span><span lang="pt" hidden>Use Cases: Regras de Negócio da Aplicação</span></h2>
+
+  <p><span lang="en">Each use case implements a single, well-named operation. It depends only on entities and on output port interfaces — never on Express, Prisma, or Stripe directly. This is the key discipline that enables testing without infrastructure.</span><span lang="pt" hidden>Cada caso de uso implementa uma operação única e bem nomeada. Depende apenas de entities e de interfaces de portas de saída — nunca de Express, Prisma ou Stripe diretamente. Esta é a disciplina central que permite testar sem infraestrutura.</span></p>
+
+  <div class="code-block"><code>// application/ports/PaymentRepository.ts
+export interface PaymentRepository {
+  save(payment: Payment): Promise&lt;void&gt;;
+  findById(id: string): Promise&lt;Payment | null&gt;;
+}
+
+// application/ports/PaymentGateway.ts
+export interface PaymentGateway {
+  charge(customerId: string, amount: Money): Promise&lt;ChargeResult&gt;;
+}
+
+export interface ChargeResult {
+  success: boolean;
+  transactionId?: string;
+  failureReason?: string;
+}
+
+// application/use-cases/ProcessPayment.ts
+import { Payment } from "../../domain/entities/Payment";
+import { Money } from "../../domain/entities/Money";
+import { PaymentRepository } from "../ports/PaymentRepository";
+import { PaymentGateway } from "../ports/PaymentGateway";
+
+export interface ProcessPaymentInput {
+  customerId: string;
+  amountInCents: number;
+  currency: string;
+}
+
+export interface ProcessPaymentOutput {
+  paymentId: string;
+  status: string;
+  transactionId?: string;
+}
+
+export class ProcessPayment {
+  constructor(
+    private readonly paymentRepository: PaymentRepository,
+    private readonly paymentGateway: PaymentGateway
+  ) {}
+
+  async execute(input: ProcessPaymentInput): Promise&lt;ProcessPaymentOutput&gt; {
+    const amount = Money.of(input.amountInCents / 100, input.currency);
+    const payment = Payment.create(input.customerId, amount);
+
+    const result = await this.paymentGateway.charge(
+      input.customerId,
+      amount
+    );
+
+    if (result.success) {
+      payment.authorize();
+    } else {
+      payment.fail(result.failureReason ?? "Unknown error");
+    }
+
+    await this.paymentRepository.save(payment);
+
+    return {
+      paymentId: payment.id,
+      status: payment.getStatus(),
+      transactionId: result.transactionId,
+    };
+  }
+}</code></div>
+
+  <h2><span lang="en">Interface Adapters: Translating Between Worlds</span><span lang="pt" hidden>Interface Adapters: Traduzindo Entre Mundos</span></h2>
+
+  <h3><span lang="en">Controller</span><span lang="pt" hidden>Controller</span></h3>
+
+  <p><span lang="en">The controller's only job is to parse the HTTP request into the use case input DTO and invoke the use case. It has no business logic — none. Any conditional logic here is likely a sign that something belongs in the use case or entity.</span><span lang="pt" hidden>O único trabalho do controller é parsear o request HTTP para o DTO de entrada do caso de uso e invocar o caso de uso. Ele não tem lógica de negócio — nenhuma. Qualquer lógica condicional aqui é provavelmente um sinal de que algo pertence ao caso de uso ou à entidade.</span></p>
+
+  <div class="code-block"><code>// adapters/controllers/PaymentController.ts
+import { Request, Response } from "express";
+import { ProcessPayment } from "../../application/use-cases/ProcessPayment";
+
+export class PaymentController {
+  constructor(private readonly processPayment: ProcessPayment) {}
+
+  async handle(req: Request, res: Response): Promise&lt;void&gt; {
+    const { customerId, amountInCents, currency } = req.body;
+
+    const output = await this.processPayment.execute({
+      customerId,
+      amountInCents,
+      currency,
+    });
+
+    res.status(201).json(output);
+  }
+}</code></div>
+
+  <h3><span lang="en">Persistence Gateway (Prisma)</span><span lang="pt" hidden>Gateway de Persistência (Prisma)</span></h3>
+
+  <p><span lang="en">The gateway translates between the domain entity and the persistence model. Notice that the domain <code>Payment</code> entity has no Prisma decorators — the gateway absorbs all that mapping complexity.</span><span lang="pt" hidden>O gateway traduz entre a entidade de domínio e o modelo de persistência. Observe que a entidade <code>Payment</code> do domínio não tem decoradores Prisma — o gateway absorve toda essa complexidade de mapeamento.</span></p>
+
+  <div class="code-block"><code>// adapters/gateways/PrismaPaymentRepository.ts
+import { PrismaClient } from "@prisma/client";
+import { Payment } from "../../domain/entities/Payment";
+import { Money } from "../../domain/entities/Money";
+import { PaymentRepository } from "../../application/ports/PaymentRepository";
+
+export class PrismaPaymentRepository implements PaymentRepository {
+  constructor(private readonly prisma: PrismaClient) {}
+
+  async save(payment: Payment): Promise&lt;void&gt; {
+    await this.prisma.payment.upsert({
+      where: { id: payment.id },
+      update: {
+        status: payment.getStatus(),
+        failureReason: payment.getFailureReason() ?? null,
+      },
+      create: {
+        id: payment.id,
+        customerId: payment.customerId,
+        amountInCents: Math.round(payment.amount.amount * 100),
+        currency: payment.amount.currency,
+        status: payment.getStatus(),
+        createdAt: payment.createdAt,
+      },
+    });
+  }
+
+  async findById(id: string): Promise&lt;Payment | null&gt; {
+    const row = await this.prisma.payment.findUnique({ where: { id } });
+    if (!row) return null;
+    return Payment.reconstitute(
+      row.id,
+      row.customerId,
+      Money.of(row.amountInCents / 100, row.currency),
+      row.status,
+      row.createdAt
+    );
+  }
+}</code></div>
+
+  <h2><span lang="en">Testability: The Real Return on Investment</span><span lang="pt" hidden>Testabilidade: O Verdadeiro Retorno do Investimento</span></h2>
+
+  <p><span lang="en">Because neither entities nor use cases have any dependency on infrastructure, you can test all business logic with pure in-memory fakes — no database, no HTTP server, no Stripe sandbox account required.</span><span lang="pt" hidden>Como nem entities nem casos de uso têm qualquer dependência de infraestrutura, você pode testar toda a lógica de negócio com fakes em memória — sem banco de dados, sem servidor HTTP, sem conta sandbox da Stripe.</span></p>
+
+  <div class="code-block"><code>// In-memory fake for tests — not a mock, a real implementation
+class InMemoryPaymentRepository implements PaymentRepository {
+  private store = new Map&lt;string, Payment&gt;();
+  async save(p: Payment) { this.store.set(p.id, p); }
+  async findById(id: string) { return this.store.get(id) ?? null; }
+}
+
+class FakePaymentGateway implements PaymentGateway {
+  private shouldSucceed = true;
+  failNextCharge(reason = "Insufficient funds") {
+    this.shouldSucceed = false;
+    this._reason = reason;
+  }
+  private _reason?: string;
+  async charge(): Promise&lt;ChargeResult&gt; {
+    if (this.shouldSucceed) return { success: true, transactionId: "txn_test" };
+    return { success: false, failureReason: this._reason };
+  }
+}
+
+// Tests — millisecond execution, zero infrastructure
+describe("ProcessPayment", () => {
+  let repo: InMemoryPaymentRepository;
+  let gateway: FakePaymentGateway;
+  let useCase: ProcessPayment;
+
+  beforeEach(() => {
+    repo = new InMemoryPaymentRepository();
+    gateway = new FakePaymentGateway();
+    useCase = new ProcessPayment(repo, gateway);
+  });
+
+  it("authorizes payment when gateway succeeds", async () => {
+    const output = await useCase.execute({
+      customerId: "cust_1",
+      amountInCents: 5000,
+      currency: "BRL",
+    });
+
+    expect(output.status).toBe("AUTHORIZED");
+    expect(output.transactionId).toBe("txn_test");
+
+    const saved = await repo.findById(output.paymentId);
+    expect(saved?.getStatus()).toBe("AUTHORIZED");
+  });
+
+  it("marks payment as failed when gateway rejects", async () => {
+    gateway.failNextCharge("Card declined");
+
+    const output = await useCase.execute({
+      customerId: "cust_1",
+      amountInCents: 5000,
+      currency: "BRL",
+    });
+
+    expect(output.status).toBe("FAILED");
+  });
+
+  it("rejects non-positive amounts at the entity level", async () => {
+    await expect(
+      useCase.execute({ customerId: "cust_1", amountInCents: 0, currency: "BRL" })
+    ).rejects.toThrow("Amount must be positive");
+  });
+});</code></div>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>Key insight:</strong> The <code>InMemoryPaymentRepository</code> is not a mock — it's a real implementation of the port interface. Using in-memory fakes instead of mocks means tests verify behavior, not implementation details. Swap the fake for a Testcontainers-backed Prisma instance only for adapter-level integration tests.</span><span lang="pt" hidden><strong>Insight chave:</strong> O <code>InMemoryPaymentRepository</code> não é um mock — é uma implementação real da interface de porta. Usar fakes em memória em vez de mocks significa que os testes verificam comportamento, não detalhes de implementação. Troque o fake por uma instância Prisma com Testcontainers apenas para testes de integração no nível do adaptador.</span></p>
+  </div>
+
+  <h2><span lang="en">Clean Architecture vs. Hexagonal Architecture</span><span lang="pt" hidden>Clean Architecture vs. Arquitetura Hexagonal</span></h2>
+
+  <p><span lang="en">These two patterns share the same core idea — inward-pointing dependencies, isolated domain — but differ in vocabulary and emphasis:</span><span lang="pt" hidden>Esses dois padrões compartilham a mesma ideia central — dependências apontando para dentro, domínio isolado — mas diferem em vocabulário e ênfase:</span></p>
+
+  <div class="code-block"><code>Feature              | Clean Architecture        | Hexagonal Architecture
+---------------------|---------------------------|-------------------------
+Vocabulary           | Entities, Use Cases,      | Domain, Ports, Adapters
+                     | Interface Adapters        |
+Boundary abstraction | Input/Output boundaries   | Input/Output ports
+                     | (interfaces in use cases) | (interfaces owned by core)
+Layers               | 4 explicit circles        | 3 zones (core + adapters)
+Primary distinction  | Separates Entities from   | Emphasizes driving vs.
+                     | Use Cases explicitly       | driven adapters
+Framework coupling   | Zero in inner two circles | Zero in core
+Typical stack        | Any — language-agnostic   | Java/Spring Boot common</code></div>
+
+  <p><span lang="en">In practice, they are complementary. Many teams use Clean Architecture's layer model with Hexagonal Architecture's port/adapter terminology. The concepts that matter — the Dependency Rule, framework isolation, port interfaces — are shared by both.</span><span lang="pt" hidden>Na prática, eles são complementares. Muitas equipes usam o modelo de camadas da Clean Architecture com a terminologia de port/adapter da Arquitetura Hexagonal. Os conceitos que importam — a Regra de Dependência, isolamento de framework, interfaces de porta — são compartilhados por ambos.</span></p>
+
+  <h2><span lang="en">The Disciplines That Actually Matter</span><span lang="pt" hidden>As Disciplinas que Realmente Importam</span></h2>
+
+  <p><span lang="en">The pattern erodes when teams don't maintain two specific habits:</span><span lang="pt" hidden>O padrão se deteriora quando as equipes não mantêm dois hábitos específicos:</span></p>
+
+  <div class="callout">
+    <p><span lang="en"><strong>1. No infrastructure imports in entities or use cases.</strong> If you see <code>import { PrismaClient }</code> or <code>import { Request } from 'express'</code> inside <code>application/</code> or <code>domain/</code>, the boundary has been violated. Enforce this with ESLint import rules or architectural fitness functions (using <code>dependency-cruiser</code>).</span><span lang="pt" hidden><strong>1. Nenhum import de infraestrutura em entities ou use cases.</strong> Se você ver <code>import { PrismaClient }</code> ou <code>import { Request } from 'express'</code> dentro de <code>application/</code> ou <code>domain/</code>, o limite foi violado. Imponha isso com regras de import do ESLint ou funções de aptidão arquitetural (usando <code>dependency-cruiser</code>).</span></p>
+  </div>
+
+  <div class="callout">
+    <p><span lang="en"><strong>2. Use cases speak in domain terms, not HTTP terms.</strong> The input DTO to a use case should be a plain object with domain-meaningful field names, not a shaped-after-the-HTTP-request body. Controllers translate; use cases don't know about HTTP.</span><span lang="pt" hidden><strong>2. Casos de uso falam em termos de domínio, não em termos HTTP.</strong> O DTO de entrada para um caso de uso deve ser um objeto simples com nomes de campo significativos para o domínio, não um espelho do corpo do request HTTP. Controllers traduzem; casos de uso não sabem sobre HTTP.</span></p>
+  </div>
+
+  <h2><span lang="en">When Not to Apply It</span><span lang="pt" hidden>Quando Não Aplicar</span></h2>
+
+  <p><span lang="en">Clean Architecture has a real overhead: more files, more interfaces, more mapping. It pays off when:</span><span lang="pt" hidden>A Clean Architecture tem um overhead real: mais arquivos, mais interfaces, mais mapeamento. Compensa quando:</span></p>
+  <ul>
+    <li><span lang="en">The domain is complex enough that isolating business rules from infrastructure actually reduces cognitive load.</span><span lang="pt" hidden>O domínio é complexo o suficiente para que isolar regras de negócio da infraestrutura realmente reduza a carga cognitiva.</span></li>
+    <li><span lang="en">The system is expected to evolve over multiple years with rotating teams.</span><span lang="pt" hidden>O sistema deve evoluir por vários anos com equipes rotativas.</span></li>
+    <li><span lang="en">Fast, deterministic unit tests on business logic are a priority.</span><span lang="pt" hidden>Testes unitários rápidos e determinísticos na lógica de negócio são uma prioridade.</span></li>
+  </ul>
+
+  <p><span lang="en">For simple CRUD APIs, a three-tier structure (route → service → repository) often serves better. Clean Architecture's overhead is proportional to the richness of the domain it protects. Don't apply it uniformly across a monorepo — apply it where the domain warrants it.</span><span lang="pt" hidden>Para APIs CRUD simples, uma estrutura de três camadas (route → service → repository) frequentemente serve melhor. O overhead da Clean Architecture é proporcional à riqueza do domínio que ela protege. Não a aplique uniformemente em um monorepo — aplique onde o domínio justifica.</span></p>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+  <ul>
+    <li><span lang="en">The Dependency Rule is the entire pattern: source code dependencies can only point inward, never outward.</span><span lang="pt" hidden>A Regra de Dependência é todo o padrão: dependências de código-fonte só podem apontar para dentro, nunca para fora.</span></li>
+    <li><span lang="en">Entities hold invariants — rules that are always true, regardless of the use case. Keep them free of infrastructure.</span><span lang="pt" hidden>Entities guardam invariantes — regras que são sempre verdadeiras, independentemente do caso de uso. Mantenha-as livres de infraestrutura.</span></li>
+    <li><span lang="en">Use cases depend on port interfaces (output boundaries), not on concrete implementations. This enables in-memory fakes in tests.</span><span lang="pt" hidden>Casos de uso dependem de interfaces de porta (boundaries de saída), não de implementações concretas. Isso habilita fakes em memória nos testes.</span></li>
+    <li><span lang="en">Interface Adapters translate, they don't decide. Business logic that leaks into controllers or presenters violates the boundary.</span><span lang="pt" hidden>Interface Adapters traduzem, não decidem. Lógica de negócio que vaza para controllers ou presenters viola o limite.</span></li>
+    <li><span lang="en">Use in-memory fakes over mocks for port implementations in unit tests — they verify behavior, not call sequences.</span><span lang="pt" hidden>Use fakes em memória em vez de mocks para implementações de porta em testes unitários — eles verificam comportamento, não sequências de chamadas.</span></li>
+    <li><span lang="en">Enforce the Dependency Rule automatically with <code>dependency-cruiser</code> or ESLint import boundary rules — human discipline alone doesn't scale.</span><span lang="pt" hidden>Imponha a Regra de Dependência automaticamente com <code>dependency-cruiser</code> ou regras de import do ESLint — disciplina humana sozinha não escala.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+<footer><p>&copy; 2025 Jefferson Valandro. Built with care.</p></footer>
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>
