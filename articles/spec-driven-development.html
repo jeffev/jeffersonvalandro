@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spec-Driven Development: Shipping Features with AI Without Losing Control — Jefferson Valandro</title>
+  <meta name="description" content="How a structured spec lifecycle — Draft, Approve, Implement, Review, Close — turns AI-assisted development from a guessing game into a repeatable, auditable engineering practice.">
+  <meta name="author" content="Jefferson Valandro">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/articles/spec-driven-development.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/articles/spec-driven-development.html">
+  <meta property="og:title" content="Spec-Driven Development: Shipping Features with AI Without Losing Control — Jefferson Valandro">
+  <meta property="og:description" content="How a structured spec lifecycle turns AI-assisted development from a guessing game into a repeatable, auditable engineering practice.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/cover_bg_4.jpg">
+  <meta name="theme-color" content="#070d1a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../css/articles.css">
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" aria-label="Switch to Portuguese">
+    <span id="langFlag" aria-hidden="true">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-file-alt"></i> <span lang="en">AI &amp; Developer Workflow</span><span lang="pt" hidden>IA &amp; Workflow de Desenvolvimento</span></div>
+    <h1><span lang="en">Spec-Driven Development: Shipping Features with AI Without Losing Control</span><span lang="pt" hidden>Spec-Driven Development: Entregando Features com IA Sem Perder o Controle</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> April 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">13 min read</span><span lang="pt" hidden>13 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">spec-driven</span>
+      <span class="tag">AI workflow</span>
+      <span class="tag">Claude Code</span>
+      <span class="tag">developer productivity</span>
+      <span class="tag">engineering process</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">The standard way most developers use AI coding assistants goes something like this: open a chat, describe what you want, paste some context, iterate until it works, merge. Fast, yes. But after a few weeks of this, codebases start showing the symptoms — scattered implementations, features that almost match what was intended, changes nobody can fully explain, and a growing gap between what was asked and what was built.</span><span lang="pt" hidden>O jeito padrão que a maioria dos desenvolvedores usa assistentes de IA vai mais ou menos assim: abre um chat, descreve o que quer, cola algum contexto, itera até funcionar, faz merge. Rápido, sim. Mas depois de algumas semanas assim, os codebases começam a mostrar os sintomas — implementações espalhadas, features que quase combinam com o que foi pretendido, mudanças que ninguém consegue explicar completamente, e uma lacuna crescente entre o que foi pedido e o que foi construído.</span></p>
+
+  <p><span lang="en">The root cause is that AI agents work best with precise, bounded context — and free-form prompting provides neither. Spec-driven development is the discipline of defining that context deliberately, before you ask the AI to build anything.</span><span lang="pt" hidden>A causa raiz é que agentes de IA funcionam melhor com contexto preciso e delimitado — e o prompting livre não fornece nenhum dos dois. Spec-driven development é a disciplina de definir esse contexto deliberadamente, antes de pedir à IA que construa qualquer coisa.</span></p>
+
+  <h2><span lang="en">The Core Problem with Free-Form AI Development</span><span lang="pt" hidden>O Problema Central do Desenvolvimento Livre com IA</span></h2>
+
+  <p><span lang="en">When you describe a feature in a chat message, you are solving multiple problems simultaneously and implicitly: what should be built, what is out of scope, which files should change, what the acceptance criteria are. The AI resolves all these ambiguities on its own — silently, based on inference. Sometimes it guesses right. Often enough it doesn't, and you only find out during review or in production.</span><span lang="pt" hidden>Quando você descreve uma feature em uma mensagem de chat, está resolvendo múltiplos problemas simultaneamente e implicitamente: o que deve ser construído, o que está fora de escopo, quais arquivos devem mudar, quais são os critérios de aceite. A IA resolve todas essas ambiguidades sozinha — silenciosamente, baseada em inferência. Às vezes chuta certo. Com frequência suficiente não chuta, e você só descobre durante a revisão ou em produção.</span></p>
+
+  <div class="callout">
+    <p><span lang="en"><strong>The gap that spec-driven closes:</strong> Between "describe what you want" and "AI implements it" there is a step that most teams skip — alignment. Not alignment with the AI, but alignment within the team about what exactly is being built, why, and where the boundary is. A spec makes that alignment explicit and durable.</span><span lang="pt" hidden><strong>A lacuna que spec-driven fecha:</strong> Entre "descrever o que você quer" e "IA implementa" existe um passo que a maioria dos times pula — alinhamento. Não alinhamento com a IA, mas alinhamento dentro do time sobre o que exatamente está sendo construído, por quê e onde está o limite. Uma spec torna esse alinhamento explícito e durável.</span></p>
+  </div>
+
+  <h2><span lang="en">What a Spec Is (and What It Is Not)</span><span lang="pt" hidden>O Que É uma Spec (e o Que Não É)</span></h2>
+
+  <p><span lang="en">A spec is not a technical design document, not a story ticket, not a requirements dump. It is a focused, single-feature agreement between the developer and the AI that answers four questions: <em>what</em> is being built, <em>what is not</em> being built, <em>which tasks</em> constitute the implementation, and <em>which files</em> are expected to change.</span><span lang="pt" hidden>Uma spec não é um documento de design técnico, não é um ticket de história, não é um despejo de requisitos. É um acordo focado, de feature única, entre o desenvolvedor e a IA que responde a quatro perguntas: <em>o que</em> está sendo construído, <em>o que não está</em> sendo construído, <em>quais tarefas</em> constituem a implementação e <em>quais arquivos</em> devem mudar.</span></p>
+
+  <div class="code-block"><code># SPEC-003 — Add bio field to user model
+
+## Status
+in-progress
+
+## What
+Add an optional `bio` field (short text) to the user model,
+expose it in the profile endpoint, and allow the user to update it.
+
+## Out of scope
+- Profile photo upload
+- Content moderation for bio text
+- Bio length validation beyond a simple max-length constraint
+
+## Scope
+- [ ] Add bio field to User model
+- [ ] Create migration for bio column (max 280 chars, nullable)
+- [ ] Include bio in GET /api/users/me response
+- [ ] Allow PATCH /api/users/me to update bio
+
+## Files expected to change
+- backend/app/models/user.py
+- backend/app/routes/users.py
+- backend/app/schemas/user.py
+- backend/migrations/</code></div>
+
+  <p><span lang="en">Notice the "Out of scope" section. This is the most underrated part of a spec. Every ambiguous feature request has a gravity well of adjacent features that the AI — and sometimes the developer — will be tempted to implement. Making scope boundaries explicit prevents scope creep before it starts, and gives the AI a clear signal to stop.</span><span lang="pt" hidden>Observe a seção "Out of scope". Esta é a parte mais subestimada de uma spec. Todo pedido de feature ambíguo tem um campo gravitacional de features adjacentes que a IA — e às vezes o próprio desenvolvedor — será tentada a implementar. Tornar os limites de escopo explícitos evita o scope creep antes que comece e dá à IA um sinal claro para parar.</span></p>
+
+  <h2><span lang="en">The Spec Lifecycle</span><span lang="pt" hidden>O Ciclo de Vida da Spec</span></h2>
+
+  <div class="diagram">
+    <div style="display:flex; flex-direction:column; align-items:center; gap:0; width:100%;">
+
+      <div style="display:flex; align-items:stretch; justify-content:center; gap:0; flex-wrap:wrap; width:100%; max-width:680px;">
+
+        <div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:90px;">
+          <div style="background:rgba(79,142,247,0.12); border:2px solid rgba(79,142,247,0.4); border-radius:10px; padding:0.7rem 0.5rem; text-align:center; width:100%;">
+            <div style="font-size:1.1rem; color:var(--accent);">✦</div>
+            <div style="font-size:0.75rem; font-weight:700; color:var(--accent); margin-top:0.2rem;"><span lang="en">Draft</span><span lang="pt" hidden>Rascunho</span></div>
+            <div style="font-size:0.62rem; color:var(--muted); margin-top:0.25rem; line-height:1.3;"><span lang="en">AI drafts from your description</span><span lang="pt" hidden>IA gera a partir da sua descrição</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; padding:0 0.3rem; color:var(--accent2); font-size:1rem;">→</div>
+
+        <div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:90px;">
+          <div style="background:rgba(6,214,160,0.1); border:2px solid rgba(6,214,160,0.35); border-radius:10px; padding:0.7rem 0.5rem; text-align:center; width:100%;">
+            <div style="font-size:1.1rem; color:var(--accent2);">✔</div>
+            <div style="font-size:0.75rem; font-weight:700; color:var(--accent2); margin-top:0.2rem;"><span lang="en">Approve</span><span lang="pt" hidden>Aprovação</span></div>
+            <div style="font-size:0.62rem; color:var(--muted); margin-top:0.25rem; line-height:1.3;"><span lang="en">Human reviews scope &amp; tasks</span><span lang="pt" hidden>Humano revisa escopo e tarefas</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; padding:0 0.3rem; color:var(--accent2); font-size:1rem;">→</div>
+
+        <div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:90px;">
+          <div style="background:rgba(255,209,102,0.1); border:2px solid rgba(255,209,102,0.35); border-radius:10px; padding:0.7rem 0.5rem; text-align:center; width:100%;">
+            <div style="font-size:1.1rem; color:#ffd166;">▶</div>
+            <div style="font-size:0.75rem; font-weight:700; color:#ffd166; margin-top:0.2rem;"><span lang="en">Start</span><span lang="pt" hidden>Início</span></div>
+            <div style="font-size:0.62rem; color:var(--muted); margin-top:0.25rem; line-height:1.3;"><span lang="en">TASK.md written to project root</span><span lang="pt" hidden>TASK.md escrito na raiz do projeto</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; padding:0 0.3rem; color:var(--accent2); font-size:1rem;">→</div>
+
+        <div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:90px;">
+          <div style="background:rgba(247,37,133,0.08); border:2px solid rgba(247,37,133,0.3); border-radius:10px; padding:0.7rem 0.5rem; text-align:center; width:100%;">
+            <div style="font-size:1.1rem; color:#f87db0;">⚙</div>
+            <div style="font-size:0.75rem; font-weight:700; color:#f87db0; margin-top:0.2rem;"><span lang="en">Implement</span><span lang="pt" hidden>Implementar</span></div>
+            <div style="font-size:0.62rem; color:var(--muted); margin-top:0.25rem; line-height:1.3;"><span lang="en">AI works from TASK.md context</span><span lang="pt" hidden>IA trabalha com contexto do TASK.md</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; padding:0 0.3rem; color:var(--accent2); font-size:1rem;">→</div>
+
+        <div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:90px;">
+          <div style="background:rgba(79,142,247,0.12); border:2px solid rgba(79,142,247,0.4); border-radius:10px; padding:0.7rem 0.5rem; text-align:center; width:100%;">
+            <div style="font-size:1.1rem; color:var(--accent);">◎</div>
+            <div style="font-size:0.75rem; font-weight:700; color:var(--accent); margin-top:0.2rem;"><span lang="en">Review</span><span lang="pt" hidden>Revisão</span></div>
+            <div style="font-size:0.62rem; color:var(--muted); margin-top:0.25rem; line-height:1.3;"><span lang="en">AI audits against the spec</span><span lang="pt" hidden>IA audita contra a spec</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; padding:0 0.3rem; color:var(--accent2); font-size:1rem;">→</div>
+
+        <div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:90px;">
+          <div style="background:rgba(6,214,160,0.1); border:2px solid rgba(6,214,160,0.35); border-radius:10px; padding:0.7rem 0.5rem; text-align:center; width:100%;">
+            <div style="font-size:1.1rem; color:var(--accent2);">✓</div>
+            <div style="font-size:0.75rem; font-weight:700; color:var(--accent2); margin-top:0.2rem;"><span lang="en">Close</span><span lang="pt" hidden>Fechar</span></div>
+            <div style="font-size:0.62rem; color:var(--muted); margin-top:0.25rem; line-height:1.3;"><span lang="en">Spec archived, TASK.md removed</span><span lang="pt" hidden>Spec arquivada, TASK.md removido</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:1rem; display:flex; align-items:center; gap:0.5rem; max-width:680px; width:100%;">
+        <div style="flex:1; height:1px; background:linear-gradient(to right, transparent, rgba(79,142,247,0.3));"></div>
+        <div style="font-size:0.63rem; color:var(--muted); white-space:nowrap; padding:0.25rem 0.6rem; border:1px solid var(--border); border-radius:20px;">
+          <span lang="en">one spec = one feature = one bounded AI session</span><span lang="pt" hidden>uma spec = uma feature = uma sessão de IA delimitada</span>
+        </div>
+        <div style="flex:1; height:1px; background:linear-gradient(to left, transparent, rgba(79,142,247,0.3));"></div>
+      </div>
+
+    </div>
+    <div class="diagram-label"><span lang="en">Each phase has a clear owner — AI drafts, human approves, AI implements, AI reviews, human closes</span><span lang="pt" hidden>Cada fase tem um dono claro — IA rascunha, humano aprova, IA implementa, IA revisa, humano fecha</span></div>
+  </div>
+
+  <h2><span lang="en">Phase 1 — Draft: AI as Spec Author</span><span lang="pt" hidden>Fase 1 — Rascunho: IA Como Autora da Spec</span></h2>
+
+  <p><span lang="en">You describe the feature in plain language. The AI generates the spec — breaking the description into concrete tasks, inferring scope boundaries, identifying which files are likely to change, and flagging ambiguities for you to resolve. The output is a structured markdown file, not an implementation.</span><span lang="pt" hidden>Você descreve a feature em linguagem simples. A IA gera a spec — quebrando a descrição em tarefas concretas, inferindo limites de escopo, identificando quais arquivos provavelmente mudarão e sinalizando ambiguidades para você resolver. O output é um arquivo markdown estruturado, não uma implementação.</span></p>
+
+  <div class="code-block"><code>$ ai-kit spec new "add a bio field to the user profile so users can write
+  a short description about themselves, visible on their public profile page"
+
+Generating spec...
+
+✓ SPEC-005 created in .aikit-specs/draft/SPEC-005-user-bio-field.md
+  → 4 tasks identified
+  → 3 files expected to change
+  → Review the spec before approving</code></div>
+
+  <p><span lang="en">The AI does not write any production code at this stage. It only produces the agreement. This separation is the entire point — you are deciding what to build before you start building it, with AI helping structure the decision rather than jumping straight to implementation.</span><span lang="pt" hidden>A IA não escreve código de produção nesta fase. Ela apenas produz o acordo. Essa separação é o ponto central — você está decidindo o que construir antes de começar a construir, com a IA ajudando a estruturar a decisão em vez de pular direto para a implementação.</span></p>
+
+  <h2><span lang="en">Phase 2 — Approve: The Human Gate</span><span lang="pt" hidden>Fase 2 — Aprovação: O Portão Humano</span></h2>
+
+  <p><span lang="en">Before implementation starts, a human reviews and approves the spec. This is not a formality — it is the highest-value step in the entire workflow. The approval gate forces an explicit answer to the questions most free-form AI development never asks:</span><span lang="pt" hidden>Antes de a implementação começar, um humano revisa e aprova a spec. Isso não é formalidade — é o passo de maior valor em todo o workflow. O portão de aprovação força uma resposta explícita às perguntas que o desenvolvimento livre com IA nunca faz:</span></p>
+
+  <ul>
+    <li><span lang="en">Is this the right scope? Not too large, not too small?</span><span lang="pt" hidden>Este é o escopo correto? Nem grande demais, nem pequeno demais?</span></li>
+    <li><span lang="en">Does the task list actually cover the intent, or is something missing?</span><span lang="pt" hidden>A lista de tarefas realmente cobre a intenção, ou está faltando algo?</span></li>
+    <li><span lang="en">Is the "out of scope" section explicit enough to prevent the AI from over-building?</span><span lang="pt" hidden>A seção "out of scope" é explícita o suficiente para evitar que a IA construa além do necessário?</span></li>
+    <li><span lang="en">Are the expected files correct? Any file not listed is a signal that the AI might touch something unexpected.</span><span lang="pt" hidden>Os arquivos esperados estão corretos? Qualquer arquivo não listado é um sinal de que a IA pode tocar algo inesperado.</span></li>
+  </ul>
+
+  <p><span lang="en">Approval takes two to five minutes. It prevents hours of re-work caused by misaligned implementation. Teams that skip this step consistently report the largest gap between what they asked for and what was built.</span><span lang="pt" hidden>A aprovação leva de dois a cinco minutos. Ela previne horas de retrabalho causado por implementação desalinhada. Times que pulam esse passo consistentemente relatam a maior lacuna entre o que pediram e o que foi construído.</span></p>
+
+  <h2><span lang="en">Phase 3 — Start: TASK.md as the Implementation Contract</span><span lang="pt" hidden>Fase 3 — Início: TASK.md Como Contrato de Implementação</span></h2>
+
+  <p><span lang="en">When a spec is started, a <code>TASK.md</code> file is written to the project root. This file is the implementation contract — a focused, single-file context that the AI reads at the beginning of every session. It contains the approved spec, the task checklist, and the list of expected files.</span><span lang="pt" hidden>Quando uma spec é iniciada, um arquivo <code>TASK.md</code> é escrito na raiz do projeto. Este arquivo é o contrato de implementação — um contexto focado em um único arquivo que a IA lê no início de cada sessão. Ele contém a spec aprovada, o checklist de tarefas e a lista de arquivos esperados.</span></p>
+
+  <div class="code-block"><code># TASK.md — SPEC-005 (Active)
+# Add bio field to user model
+
+## Your task
+Implement the following spec exactly as written.
+Do not add features not listed in the scope.
+Do not modify files not listed in "Files expected to change".
+
+## Scope (implement all of these)
+- [ ] Add bio field to User model
+- [ ] Create migration for bio column (max 280 chars, nullable)
+- [ ] Include bio in GET /api/users/me response
+- [ ] Allow PATCH /api/users/me to update bio
+
+## Out of scope (do not implement)
+- Profile photo upload
+- Content moderation for bio text
+- Bio length validation beyond max-length
+
+## Files expected to change
+- backend/app/models/user.py
+- backend/app/routes/users.py
+- backend/app/schemas/user.py
+- backend/migrations/</code></div>
+
+  <p><span lang="en">The <code>TASK.md</code> pattern solves a real problem in long AI sessions: context drift. Without a persistent anchor, an AI session that spans dozens of tool calls will gradually drift from the original intent — adding things, changing scope, touching files it shouldn't. <code>TASK.md</code> is that anchor. It is re-read at the start of every session and serves as the authoritative description of what is in and out of bounds.</span><span lang="pt" hidden>O padrão <code>TASK.md</code> resolve um problema real em sessões longas de IA: deriva de contexto. Sem uma âncora persistente, uma sessão de IA que abrange dezenas de chamadas de ferramentas vai gradualmente se desviar da intenção original — adicionando coisas, mudando escopo, tocando arquivos que não deveria. <code>TASK.md</code> é essa âncora. Ele é relido no início de cada sessão e serve como a descrição autoritativa do que está dentro e fora dos limites.</span></p>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>Why this works:</strong> AI agents perform significantly better with bounded, explicit context than with open-ended instructions. A <code>TASK.md</code> with four tasks and three files is a far tighter prompt than "implement the bio feature". The tighter the context, the more the AI's output matches the intent — and the less you need to review and redo.</span><span lang="pt" hidden><strong>Por que isso funciona:</strong> Agentes de IA performam significativamente melhor com contexto delimitado e explícito do que com instruções abertas. Um <code>TASK.md</code> com quatro tarefas e três arquivos é um prompt muito mais preciso do que "implemente a feature de bio". Quanto mais preciso o contexto, mais o output da IA corresponde à intenção — e menos você precisa revisar e refazer.</span></p>
+  </div>
+
+  <h2><span lang="en">Phase 4 — Implement: AI with a Leash</span><span lang="pt" hidden>Fase 4 — Implementação: IA com Coleira</span></h2>
+
+  <p><span lang="en">Implementation is where the AI writes code — but now within a defined contract. The developer opens their AI coding assistant with the <code>TASK.md</code> loaded and lets the agent work through the task list. The key discipline: the AI marks tasks as done as it completes them, and the developer can track progress without having to parse a long chat history.</span><span lang="pt" hidden>A implementação é onde a IA escreve código — mas agora dentro de um contrato definido. O desenvolvedor abre seu assistente de IA com o <code>TASK.md</code> carregado e deixa o agente trabalhar pela lista de tarefas. A disciplina chave: a IA marca tarefas como concluídas à medida que as completa, e o desenvolvedor pode acompanhar o progresso sem precisar analisar um longo histórico de chat.</span></p>
+
+  <div class="code-block" lang="en"><code>Implementation session — what changes:
+
+Before session:
+  - [ ] Add bio field to User model
+  - [ ] Create migration for bio column
+  - [ ] Include bio in GET /api/users/me
+  - [ ] Allow PATCH /api/users/me to update bio
+
+After session:
+  - [x] Add bio field to User model
+  - [x] Create migration for bio column
+  - [x] Include bio in GET /api/users/me
+  - [ ] Allow PATCH /api/users/me to update bio   ← still pending
+
+Touched files: user.py, schemas/user.py, migrations/0042_add_user_bio.py
+Unexpected touches: none</code></div>
+  <div class="code-block" lang="pt" hidden><code>Sessão de implementação — o que muda:
+
+Antes da sessão:
+  - [ ] Adicionar campo bio ao modelo User
+  - [ ] Criar migration para a coluna bio
+  - [ ] Incluir bio na resposta de GET /api/users/me
+  - [ ] Permitir PATCH /api/users/me para atualizar bio
+
+Após a sessão:
+  - [x] Adicionar campo bio ao modelo User
+  - [x] Criar migration para a coluna bio
+  - [x] Incluir bio na resposta de GET /api/users/me
+  - [ ] Permitir PATCH /api/users/me para atualizar bio   ← ainda pendente
+
+Arquivos tocados: user.py, schemas/user.py, migrations/0042_add_user_bio.py
+Toques inesperados: nenhum</code></div>
+
+  <p><span lang="en">The checklist also serves as a natural session boundary. When the AI session ends mid-feature, the unchecked tasks tell the next session exactly where to resume. There is no "wait, where did we leave off?" — the state is explicit.</span><span lang="pt" hidden>O checklist também serve como limite natural de sessão. Quando a sessão de IA termina no meio de uma feature, as tarefas não marcadas dizem à próxima sessão exatamente onde retomar. Não há "espera, onde paramos?" — o estado é explícito.</span></p>
+
+  <h2><span lang="en">Phase 5 — Review: Closing the Loop</span><span lang="pt" hidden>Fase 5 — Revisão: Fechando o Loop</span></h2>
+
+  <p><span lang="en">After implementation, the AI reviews what was built against what was specified. This is not a general code review — it is a spec compliance check. The reviewer reads the diff, compares against the spec scope, and answers three questions:</span><span lang="pt" hidden>Após a implementação, a IA revisa o que foi construído em relação ao que foi especificado. Isso não é uma revisão de código genérica — é uma verificação de conformidade com a spec. O revisor lê o diff, compara com o escopo da spec e responde três perguntas:</span></p>
+
+  <ul>
+    <li><span lang="en">Was everything in scope implemented?</span><span lang="pt" hidden>Tudo que estava no escopo foi implementado?</span></li>
+    <li><span lang="en">Was anything out of scope implemented anyway?</span><span lang="pt" hidden>Algo fora de escopo foi implementado mesmo assim?</span></li>
+    <li><span lang="en">Were any unexpected files modified?</span><span lang="pt" hidden>Algum arquivo inesperado foi modificado?</span></li>
+  </ul>
+
+  <p><span lang="en">This review is faster and more precise than a general review precisely because the spec is the acceptance criteria. You are not asking "is this good code?" — you are asking "does this match what we agreed to build?" Those are different questions, and the second is answerable in minutes.</span><span lang="pt" hidden>Essa revisão é mais rápida e precisa do que uma revisão geral precisamente porque a spec é o critério de aceite. Você não está perguntando "este é um bom código?" — está perguntando "isso corresponde ao que concordamos em construir?" Essas são perguntas diferentes, e a segunda pode ser respondida em minutos.</span></p>
+
+  <h2><span lang="en">The Audit Trail as a Side Effect</span><span lang="pt" hidden>O Rastro de Auditoria Como Efeito Colateral</span></h2>
+
+  <p><span lang="en">One underrated consequence of spec-driven development is the audit trail it produces without any extra effort. After a few weeks, your <code>.aikit-specs/done/</code> directory contains a complete history of every feature: what was intended, what was excluded, what was implemented, and when it was closed.</span><span lang="pt" hidden>Uma consequência subestimada do spec-driven development é o rastro de auditoria que ele produz sem nenhum esforço extra. Depois de algumas semanas, seu diretório <code>.aikit-specs/done/</code> contém um histórico completo de cada feature: o que foi pretendido, o que foi excluído, o que foi implementado e quando foi fechado.</span></p>
+
+  <div class="code-block"><code>.aikit-specs/
+├── active/
+│   └── SPEC-005-user-bio-field.md
+├── draft/
+│   └── SPEC-006-notifications.md
+└── done/
+    ├── SPEC-001-auth-refresh-token.md    # closed 2025-03-12
+    ├── SPEC-002-product-pagination.md    # closed 2025-03-18
+    ├── SPEC-003-order-status-webhook.md  # closed 2025-03-25
+    └── SPEC-004-email-verification.md    # closed 2025-04-01</code></div>
+
+  <p><span lang="en">This history answers questions that normally require archaeology: "why is this field nullable?", "when did we add this endpoint?", "was the rate limiting on this route intentional?". The spec that introduced each change has the answer — and unlike commit messages, it has the full context, including what was deliberately left out.</span><span lang="pt" hidden>Esse histórico responde perguntas que normalmente exigem arqueologia: "por que este campo é nullable?", "quando adicionamos esse endpoint?", "o rate limiting nessa rota foi intencional?". A spec que introduziu cada mudança tem a resposta — e ao contrário de commit messages, ela tem o contexto completo, incluindo o que foi deliberadamente deixado de fora.</span></p>
+
+  <h2><span lang="en">How Specs Improve AI Performance</span><span lang="pt" hidden>Como Specs Melhoram a Performance da IA</span></h2>
+
+  <p><span lang="en">Beyond process benefits, specs make the AI technically better at its job. LLMs work best with high signal-to-noise ratio context. A spec reduces noise in several ways:</span><span lang="pt" hidden>Além dos benefícios de processo, specs tornam a IA tecnicamente melhor no seu trabalho. LLMs funcionam melhor com contexto de alta relação sinal-ruído. Uma spec reduz o ruído de várias formas:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Scope prevents over-generation.</strong> Without explicit boundaries, the AI will often implement adjacent features it thinks you'd want. A spec with a clear "out of scope" section eliminates this. Fewer files touched means fewer things to review and fewer unexpected side effects.</span><span lang="pt" hidden><strong>Escopo previne geração excessiva.</strong> Sem limites explícitos, a IA frequentemente implementará features adjacentes que acha que você quer. Uma spec com uma seção clara de "out of scope" elimina isso. Menos arquivos tocados significa menos coisas para revisar e menos efeitos colaterais inesperados.</span></li>
+    <li><span lang="en"><strong>Task lists focus the session.</strong> An AI session with a checklist behaves differently from one without. The checklist gives the agent a completion signal — it knows when to stop. Sessions without one tend to run long and wander.</span><span lang="pt" hidden><strong>Listas de tarefas focam a sessão.</strong> Uma sessão de IA com checklist se comporta diferente de uma sem. O checklist dá ao agente um sinal de conclusão — ele sabe quando parar. Sessões sem um tendem a se prolongar e divagar.</span></li>
+    <li><span lang="en"><strong>File lists constrain the blast radius.</strong> Telling the AI which files are expected to change reduces the chance of it accidentally modifying unrelated modules — especially in large codebases where similar patterns appear in multiple places.</span><span lang="pt" hidden><strong>Listas de arquivos restringem o raio de impacto.</strong> Dizer à IA quais arquivos devem mudar reduz a chance de ela modificar acidentalmente módulos não relacionados — especialmente em codebases grandes onde padrões similares aparecem em múltiplos lugares.</span></li>
+  </ul>
+
+  <h2><span lang="en">When One Feature Per Spec Matters Most</span><span lang="pt" hidden>Quando Uma Feature por Spec Importa Mais</span></h2>
+
+  <p><span lang="en">The "one spec, one feature" constraint is the hardest discipline to maintain under deadline pressure. It is also the most important one. Specs that contain multiple features produce implementations that are harder to review, harder to revert, and harder to understand later.</span><span lang="pt" hidden>A restrição de "uma spec, uma feature" é a disciplina mais difícil de manter sob pressão de prazo. É também a mais importante. Specs que contêm múltiplas features produzem implementações mais difíceis de revisar, mais difíceis de reverter e mais difíceis de entender depois.</span></p>
+
+  <div class="callout">
+    <p><span lang="en"><strong>The splitting heuristic:</strong> If a spec has more than six tasks, or if any two tasks could be delivered independently and both would provide value, split into two specs. The overhead of an extra spec is five minutes. The overhead of a muddled implementation that mixes two features can be days of untangling.</span><span lang="pt" hidden><strong>A heurística de divisão:</strong> Se uma spec tem mais de seis tarefas, ou se quaisquer duas tarefas poderiam ser entregues independentemente e ambas forneceriam valor, divida em duas specs. O overhead de uma spec extra é cinco minutos. O overhead de uma implementação confusa que mistura duas features pode ser dias de desembaraço.</span></p>
+  </div>
+
+  <h2><span lang="en">Spec-Driven in Practice: A Real Session</span><span lang="pt" hidden>Spec-Driven na Prática: Uma Sessão Real</span></h2>
+
+  <p><span lang="en">Here is what a complete spec-driven workflow looks like end-to-end, from description to close:</span><span lang="pt" hidden>Aqui está como um workflow spec-driven completo se parece de ponta a ponta, da descrição ao fechamento:</span></p>
+
+  <div class="code-block" lang="en"><code># 1. Draft — describe the feature in plain language (~30 seconds)
+$ ai-kit spec new "users should be able to reset their password via email.
+  Send a reset link, validate the token, and allow setting a new password."
+
+✓ SPEC-007 drafted → .aikit-specs/draft/SPEC-007-password-reset.md
+  6 tasks · 4 files expected
+
+# 2. Review the draft (~3 minutes)
+# Edit the spec if scope needs adjusting
+$ ai-kit spec show SPEC-007
+
+# 3. Approve (~10 seconds)
+$ ai-kit spec approve SPEC-007
+✓ SPEC-007 approved and moved to draft/
+
+# 4. Start — writes TASK.md to project root
+$ ai-kit spec start SPEC-007
+✓ TASK.md written
+
+# 5. Implement — open Claude Code, it reads TASK.md
+$ claude   # or ai-kit tui → ✦ Claude button
+# ... AI works through the task list ...
+# ... marks tasks done as it goes ...
+
+# 6. Review — AI checks implementation against spec
+$ ai-kit spec review SPEC-007
+✓ All 6 tasks implemented
+✓ No out-of-scope files modified
+⚠ Missing: rate limiting on /api/auth/reset-password (security recommendation)
+
+# Fix the finding, then close
+$ ai-kit spec close SPEC-007
+✓ SPEC-007 closed → .aikit-specs/done/
+✓ TASK.md removed</code></div>
+  <div class="code-block" lang="pt" hidden><code># 1. Rascunho — descreva a feature em linguagem simples (~30 segundos)
+$ ai-kit spec new "usuários devem poder resetar a senha via e-mail.
+  Enviar link de reset, validar o token e permitir definir nova senha."
+
+✓ SPEC-007 rascunhado → .aikit-specs/draft/SPEC-007-password-reset.md
+  6 tarefas · 4 arquivos esperados
+
+# 2. Revisar o rascunho (~3 minutos)
+# Edite a spec se o escopo precisar de ajuste
+$ ai-kit spec show SPEC-007
+
+# 3. Aprovar (~10 segundos)
+$ ai-kit spec approve SPEC-007
+✓ SPEC-007 aprovado
+
+# 4. Iniciar — escreve TASK.md na raiz do projeto
+$ ai-kit spec start SPEC-007
+✓ TASK.md escrito
+
+# 5. Implementar — abrir Claude Code, ele lê o TASK.md
+$ claude   # ou ai-kit tui → botão ✦ Claude
+# ... IA trabalha pela lista de tarefas ...
+# ... marca tarefas como concluídas conforme avança ...
+
+# 6. Revisão — IA verifica implementação contra a spec
+$ ai-kit spec review SPEC-007
+✓ Todas as 6 tarefas implementadas
+✓ Nenhum arquivo fora do escopo modificado
+⚠ Faltando: rate limiting em /api/auth/reset-password (recomendação de segurança)
+
+# Corrige o achado, depois fecha
+$ ai-kit spec close SPEC-007
+✓ SPEC-007 fechado → .aikit-specs/done/
+✓ TASK.md removido</code></div>
+
+  <h2><span lang="en">What Spec-Driven Is Not</span><span lang="pt" hidden>O Que Spec-Driven Não É</span></h2>
+
+  <p><span lang="en">Spec-driven development is not a silver bullet, and it is not appropriate for every task. It adds overhead — typically ten to fifteen minutes per feature — that is not always justified. The cases where it pays off clearly:</span><span lang="pt" hidden>Spec-driven development não é bala de prata e não é apropriado para toda tarefa. Ele adiciona overhead — tipicamente dez a quinze minutos por feature — que nem sempre é justificado. Os casos onde compensa claramente:</span></p>
+  <ul>
+    <li><span lang="en">Features that touch multiple files or modules, where scope creep is a real risk.</span><span lang="pt" hidden>Features que tocam múltiplos arquivos ou módulos, onde scope creep é um risco real.</span></li>
+    <li><span lang="en">Features built by multiple people or in multiple sessions.</span><span lang="pt" hidden>Features construídas por múltiplas pessoas ou em múltiplas sessões.</span></li>
+    <li><span lang="en">Any feature that will go through a formal code review.</span><span lang="pt" hidden>Qualquer feature que passará por uma revisão formal de código.</span></li>
+    <li><span lang="en">Features in domains with security, compliance, or data integrity implications.</span><span lang="pt" hidden>Features em domínios com implicações de segurança, conformidade ou integridade de dados.</span></li>
+  </ul>
+
+  <p><span lang="en">For a two-line bug fix or a minor style change, a spec is overkill. For anything that will be in production for more than a week and touched by more than one person, the ten-minute investment consistently pays back.</span><span lang="pt" hidden>Para uma correção de bug de duas linhas ou uma mudança menor de estilo, uma spec é exagero. Para qualquer coisa que estará em produção por mais de uma semana e será tocada por mais de uma pessoa, o investimento de dez minutos consistentemente se paga.</span></p>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+  <ul>
+    <li><span lang="en">Free-form AI development produces misaligned implementations because ambiguity is resolved by the AI, not by the developer. Spec-driven closes that gap before implementation starts.</span><span lang="pt" hidden>O desenvolvimento livre com IA produz implementações desalinhadas porque a ambiguidade é resolvida pela IA, não pelo desenvolvedor. Spec-driven fecha essa lacuna antes que a implementação comece.</span></li>
+    <li><span lang="en">The "out of scope" section is the most underrated part of a spec — it prevents over-generation and keeps the implementation bounded.</span><span lang="pt" hidden>A seção "out of scope" é a parte mais subestimada de uma spec — ela previne geração excessiva e mantém a implementação delimitada.</span></li>
+    <li><span lang="en">The approval gate is not a formality. It is the highest-value step: the moment the developer explicitly agrees on what will and won't be built.</span><span lang="pt" hidden>O portão de aprovação não é formalidade. É o passo de maior valor: o momento em que o desenvolvedor explicitamente concorda sobre o que será e o que não será construído.</span></li>
+    <li><span lang="en"><code>TASK.md</code> prevents context drift across long or multi-session implementations. It is the persistent anchor that keeps the AI oriented toward the agreed spec.</span><span lang="pt" hidden><code>TASK.md</code> previne deriva de contexto em implementações longas ou de múltiplas sessões. É a âncora persistente que mantém a IA orientada para a spec acordada.</span></li>
+    <li><span lang="en">The spec archive is a free audit trail — a complete history of intent, scope, and decisions that outlives commit messages.</span><span lang="pt" hidden>O arquivo de specs é um rastro de auditoria gratuito — um histórico completo de intenção, escopo e decisões que sobrevive às mensagens de commit.</span></li>
+    <li><span lang="en">One spec, one feature. If a spec has more than six tasks, split it. The discipline compound over time into a codebase where every change is traceable and every feature was intentional.</span><span lang="pt" hidden>Uma spec, uma feature. Se uma spec tem mais de seis tarefas, divida. A disciplina se compõe ao longo do tempo em um codebase onde cada mudança é rastreável e cada feature foi intencional.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+<footer><p>&copy; 2025 Jefferson Valandro. Built with care.</p></footer>
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>
