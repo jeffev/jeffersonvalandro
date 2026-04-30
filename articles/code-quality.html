@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Code Quality: Common Mistakes Every Team Makes and How to Detect Them — Jefferson Valandro</title>
+  <meta name="description" content="The six most destructive anti-patterns, dependency cycles, module health scores, and how to automate architecture quality checks on any codebase.">
+  <meta name="author" content="Jefferson Valandro">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/articles/code-quality.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/articles/code-quality.html">
+  <meta property="og:title" content="Code Quality: Common Mistakes Every Team Makes and How to Detect Them — Jefferson Valandro">
+  <meta property="og:description" content="The six most destructive anti-patterns, dependency cycles, module health scores, and how to automate architecture quality checks on any codebase.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/archlens.png">
+  <meta name="theme-color" content="#070d1a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../css/articles.css">
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" aria-label="Switch to Portuguese">
+    <span id="langFlag" aria-hidden="true">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-shield-alt"></i> <span lang="en">Software Quality</span><span lang="pt" hidden>Qualidade de Software</span></div>
+    <h1><span lang="en">Code Quality: Common Mistakes Every Team Makes (and How to Detect Them Automatically)</span><span lang="pt" hidden>Qualidade de Código: Os Erros Mais Comuns que Todo Time Comete (e Como Detectá-los Automaticamente)</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> April 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">14 min read</span><span lang="pt" hidden>14 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">code quality</span>
+      <span class="tag">anti-patterns</span>
+      <span class="tag">architecture</span>
+      <span class="tag">refactoring</span>
+      <span class="tag">tech debt</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">Code quality is one of those terms that every team claims to care about and few can actually measure. Ask five engineers what "good quality" means and you'll get five different answers — clean formatting, good test coverage, meaningful variable names, low cyclomatic complexity. All true, all incomplete. Quality is the aggregate of structural decisions made (or avoided) over months. The problem is that structural degradation is invisible until it isn't: the codebase that felt fine six months ago now takes three engineers to understand a single change.</span><span lang="pt" hidden>Qualidade de código é um daqueles termos que todo time diz que se importa, mas poucos conseguem medir de verdade. Pergunte a cinco engenheiros o que significa "boa qualidade" e você terá cinco respostas diferentes — formatação limpa, boa cobertura de testes, nomes de variáveis significativos, baixa complexidade ciclomática. Tudo verdade, tudo incompleto. Qualidade é o agregado de decisões estruturais tomadas (ou evitadas) ao longo de meses. O problema é que a degradação estrutural é invisível até que não seja mais: o codebase que parecia bem há seis meses agora exige três engenheiros para entender uma única mudança.</span></p>
+
+  <p><span lang="en">This article covers the six anti-patterns that cause most of that degradation, why dependency cycles are a separate category of dangerous, how to score module health, and how to automate all of this so you catch problems early rather than explaining them in a post-mortem.</span><span lang="pt" hidden>Este artigo aborda os seis anti-patterns que causam a maior parte dessa degradação, por que ciclos de dependência são uma categoria separada de perigo, como pontuar a saúde de módulos e como automatizar tudo isso para que você detecte problemas cedo, e não os explique em um post-mortem.</span></p>
+
+  <h2><span lang="en">Why Quality Degrades Silently</span><span lang="pt" hidden>Por Que a Qualidade Degrada Silenciosamente</span></h2>
+
+  <p><span lang="en">Structural problems don't announce themselves. They accumulate through decisions that each looked reasonable at the time: adding one more method to the class that already does too much, importing a module that creates a subtle cycle, duplicating a constant "just this once". Each individual decision has a plausible justification. The compound effect — measured across months — is a codebase where changes are unpredictable, refactoring feels risky, and onboarding takes weeks instead of days.</span><span lang="pt" hidden>Problemas estruturais não se anunciam. Eles se acumulam por meio de decisões que, individualmente, pareciam razoáveis na época: adicionar mais um método à classe que já faz coisas demais, importar um módulo que cria um ciclo sutil, duplicar uma constante "só dessa vez". Cada decisão individual tem uma justificativa plausível. O efeito composto — medido ao longo de meses — é um codebase onde mudanças são imprevisíveis, refatorar parece arriscado e o onboarding leva semanas em vez de dias.</span></p>
+
+  <div class="callout">
+    <p><span lang="en"><strong>The silent accumulation problem:</strong> No single commit breaks a codebase. Anti-patterns emerge from a pattern of small, locally reasonable decisions that are globally destructive. This is why code reviews alone are insufficient — a reviewer approving a single commit can't see the structural trend that commit participates in.</span><span lang="pt" hidden><strong>O problema da acumulação silenciosa:</strong> Nenhum commit único quebra um codebase. Anti-patterns emergem de um padrão de decisões pequenas e localmente razoáveis que são globalmente destrutivas. É por isso que code reviews sozinhos são insuficientes — um revisor aprovando um único commit não consegue ver a tendência estrutural da qual aquele commit participa.</span></p>
+  </div>
+
+  <h2><span lang="en">The Six Most Destructive Anti-Patterns</span><span lang="pt" hidden>Os Seis Anti-Patterns Mais Destrutivos</span></h2>
+
+  <h3><span lang="en">1. God Class</span><span lang="pt" hidden>1. God Class (Classe Deus)</span></h3>
+
+  <p><span lang="en">A God Class is a class (or module, or service) that knows too much and does too much. It accumulates responsibilities over time because it already exists, already has the database connection, already imports the right utilities — so new behavior lands there instead of in a proper home. The result is a class with hundreds of methods, thousands of lines, and intimate knowledge of every other domain in the system.</span><span lang="pt" hidden>Uma God Class é uma classe (ou módulo, ou serviço) que sabe coisas demais e faz coisas demais. Ela acumula responsabilidades ao longo do tempo porque já existe, já tem a conexão com o banco, já importa os utilitários certos — então novo comportamento aterra lá em vez de encontrar um lugar adequado. O resultado é uma classe com centenas de métodos, milhares de linhas e conhecimento íntimo de todos os outros domínios do sistema.</span></p>
+
+  <div class="code-block"><code><span lang="en">// God Class signals:
+// • More than ~300 lines and growing
+// • Methods that span unrelated domains (payments AND emails AND reports)
+// • Every other module imports it
+// • Changing it requires understanding the whole system</span><span lang="pt" hidden>// Sinais de God Class:
+// • Mais de ~300 linhas e crescendo
+// • Métodos que abrangem domínios não relacionados (pagamentos E emails E relatórios)
+// • Todo outro módulo a importa
+// • Alterá-la exige entender todo o sistema</span>
+
+class OrderService {
+  createOrder() { ... }
+  sendConfirmationEmail() { ... }    // deveria ser EmailService
+  generateInvoicePDF() { ... }       // deveria ser InvoiceService
+  updateInventory() { ... }          // deveria ser InventoryService
+  applyDiscountCode() { ... }        // deveria ser PromotionService
+  calculateShipping() { ... }        // deveria ser ShippingService
+  notifyWarehouse() { ... }          // deveria ser NotificationService
+  // ... 40 more methods
+}</code></div>
+
+  <p><span lang="en">The fix is decomposition by Single Responsibility: each class should have exactly one reason to change. An <code>OrderService</code> should handle the order lifecycle. Emails, invoices, inventory, and shipping belong in their own services with their own boundaries.</span><span lang="pt" hidden>A correção é a decomposição pelo Princípio da Responsabilidade Única: cada classe deve ter exatamente um motivo para mudar. Um <code>OrderService</code> deve lidar com o ciclo de vida do pedido. Emails, faturas, estoque e frete pertencem a seus próprios serviços com seus próprios limites.</span></p>
+
+  <h3><span lang="en">2. Feature Envy</span><span lang="pt" hidden>2. Feature Envy (Inveja de Feature)</span></h3>
+
+  <p><span lang="en">Feature Envy describes a method that is more interested in the data of another class than its own. The giveaway is a method that repeatedly calls getters on an external object to compute something. The method belongs with the data it's consuming — it just ended up in the wrong place.</span><span lang="pt" hidden>Feature Envy descreve um método que está mais interessado nos dados de outra classe do que nos seus próprios. O sinal é um método que chama repetidamente getters de um objeto externo para calcular algo. O método pertence aos dados que está consumindo — ele apenas acabou no lugar errado.</span></p>
+
+  <div class="code-block"><code><span lang="en">// Feature Envy — this method belongs in Order, not OrderReportService</span><span lang="pt" hidden>// Feature Envy — esse método pertence a Order, não a OrderReportService</span>
+class OrderReportService {
+  calculateTotal(order: Order): number {
+    const subtotal = order.getItems()
+      .reduce((sum, item) => sum + item.getPrice() * item.getQuantity(), 0);
+    const discount = order.getCoupon()?.getDiscountRate() ?? 0;
+    const tax = order.getAddress().getState().getTaxRate();
+    return subtotal * (1 - discount) * (1 + tax);
+  }
+}</code></div>
+
+  <p><span lang="en">Feature Envy is often a symptom of an anemic domain model: all the data lives in POJOs (plain objects with only getters/setters) while all the behavior ends up scattered in service classes. Moving behavior closer to the data it operates on reduces coupling and improves cohesion simultaneously.</span><span lang="pt" hidden>Feature Envy é frequentemente um sintoma de modelo de domínio anêmico: todos os dados vivem em POJOs (objetos simples com apenas getters/setters) enquanto todo o comportamento acaba espalhado em classes de serviço. Mover o comportamento para perto dos dados em que opera reduz o acoplamento e melhora a coesão simultaneamente.</span></p>
+
+  <h3><span lang="en">3. Shotgun Surgery</span><span lang="pt" hidden>3. Shotgun Surgery (Cirurgia de Escopeta)</span></h3>
+
+  <p><span lang="en">Shotgun Surgery is the inverse of God Class: a single logical change requires modifications to many unrelated files. Adding a new user field forces changes in the model, the DTO, the mapper, the validator, the API schema, the frontend form, the email template, and three test fixtures. No single file is too large — but every change is expensive because the concern is scattered everywhere.</span><span lang="pt" hidden>Shotgun Surgery é o inverso da God Class: uma única mudança lógica exige modificações em muitos arquivos não relacionados. Adicionar um novo campo de usuário força mudanças no modelo, no DTO, no mapper, no validador, no schema da API, no formulário do frontend, no template de email e em três fixtures de teste. Nenhum arquivo individual é muito grande — mas cada mudança é cara porque a responsabilidade está espalhada por toda parte.</span></p>
+
+  <p><span lang="en">The root cause is usually missing abstraction: the same concept is represented multiple times in different forms, and there's no single authoritative source that the others derive from. The fix is consolidation — identifying the canonical representation and generating or deriving the others from it.</span><span lang="pt" hidden>A causa raiz geralmente é abstração ausente: o mesmo conceito é representado múltiplas vezes em formas diferentes, e não há uma fonte autoritativa única da qual as outras derivam. A correção é consolidação — identificar a representação canônica e gerar ou derivar as outras a partir dela.</span></p>
+
+  <h3><span lang="en">4. Data Clump</span><span lang="pt" hidden>4. Data Clump (Grupo de Dados)</span></h3>
+
+  <p><span lang="en">Data Clumps are groups of data items that always appear together but haven't been named as a concept. If three or more fields always travel together — <code>street</code>, <code>city</code>, <code>postalCode</code>; or <code>startDate</code>, <code>endDate</code>, <code>timezone</code> — that's an object waiting to be born. Leaving them as loose parameters means every function that uses them must accept all three, every validation must repeat itself, and refactoring one means touching every call site.</span><span lang="pt" hidden>Data Clumps são grupos de itens de dados que sempre aparecem juntos, mas não foram nomeados como um conceito. Se três ou mais campos sempre viajam juntos — <code>street</code>, <code>city</code>, <code>postalCode</code>; ou <code>startDate</code>, <code>endDate</code>, <code>timezone</code> — é um objeto esperando para nascer. Deixá-los como parâmetros soltos significa que cada função que os usa deve aceitar todos os três, cada validação deve se repetir e refatorar um significa tocar todos os call sites.</span></p>
+
+  <div class="code-block"><code><span lang="en">// Data Clump — these three always appear together</span><span lang="pt" hidden>// Data Clump — esses três sempre aparecem juntos</span>
+function scheduleReport(startDate: Date, endDate: Date, timezone: string) { ... }
+function fetchMetrics(startDate: Date, endDate: Date, timezone: string) { ... }
+function exportData(startDate: Date, endDate: Date, timezone: string) { ... }
+
+<span lang="en">// After extracting the concept:</span><span lang="pt" hidden>// Após extrair o conceito:</span>
+class DateRange { constructor(start: Date, end: Date, timezone: string) { ... } }
+function scheduleReport(range: DateRange) { ... }</code></div>
+
+  <h3><span lang="en">5. Dead Code</span><span lang="pt" hidden>5. Dead Code (Código Morto)</span></h3>
+
+  <p><span lang="en">Dead code is code that is never executed: unreachable branches, unused exports, variables that are assigned but never read, functions that are defined but never called. Beyond the obvious problem of wasted space, dead code creates a maintenance trap — future developers can't tell if it's intentionally unused (a toggle, a migration path) or accidentally orphaned. Every hour spent reading dead code is an hour not spent understanding live code.</span><span lang="pt" hidden>Código morto é código que nunca é executado: branches inacessíveis, exports não utilizados, variáveis que são atribuídas mas nunca lidas, funções que são definidas mas nunca chamadas. Além do problema óbvio de espaço desperdiçado, o código morto cria uma armadilha de manutenção — futuros desenvolvedores não conseguem dizer se está intencionalmente sem uso (um toggle, um caminho de migração) ou acidentalmente órfão. Cada hora gasta lendo código morto é uma hora não gasta entendendo código vivo.</span></p>
+
+  <p><span lang="en">The aggressive fix is deletion. If it's truly dead and there's no planned use, remove it — that's what version control is for. The conservative fix is a clear comment marking the intent, but this approach compounds: every "will be used later" comment that ages becomes noise.</span><span lang="pt" hidden>A correção agressiva é a exclusão. Se está verdadeiramente morto e não há uso planejado, remova — é para isso que existe o controle de versão. A correção conservadora é um comentário claro marcando a intenção, mas essa abordagem se agrava: cada comentário "será usado depois" que envelhece se torna ruído.</span></p>
+
+  <h3><span lang="en">6. Primitive Obsession</span><span lang="pt" hidden>6. Primitive Obsession (Obsessão por Primitivos)</span></h3>
+
+  <p><span lang="en">Primitive Obsession is the habit of representing domain concepts with raw primitives instead of typed objects. User IDs as plain strings, monetary amounts as floating-point numbers, email addresses as unvalidated strings. The code compiles and runs — until someone passes a product ID where a user ID was expected, or adds two monetary amounts in different currencies, or stores an email without validation.</span><span lang="pt" hidden>Primitive Obsession é o hábito de representar conceitos de domínio com primitivos brutos em vez de objetos tipados. IDs de usuário como strings puras, valores monetários como números de ponto flutuante, endereços de email como strings não validadas. O código compila e roda — até que alguém passe um ID de produto onde se esperava um ID de usuário, ou some dois valores monetários em moedas diferentes, ou armazene um email sem validação.</span></p>
+
+  <div class="code-block"><code><span lang="en">// Primitive Obsession — easy to misuse, no domain protection</span><span lang="pt" hidden>// Primitive Obsession — fácil de usar errado, sem proteção de domínio</span>
+function chargeUser(userId: string, amount: number, currency: string) { ... }
+chargeUser(productId, 9.99, "USD"); <span lang="en">// compiles fine, wrong at runtime</span><span lang="pt" hidden>// compila bem, errado em runtime</span>
+
+<span lang="en">// With value objects — the type system catches the mistake at compile time</span><span lang="pt" hidden>// Com value objects — o sistema de tipos captura o erro em tempo de compilação</span>
+function chargeUser(userId: UserId, amount: Money) { ... }
+chargeUser(productId, Money.usd(9.99)); <span lang="en">// type error — ProductId ≠ UserId</span><span lang="pt" hidden>// erro de tipo — ProductId ≠ UserId</span></code></div>
+
+  <p><span lang="en">Value objects — thin wrappers around primitives that enforce invariants — are the standard fix. They make invalid states unrepresentable and push validation to the boundary where data enters the system.</span><span lang="pt" hidden>Value objects — invólucros finos em torno de primitivos que impõem invariantes — são a correção padrão. Eles tornam estados inválidos não representáveis e empurram a validação para o limite onde os dados entram no sistema.</span></p>
+
+  <h2><span lang="en">Dependency Cycles: A Separate Category of Dangerous</span><span lang="pt" hidden>Ciclos de Dependência: Uma Categoria Separada de Perigo</span></h2>
+
+  <p><span lang="en">Circular dependencies deserve their own section because they're qualitatively different from the anti-patterns above. A cycle doesn't degrade performance or readability directly — it destroys your ability to reason about the system independently. When module A depends on B, and B depends on A, you cannot understand, test, or deploy either one without the other. Both must change together, be tested together, and be reasoned about together. The modules are coupled in the most fundamental sense.</span><span lang="pt" hidden>Dependências circulares merecem sua própria seção porque são qualitativamente diferentes dos anti-patterns acima. Um ciclo não degrada o desempenho ou a legibilidade diretamente — ele destrói sua capacidade de raciocinar sobre o sistema independentemente. Quando o módulo A depende de B e B depende de A, você não pode entender, testar ou implantar nenhum dos dois sem o outro. Ambos devem mudar juntos, ser testados juntos e raciocinar sobre eles juntos. Os módulos estão acoplados no sentido mais fundamental.</span></p>
+
+  <div class="diagram">
+    <div style="display:flex; align-items:center; justify-content:center; gap:2rem; flex-wrap:wrap;">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:1rem;">
+        <div style="background:rgba(247,37,133,0.1); border:2px solid rgba(247,37,133,0.4); border-radius:10px; padding:0.8rem 1.4rem; text-align:center;">
+          <div style="font-size:0.8rem; font-weight:700; color:#f72585;">Order Service</div>
+          <div style="font-size:0.65rem; color:var(--muted); margin-top:0.2rem;"><span lang="en">imports User Service</span><span lang="pt" hidden>importa User Service</span></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:2.5rem;">
+          <div style="color:#f72585; font-size:0.8rem;">↑ <span lang="en">also imports</span><span lang="pt" hidden>também importa</span></div>
+          <div style="color:#f72585; font-size:0.8rem;"><span lang="en">imports</span><span lang="pt" hidden>importa</span> ↓</div>
+        </div>
+        <div style="background:rgba(247,37,133,0.1); border:2px solid rgba(247,37,133,0.4); border-radius:10px; padding:0.8rem 1.4rem; text-align:center;">
+          <div style="font-size:0.8rem; font-weight:700; color:#f72585;">User Service</div>
+          <div style="font-size:0.65rem; color:var(--muted); margin-top:0.2rem;"><span lang="en">imports Order Service</span><span lang="pt" hidden>importa Order Service</span></div>
+        </div>
+      </div>
+      <div style="color:var(--muted); font-size:1.4rem;">→</div>
+      <div style="background:rgba(247,37,133,0.08); border:1px solid rgba(247,37,133,0.25); border-radius:10px; padding:1rem 1.2rem; max-width:220px;">
+        <div style="font-size:0.72rem; color:#f87db0; line-height:1.6;">
+          <div>✗ <span lang="en">Can't test A without B</span><span lang="pt" hidden>Não pode testar A sem B</span></div>
+          <div>✗ <span lang="en">Can't deploy A without B</span><span lang="pt" hidden>Não pode implantar A sem B</span></div>
+          <div>✗ <span lang="en">Changes ripple in both directions</span><span lang="pt" hidden>Mudanças se propagam em ambas direções</span></div>
+          <div>✗ <span lang="en">No clear layer boundary</span><span lang="pt" hidden>Nenhum limite de camada claro</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="diagram-label"><span lang="en">Circular dependencies merge separate modules into a single indivisible unit — defeating the purpose of modularity</span><span lang="pt" hidden>Dependências circulares fundem módulos separados em uma única unidade indivisível — derrotando o propósito da modularidade</span></div>
+  </div>
+
+  <p><span lang="en">Cycles are insidious because they're hard to spot in code review. A single import statement looks harmless. The cycle only becomes visible when you draw the dependency graph — which almost no one does manually. Automated detection is the only practical approach at scale.</span><span lang="pt" hidden>Ciclos são insidiosos porque são difíceis de detectar em code reviews. Uma única instrução import parece inofensiva. O ciclo só fica visível quando você desenha o grafo de dependências — o que quase ninguém faz manualmente. A detecção automatizada é a única abordagem prática em escala.</span></p>
+
+  <p><span lang="en">The standard fix is extraction: identify the subset of behavior that both modules need, extract it into a third module with no dependencies on either, and have both import from there. Or introduce an abstraction (interface, event) that breaks the direct import relationship.</span><span lang="pt" hidden>A correção padrão é a extração: identificar o subconjunto de comportamento que ambos os módulos precisam, extraí-lo em um terceiro módulo sem dependências em nenhum dos dois, e fazer com que ambos importem de lá. Ou introduzir uma abstração (interface, evento) que quebra o relacionamento de importação direto.</span></p>
+
+  <h2><span lang="en">Scoring Module Health: Cohesion, Coupling, and Size</span><span lang="pt" hidden>Pontuando a Saúde de Módulos: Coesão, Acoplamento e Tamanho</span></h2>
+
+  <p><span lang="en">Individual anti-patterns are useful to name. But a single number — a health score — is useful for ranking. When you have 15 modules and limited refactoring budget, you need to know which three to fix first. A 0–100 score per module, broken down by three dimensions, gives you that ranking:</span><span lang="pt" hidden>Anti-patterns individuais são úteis para nomear. Mas um único número — um health score — é útil para ranking. Quando você tem 15 módulos e orçamento limitado de refatoração, precisa saber quais três corrigir primeiro. Uma pontuação de 0–100 por módulo, dividida em três dimensões, fornece esse ranking:</span></p>
+
+  <div class="diagram">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; max-width:660px; margin:0 auto;">
+      <div style="background:rgba(79,142,247,0.1); border:1px solid rgba(79,142,247,0.3); border-radius:10px; padding:1rem;">
+        <div style="font-size:0.8rem; font-weight:700; color:var(--accent); margin-bottom:0.5rem;"><span lang="en">Cohesion</span><span lang="pt" hidden>Coesão</span></div>
+        <div style="font-size:0.7rem; color:var(--muted); line-height:1.5;"><span lang="en">Do the responsibilities in this module belong together? High cohesion = single clear purpose. Low cohesion = God Class signal.</span><span lang="pt" hidden>As responsabilidades neste módulo pertencem juntas? Alta coesão = propósito único e claro. Baixa coesão = sinal de God Class.</span></div>
+      </div>
+      <div style="background:rgba(6,214,160,0.08); border:1px solid rgba(6,214,160,0.3); border-radius:10px; padding:1rem;">
+        <div style="font-size:0.8rem; font-weight:700; color:var(--accent2); margin-bottom:0.5rem;"><span lang="en">Coupling</span><span lang="pt" hidden>Acoplamento</span></div>
+        <div style="font-size:0.7rem; color:var(--muted); line-height:1.5;"><span lang="en">How many other modules does this one depend on? High coupling = changes here cascade everywhere. Low coupling = module is independently changeable.</span><span lang="pt" hidden>De quantos outros módulos este depende? Alto acoplamento = mudanças aqui se propagam para todo lado. Baixo acoplamento = módulo pode ser alterado independentemente.</span></div>
+      </div>
+      <div style="background:rgba(255,209,102,0.08); border:1px solid rgba(255,209,102,0.3); border-radius:10px; padding:1rem;">
+        <div style="font-size:0.8rem; font-weight:700; color:#ffd166; margin-bottom:0.5rem;"><span lang="en">Size</span><span lang="pt" hidden>Tamanho</span></div>
+        <div style="font-size:0.7rem; color:var(--muted); line-height:1.5;"><span lang="en">File count and line count relative to the rest of the codebase. Outliers (too large or surprisingly small) are signals worth investigating.</span><span lang="pt" hidden>Contagem de arquivos e linhas em relação ao restante do codebase. Outliers (muito grandes ou surpreendentemente pequenos) são sinais que valem investigar.</span></div>
+      </div>
+    </div>
+    <div class="diagram-label"><span lang="en">Score = weighted average of cohesion, coupling, and size — sorted worst-first to prioritize refactoring effort</span><span lang="pt" hidden>Pontuação = média ponderada de coesão, acoplamento e tamanho — ordenados do pior para o melhor para priorizar o esforço de refatoração</span></div>
+  </div>
+
+  <p><span lang="en">A module scoring 30/100 on coupling with 80/100 on cohesion tells a different story than a module scoring 30/100 on cohesion with 80/100 on coupling. The first is tightly integrated with the system but internally well-organized — the fix is decoupling. The second is loosely connected but internally a mess — the fix is decomposition. Knowing <em>which</em> dimension is failing tells you what kind of refactoring to apply.</span><span lang="pt" hidden>Um módulo com pontuação 30/100 em acoplamento e 80/100 em coesão conta uma história diferente de um módulo com 30/100 em coesão e 80/100 em acoplamento. O primeiro está fortemente integrado ao sistema, mas bem organizado internamente — a correção é o desacoplamento. O segundo está fracamente conectado, mas internamente é uma bagunça — a correção é a decomposição. Saber <em>qual</em> dimensão está falhando indica que tipo de refatoração aplicar.</span></p>
+
+  <h2><span lang="en">Automating Architecture Quality Analysis</span><span lang="pt" hidden>Automatizando a Análise de Qualidade Arquitetural</span></h2>
+
+  <p><span lang="en">All of the above — anti-pattern detection, cycle detection, module health scoring — is tractable to automate. You don't need to audit your architecture manually. Tools exist that can scan your codebase, build the dependency graph, identify the patterns, and score each module in seconds.</span><span lang="pt" hidden>Tudo o que foi mencionado acima — detecção de anti-patterns, detecção de ciclos, pontuação de saúde de módulos — é viável de automatizar. Você não precisa auditar sua arquitetura manualmente. Existem ferramentas que podem escanear seu codebase, construir o grafo de dependências, identificar os padrões e pontuar cada módulo em segundos.</span></p>
+
+  <p><span lang="en">One such tool is <a href="https://jeffev.github.io/archlens-ai" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:600;">archlens-ai</a> — a CLI that points at any codebase and generates a self-contained HTML report with an interactive architecture graph, per-module health scores, detected anti-patterns with severity ratings, dependency cycle paths, and concrete refactoring suggestions. It runs on top of Claude Code and supports TypeScript, JavaScript, Python, Go, Rust, and Java/Kotlin.</span><span lang="pt" hidden>Uma dessas ferramentas é o <a href="https://jeffev.github.io/archlens-ai" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:600;">archlens-ai</a> — uma CLI que aponta para qualquer codebase e gera um relatório HTML autocontido com grafo interativo de arquitetura, health scores por módulo, anti-patterns detectados com níveis de severidade, caminhos de ciclos de dependência e sugestões concretas de refatoração. Funciona em cima do Claude Code e suporta TypeScript, JavaScript, Python, Go, Rust e Java/Kotlin.</span></p>
+
+  <div class="code-block"><code><span lang="en"># Install once</span><span lang="pt" hidden># Instale uma vez</span>
+npm install -g archlens-ai
+
+<span lang="en"># Analyze any project — report opens in your browser automatically</span><span lang="pt" hidden># Analise qualquer projeto — o relatório abre no navegador automaticamente</span>
+archlens-ai analyze ./my-project
+
+<span lang="en"># Deep mode reads key file contents for more accurate analysis</span><span lang="pt" hidden># Modo deep lê o conteúdo de arquivos-chave para análise mais precisa</span>
+archlens-ai analyze ./my-project --depth deep
+
+<span lang="en"># Security-focused analysis (OWASP Top 10)</span><span lang="pt" hidden># Análise focada em segurança (OWASP Top 10)</span>
+archlens-ai analyze ./my-project --profile security</code></div>
+
+  <p><span lang="en">The report surfaces exactly the patterns covered in this article: God Classes with responsibility breakdowns, Feature Envy signals, Shotgun Surgery indicators, Data Clumps, Dead Code candidates, and Primitive Obsession instances — each with the module it lives in, its severity, and a concrete suggestion for addressing it.</span><span lang="pt" hidden>O relatório expõe exatamente os padrões abordados neste artigo: God Classes com análise de responsabilidades, sinais de Feature Envy, indicadores de Shotgun Surgery, Data Clumps, candidatos a Dead Code e instâncias de Primitive Obsession — cada um com o módulo onde vive, sua severidade e uma sugestão concreta para resolvê-lo.</span></p>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>What a real report looks like:</strong> Running archlens-ai on a mid-size TypeScript monorepo (130 files) produced a health score of 44/100 with 12 identified modules, 7 architectural suggestions, and 3 circular dependency paths — all in under 30 seconds, with an interactive graph showing which modules were critical, at-risk, or healthy. The worst-scoring module had cohesion 28/100 and coupling 71/100, immediately pointing to decomposition as the right intervention.</span><span lang="pt" hidden><strong>Como é um relatório real:</strong> Executar archlens-ai em um monorepo TypeScript de médio porte (130 arquivos) produziu um health score de 44/100 com 12 módulos identificados, 7 sugestões arquiteturais e 3 caminhos de dependência circular — tudo em menos de 30 segundos, com um grafo interativo mostrando quais módulos eram críticos, em risco ou saudáveis. O módulo com pior pontuação tinha coesão 28/100 e acoplamento 71/100, apontando imediatamente para a decomposição como a intervenção correta.</span></p>
+  </div>
+
+  <h2><span lang="en">Quality Gates in CI</span><span lang="pt" hidden>Quality Gates em CI</span></h2>
+
+  <p><span lang="en">Detecting anti-patterns is valuable. Blocking merges when quality drops below a threshold is how you prevent them from accumulating in the first place. A CI quality gate turns the health score from a diagnostic into a policy.</span><span lang="pt" hidden>Detectar anti-patterns é valioso. Bloquear merges quando a qualidade cai abaixo de um limite é como você evita que eles se acumulem desde o início. Um quality gate em CI transforma o health score de um diagnóstico em uma política.</span></p>
+
+  <div class="code-block"><code><span lang="en"># .github/workflows/architecture.yml
+# Blocks merge if health score drops below 70</span><span lang="pt" hidden># .github/workflows/architecture.yml
+# Bloqueia merge se o health score cair abaixo de 70</span>
+- name: <span lang="en">Architecture quality gate</span><span lang="pt" hidden>Quality gate de arquitetura</span>
+  run: npx archlens-ai analyze . --min-score 70 --no-open --output /tmp/archlens.html
+
+- name: <span lang="en">Upload report as artifact</span><span lang="pt" hidden>Upload do relatório como artefato</span>
+  uses: actions/upload-artifact@v3
+  with:
+    name: architecture-report
+    path: /tmp/archlens.html</code></div>
+
+  <p><span lang="en">The <code>--min-score</code> flag exits with code 1 when the health score falls below the threshold, making it a standard blocking CI check. The report is uploaded as an artifact so the team can review exactly which modules and anti-patterns triggered the failure — not just that the build failed.</span><span lang="pt" hidden>O flag <code>--min-score</code> sai com código 1 quando o health score cai abaixo do limite, tornando-o um check de CI bloqueante padrão. O relatório é carregado como artefato para que o time possa revisar exatamente quais módulos e anti-patterns desencadearam a falha — não apenas que o build falhou.</span></p>
+
+  <p><span lang="en">A few practical notes on thresholds: don't set the initial threshold at your current score minus one. Set it at a defensible target (70 is a reasonable baseline for most teams) and accept that you'll need to refactor to reach it. The gate only creates value if it occasionally blocks — a gate that never triggers is not a gate, it's decoration.</span><span lang="pt" hidden>Algumas notas práticas sobre limites: não defina o limite inicial como sua pontuação atual menos um. Defina-o em um alvo defensável (70 é uma linha de base razoável para a maioria dos times) e aceite que você precisará refatorar para alcançá-lo. O gate só cria valor se ocasionalmente bloquear — um gate que nunca aciona não é um gate, é decoração.</span></p>
+
+  <h2><span lang="en">Building the Habit: Architectural Review Cadence</span><span lang="pt" hidden>Construindo o Hábito: Cadência de Revisão Arquitetural</span></h2>
+
+  <p><span lang="en">A CI gate catches regressions. But catching a problem the day it's introduced is better than catching it in the CI gate. The teams that maintain quality over years tend to have a lightweight review habit: a short architectural review in sprint retrospectives, or a monthly "architecture health" meeting where the score trend is reviewed alongside new anti-pattern findings.</span><span lang="pt" hidden>Um gate de CI captura regressões. Mas detectar um problema no dia em que é introduzido é melhor do que capturá-lo no gate de CI. Os times que mantêm qualidade ao longo dos anos tendem a ter um hábito leve de revisão: uma revisão arquitetural curta nas retrospectivas da sprint, ou uma reunião mensal de "saúde da arquitetura" onde a tendência de pontuação é revisada junto com novos achados de anti-patterns.</span></p>
+
+  <p><span lang="en">The key insight is that quality is a trend, not a snapshot. A module that scores 60/100 today but has been improving from 40 for three months is in a better position than a module that scores 75/100 but has been declining from 90. The score at any point in time is less informative than the direction it's moving.</span><span lang="pt" hidden>O insight chave é que qualidade é uma tendência, não um snapshot. Um módulo que pontua 60/100 hoje, mas tem melhorado de 40 por três meses, está em melhor posição do que um módulo que pontua 75/100, mas tem declinado de 90. A pontuação em qualquer momento no tempo é menos informativa do que a direção em que está se movendo.</span></p>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+
+  <ul>
+    <li><span lang="en"><strong>Anti-patterns accumulate through locally reasonable decisions.</strong> No single commit is the problem — the problem is the pattern across commits. This is why automated detection at scale is necessary.</span><span lang="pt" hidden><strong>Anti-patterns se acumulam por meio de decisões localmente razoáveis.</strong> Nenhum commit único é o problema — o problema é o padrão ao longo dos commits. Por isso a detecção automatizada em escala é necessária.</span></li>
+    <li><span lang="en"><strong>God Class, Feature Envy, Shotgun Surgery, Data Clump, Dead Code, Primitive Obsession</strong> are the six patterns responsible for most structural debt. Name them on your team so engineers can identify them in code review before they compound.</span><span lang="pt" hidden><strong>God Class, Feature Envy, Shotgun Surgery, Data Clump, Dead Code, Primitive Obsession</strong> são os seis padrões responsáveis pela maior parte da dívida estrutural. Nomeie-os no seu time para que os engenheiros possam identificá-los em code reviews antes que se agravem.</span></li>
+    <li><span lang="en"><strong>Circular dependencies are qualitatively different</strong> — they destroy the modularity boundary entirely. Detect them with tooling; don't rely on code review to catch them.</span><span lang="pt" hidden><strong>Dependências circulares são qualitativamente diferentes</strong> — elas destroem completamente o limite de modularidade. Detecte-as com ferramentas; não confie no code review para encontrá-las.</span></li>
+    <li><span lang="en"><strong>Score modules on cohesion, coupling, and size</strong> to know where to invest refactoring effort. The worst-first ranking is more actionable than a full audit.</span><span lang="pt" hidden><strong>Pontue módulos em coesão, acoplamento e tamanho</strong> para saber onde investir esforço de refatoração. O ranking do pior para o melhor é mais acionável do que uma auditoria completa.</span></li>
+    <li><span lang="en"><strong>Automate the analysis.</strong> Tools like <a href="https://jeffev.github.io/archlens-ai" target="_blank" rel="noopener noreferrer" style="color:var(--accent);">archlens-ai</a> can surface all of the above in one command — interactive graph, module scores, anti-patterns, and cycle paths — without manual effort.</span><span lang="pt" hidden><strong>Automatize a análise.</strong> Ferramentas como o <a href="https://jeffev.github.io/archlens-ai" target="_blank" rel="noopener noreferrer" style="color:var(--accent);">archlens-ai</a> podem expor tudo isso em um único comando — grafo interativo, pontuações de módulos, anti-patterns e caminhos de ciclos — sem esforço manual.</span></li>
+    <li><span lang="en"><strong>Add a CI quality gate</strong> with <code>--min-score</code> to block merges that regress architecture health. A gate that never triggers provides no value; set a real threshold and invest in meeting it.</span><span lang="pt" hidden><strong>Adicione um quality gate no CI</strong> com <code>--min-score</code> para bloquear merges que regridem a saúde da arquitetura. Um gate que nunca aciona não tem valor; defina um limite real e invista em atingi-lo.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+<footer><p>&copy; 2025 Jefferson Valandro. Built with care.</p></footer>
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>
