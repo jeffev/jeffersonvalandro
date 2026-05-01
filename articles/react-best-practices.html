@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>React Best Practices: Architecture, Performance, and Quality in 2025 — Jefferson Valandro</title>
+  <meta name="description" content="Component composition, hooks pitfalls, state management choices, performance with memo and useCallback, code splitting, and testing with React Testing Library — for production React apps.">
+  <meta name="author" content="Jefferson Valandro">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/articles/react-best-practices.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/articles/react-best-practices.html">
+  <meta property="og:title" content="React Best Practices: Architecture, Performance, and Quality in 2025 — Jefferson Valandro">
+  <meta property="og:description" content="Component composition, hooks pitfalls, state management, performance, code splitting, and testing patterns for production React apps.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/cover_bg_5.png">
+  <meta name="theme-color" content="#070d1a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../css/articles.css">
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" aria-label="Switch to Portuguese">
+    <span id="langFlag" aria-hidden="true">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-code"></i> <span lang="en">Frontend · React</span><span lang="pt" hidden>Frontend · React</span></div>
+    <h1><span lang="en">React Best Practices: Architecture, Performance, and Quality in 2025</span><span lang="pt" hidden>Boas Práticas em React: Arquitetura, Performance e Qualidade em 2025</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> April 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">15 min read</span><span lang="pt" hidden>15 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">React</span>
+      <span class="tag">TypeScript</span>
+      <span class="tag">hooks</span>
+      <span class="tag">performance</span>
+      <span class="tag">state management</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">React is deliberately unopinionated — it's a library, not a framework. That flexibility is real, and so is the cost: every team ends up building their own implicit framework through accumulated conventions. The difference between a React codebase that's a pleasure to work in and one that's a maze of workarounds comes down to a handful of decisions made (or not made) early on.</span><span lang="pt" hidden>React é deliberadamente não opinativo — é uma biblioteca, não um framework. Essa flexibilidade é real, e o custo também: cada time acaba construindo seu próprio framework implícito por meio de convenções acumuladas. A diferença entre um codebase React que é um prazer de trabalhar e um labirinto de workarounds se resume a um punhado de decisões tomadas (ou não) no início.</span></p>
+
+  <h2><span lang="en">1. Component Design: Small, Focused, and Composable</span><span lang="pt" hidden>1. Design de Componentes: Pequenos, Focados e Combináveis</span></h2>
+
+  <p><span lang="en">The most valuable mental model in React is thinking in composition rather than inheritance or hierarchy. A component should do one thing and do it well. The signal that a component needs to be split: you need to scroll to understand what it renders.</span><span lang="pt" hidden>O modelo mental mais valioso no React é pensar em composição em vez de herança ou hierarquia. Um componente deve fazer uma coisa e fazê-la bem. O sinal de que um componente precisa ser dividido: você precisa rolar para entender o que ele renderiza.</span></p>
+
+  <div class="code-block"><code><span lang="en">// ✗ Monolithic component — renders, fetches, and manages all state in one place</span><span lang="pt" hidden>// ✗ Componente monolítico — renderiza, busca e gerencia todo o estado em um lugar</span>
+function UserDashboard() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selected, setSelected] = useState(null);
+  <span lang="en">// 150 lines of JSX...</span><span lang="pt" hidden>// 150 linhas de JSX...</span>
+}
+
+<span lang="en">// ✓ Composed from focused pieces — each testable independently</span><span lang="pt" hidden>// ✓ Composto de partes focadas — cada uma testável independentemente</span>
+function UserDashboard() {
+  return (
+    &lt;DashboardLayout&gt;
+      &lt;UserListContainer /&gt;      {<span lang="en">/* fetches + manages list state */</span><span lang="pt" hidden>/* busca + gerencia estado da lista */</span>}
+      &lt;UserDetailPanel /&gt;        {<span lang="en">/* reads selected user from store */</span><span lang="pt" hidden>/* lê usuário selecionado do store */</span>}
+    &lt;/DashboardLayout&gt;
+  );
+}</code></div>
+
+  <p><span lang="en">The <strong>children prop</strong> and <strong>render props</strong> are underused composition tools. Passing UI as props rather than hardcoding it inside a component decouples layout from behavior and makes reuse trivial without adding abstraction layers.</span><span lang="pt" hidden>A <strong>prop children</strong> e <strong>render props</strong> são ferramentas de composição subutilizadas. Passar UI como props em vez de codificá-la dentro de um componente desacopla layout de comportamento e torna a reutilização trivial sem adicionar camadas de abstração.</span></p>
+
+  <div class="code-block"><code><span lang="en">// Compound pattern — state stays in the parent, rendering is delegated</span><span lang="pt" hidden>// Padrão compound — estado fica no pai, renderização é delegada</span>
+&lt;DataTable data={orders}&gt;
+  &lt;DataTable.Header /&gt;
+  &lt;DataTable.Body renderRow={order =&gt; &lt;OrderRow key={order.id} order={order} /&gt;} /&gt;
+  &lt;DataTable.Pagination /&gt;
+&lt;/DataTable&gt;</code></div>
+
+  <h2><span lang="en">2. Hooks: The Five Mistakes Everyone Makes</span><span lang="pt" hidden>2. Hooks: Os Cinco Erros que Todo Mundo Comete</span></h2>
+
+  <h3><span lang="en">useEffect for everything</span><span lang="pt" hidden>useEffect para tudo</span></h3>
+
+  <p><span lang="en"><code>useEffect</code> is the most misused hook. The React team's own guidance: most things you put in <code>useEffect</code> don't belong there. Data fetching belongs in a data-fetching library (React Query, SWR, RTK Query). Derived state belongs in a calculation during render, not a <code>useEffect</code> that syncs two state variables. Event responses belong in event handlers, not effects.</span><span lang="pt" hidden><code>useEffect</code> é o hook mais mal usado. A própria orientação da equipe React: a maioria das coisas que você coloca no <code>useEffect</code> não pertence lá. Busca de dados pertence a uma biblioteca de busca de dados (React Query, SWR, RTK Query). Estado derivado pertence a um cálculo durante a renderização, não a um <code>useEffect</code> que sincroniza duas variáveis de estado. Respostas a eventos pertencem a event handlers, não a effects.</span></p>
+
+  <div class="code-block"><code><span lang="en">// ✗ useEffect to compute derived state</span><span lang="pt" hidden>// ✗ useEffect para calcular estado derivado</span>
+const [items, setItems] = useState([]);
+const [total, setTotal] = useState(0);
+useEffect(() => { setTotal(items.reduce((s, i) => s + i.price, 0)); }, [items]);
+
+<span lang="en">// ✓ Derive during render — no effect, no extra re-render</span><span lang="pt" hidden>// ✓ Derive durante a renderização — sem effect, sem re-renderização extra</span>
+const [items, setItems] = useState([]);
+const total = items.reduce((s, i) => s + i.price, 0); <span lang="en">// recalculated on render</span><span lang="pt" hidden>// recalculado na renderização</span>
+
+<span lang="en">// ✗ useEffect to fetch on mount — no caching, no deduplication, no loading state management</span><span lang="pt" hidden>// ✗ useEffect para buscar no mount — sem cache, sem deduplicação, sem gerenciamento de loading</span>
+useEffect(() => { fetch('/api/users').then(r => r.json()).then(setUsers); }, []);
+
+<span lang="en">// ✓ React Query handles all of this — caching, background refetch, error boundaries</span><span lang="pt" hidden>// ✓ React Query lida com tudo isso — cache, refetch em background, error boundaries</span>
+const { data: users, isLoading } = useQuery({ queryKey: ['users'], queryFn: fetchUsers });</code></div>
+
+  <h3><span lang="en">Stale closures in effects and callbacks</span><span lang="pt" hidden>Closures obsoletas em effects e callbacks</span></h3>
+
+  <div class="code-block"><code><span lang="en">// ✗ Stale closure — count is captured at 0, never updates</span><span lang="pt" hidden>// ✗ Closure obsoleta — count é capturado em 0, nunca atualiza</span>
+useEffect(() => {
+  const id = setInterval(() => console.log(count), 1000);
+  return () => clearInterval(id);
+}, []); <span lang="en">// missing count dependency</span><span lang="pt" hidden>// dependência count ausente</span>
+
+<span lang="en">// ✓ Add the dependency, or use a ref for values you want to read without re-subscribing</span><span lang="pt" hidden>// ✓ Adicione a dependência ou use uma ref para valores que quer ler sem re-assinar</span>
+const countRef = useRef(count);
+useEffect(() => { countRef.current = count; });
+useEffect(() => {
+  const id = setInterval(() => console.log(countRef.current), 1000);
+  return () => clearInterval(id);
+}, []);</code></div>
+
+  <h3><span lang="en">Missing cleanup in effects</span><span lang="pt" hidden>Cleanup ausente em effects</span></h3>
+
+  <div class="code-block"><code><span lang="en">// ✗ Sets state after component unmounts — React 18 warning, potential memory leak</span><span lang="pt" hidden>// ✗ Define estado após o componente ser desmontado — aviso no React 18, potencial memory leak</span>
+useEffect(() => {
+  fetchUser(id).then(user => setUser(user));
+}, [id]);
+
+<span lang="en">// ✓ AbortController cancels the fetch when component unmounts or id changes</span><span lang="pt" hidden>// ✓ AbortController cancela o fetch quando o componente é desmontado ou id muda</span>
+useEffect(() => {
+  const controller = new AbortController();
+  fetchUser(id, { signal: controller.signal }).then(user => setUser(user));
+  return () => controller.abort();
+}, [id]);</code></div>
+
+  <h3><span lang="en">Overusing useState instead of useReducer</span><span lang="pt" hidden>Usar useState em excesso em vez de useReducer</span></h3>
+
+  <p><span lang="en">When you have three or more state variables that change together, or transitions that involve complex conditions, <code>useReducer</code> is cleaner than multiple <code>useState</code> calls. It centralizes logic, makes state transitions explicit, and is trivial to test (pure function — no hooks required).</span><span lang="pt" hidden>Quando você tem três ou mais variáveis de estado que mudam juntas, ou transições que envolvem condições complexas, <code>useReducer</code> é mais limpo do que múltiplas chamadas de <code>useState</code>. Ele centraliza a lógica, torna as transições de estado explícitas e é trivial de testar (função pura — sem necessidade de hooks).</span></p>
+
+  <h3><span lang="en">Not extracting custom hooks</span><span lang="pt" hidden>Não extrair custom hooks</span></h3>
+
+  <p><span lang="en">Any stateful logic that appears in more than one component belongs in a custom hook. Custom hooks are the primary reuse mechanism in React — they extract the <em>why</em> (the logic) from the <em>what</em> (the rendering). A component that is 60% hook calls and 40% JSX should have its hook calls extracted.</span><span lang="pt" hidden>Qualquer lógica com estado que aparece em mais de um componente pertence a um custom hook. Custom hooks são o mecanismo primário de reutilização no React — eles extraem o <em>porquê</em> (a lógica) do <em>o quê</em> (a renderização). Um componente que é 60% chamadas de hook e 40% JSX deve ter suas chamadas de hook extraídas.</span></p>
+
+  <div class="code-block"><code><span lang="en">// Custom hook encapsulates the logic — component focuses on rendering</span><span lang="pt" hidden>// Custom hook encapsula a lógica — componente foca na renderização</span>
+function useUserSearch(initialQuery = '') {
+  const [query, setQuery] = useState(initialQuery);
+  const debouncedQuery = useDebounce(query, 300);
+  const { data, isLoading } = useQuery({
+    queryKey: ['users', 'search', debouncedQuery],
+    queryFn: () => searchUsers(debouncedQuery),
+    enabled: debouncedQuery.length > 1
+  });
+  return { query, setQuery, results: data ?? [], isLoading };
+}
+
+function UserSearchPage() {
+  const { query, setQuery, results, isLoading } = useUserSearch();
+  return (
+    &lt;&gt;
+      &lt;SearchInput value={query} onChange={setQuery} /&gt;
+      &lt;UserList users={results} loading={isLoading} /&gt;
+    &lt;/&gt;
+  );
+}</code></div>
+
+  <h2><span lang="en">3. State Management: The Decision Tree</span><span lang="pt" hidden>3. Gerenciamento de Estado: A Árvore de Decisão</span></h2>
+
+  <div class="diagram">
+    <div style="display:flex; flex-direction:column; gap:0.7rem; max-width:560px; margin:0 auto;">
+
+      <div style="background:rgba(6,214,160,0.07); border-left:3px solid var(--accent2); border-radius:0 10px 10px 0; padding:0.85rem 1.1rem;">
+        <div style="font-size:0.78rem; font-weight:700; color:var(--accent2); margin-bottom:0.3rem;"><span lang="en">1. Can the state live in a single component?</span><span lang="pt" hidden>1. O estado pode viver em um único componente?</span></div>
+        <div style="font-size:0.7rem; color:var(--muted);"><span lang="en">Use <code>useState</code> or <code>useReducer</code>. Don't pull it into global state prematurely — it creates invisible coupling and makes the component harder to reuse.</span><span lang="pt" hidden>Use <code>useState</code> ou <code>useReducer</code>. Não coloque prematuramente em estado global — isso cria acoplamento invisível e torna o componente mais difícil de reutilizar.</span></div>
+      </div>
+
+      <div style="background:rgba(79,142,247,0.07); border-left:3px solid var(--accent); border-radius:0 10px 10px 0; padding:0.85rem 1.1rem;">
+        <div style="font-size:0.78rem; font-weight:700; color:var(--accent); margin-bottom:0.3rem;"><span lang="en">2. Is it server state (remote data)?</span><span lang="pt" hidden>2. É estado do servidor (dados remotos)?</span></div>
+        <div style="font-size:0.7rem; color:var(--muted);"><span lang="en">Use React Query or SWR. Server state has different concerns: caching, background sync, stale time, error retry. These libraries handle all of it. Putting API data in Redux or Zustand is almost always the wrong call.</span><span lang="pt" hidden>Use React Query ou SWR. Estado do servidor tem preocupações diferentes: cache, sincronização em background, stale time, retry de erro. Essas bibliotecas lidam com tudo. Colocar dados de API no Redux ou Zustand é quase sempre a escolha errada.</span></div>
+      </div>
+
+      <div style="background:rgba(255,209,102,0.07); border-left:3px solid #ffd166; border-radius:0 10px 10px 0; padding:0.85rem 1.1rem;">
+        <div style="font-size:0.78rem; font-weight:700; color:#ffd166; margin-bottom:0.3rem;"><span lang="en">3. Is it shared across a subtree of components?</span><span lang="pt" hidden>3. É compartilhado em uma subárvore de componentes?</span></div>
+        <div style="font-size:0.7rem; color:var(--muted);"><span lang="en">Use <code>Context</code> for low-frequency updates (theme, locale, auth user). Context re-renders all consumers on every change — avoid it for high-frequency state like form input values or scroll position.</span><span lang="pt" hidden>Use <code>Context</code> para atualizações de baixa frequência (tema, locale, usuário autenticado). Context re-renderiza todos os consumidores em cada mudança — evite para estado de alta frequência como valores de inputs de formulário ou posição de scroll.</span></div>
+      </div>
+
+      <div style="background:rgba(247,37,133,0.07); border-left:3px solid #f72585; border-radius:0 10px 10px 0; padding:0.85rem 1.1rem;">
+        <div style="font-size:0.78rem; font-weight:700; color:#f87db0; margin-bottom:0.3rem;"><span lang="en">4. Is it truly global client state?</span><span lang="pt" hidden>4. É verdadeiramente estado global do cliente?</span></div>
+        <div style="font-size:0.7rem; color:var(--muted);"><span lang="en">Use Zustand (simple, low boilerplate) or Redux Toolkit (powerful, auditable). Real global client state is rare: shopping cart, user preferences, notification queue. Most things teams put in Redux belong in React Query or local state.</span><span lang="pt" hidden>Use Zustand (simples, baixo boilerplate) ou Redux Toolkit (poderoso, auditável). Estado global do cliente real é raro: carrinho de compras, preferências do usuário, fila de notificações. A maioria das coisas que os times colocam no Redux pertence ao React Query ou estado local.</span></div>
+      </div>
+
+    </div>
+    <div class="diagram-label"><span lang="en">Most state belongs in levels 1–2. Reaching for level 4 (Redux/Zustand) for server data is a very common mistake.</span><span lang="pt" hidden>A maioria do estado pertence aos níveis 1–2. Recorrer ao nível 4 (Redux/Zustand) para dados do servidor é um erro muito comum.</span></div>
+  </div>
+
+  <h2><span lang="en">4. Performance: When memo Actually Helps (and When It Hurts)</span><span lang="pt" hidden>4. Performance: Quando memo Realmente Ajuda (e Quando Prejudica)</span></h2>
+
+  <p><span lang="en"><code>React.memo</code>, <code>useMemo</code>, and <code>useCallback</code> are optimization tools, not default patterns. They add cost (memory for the cached value, CPU for the comparison). They're only beneficial when the comparison is cheaper than the work being avoided — which is not always true.</span><span lang="pt" hidden><code>React.memo</code>, <code>useMemo</code> e <code>useCallback</code> são ferramentas de otimização, não padrões padrão. Eles adicionam custo (memória para o valor em cache, CPU para a comparação). Eles só são benéficos quando a comparação é mais barata do que o trabalho sendo evitado — o que nem sempre é verdade.</span></p>
+
+  <div class="code-block"><code><span lang="en">// ✗ Memoizing a cheap computation — the memo overhead exceeds the benefit</span><span lang="pt" hidden>// ✗ Memoizando um cálculo barato — o overhead do memo supera o benefício</span>
+const label = useMemo(() => `${firstName} ${lastName}`, [firstName, lastName]);
+
+<span lang="en">// ✓ Just compute it — string concatenation is not worth memoizing</span><span lang="pt" hidden>// ✓ Apenas calcule — concatenação de string não vale memoizar</span>
+const label = `${firstName} ${lastName}`;
+
+<span lang="en">// ✓ useMemo for genuinely expensive computations</span><span lang="pt" hidden>// ✓ useMemo para cálculos genuinamente custosos</span>
+const sortedAndFiltered = useMemo(() =>
+  items.filter(predicate).sort(comparator),
+  [items, predicate, comparator]
+);
+
+<span lang="en">// ✓ useCallback when a function is passed to a memoized child</span><span lang="pt" hidden>// ✓ useCallback quando uma função é passada para um filho memoizado</span>
+const handleSelect = useCallback((id: string) => {
+  setSelected(id);
+}, []); <span lang="en">// only useful if UserRow is wrapped in React.memo</span><span lang="pt" hidden>// só útil se UserRow estiver envolvido em React.memo</span></code></div>
+
+  <div class="callout">
+    <p><span lang="en"><strong>The memo contract:</strong> <code>React.memo</code> on a child component only prevents re-renders if <em>all</em> its props are stable across parent renders. If the parent creates a new function or object inline, the prop is a new reference every render and <code>memo</code> does nothing. <code>useCallback</code> and <code>useMemo</code> are only useful when their result is passed to a <code>React.memo</code>-wrapped component or is itself used as a dependency.</span><span lang="pt" hidden><strong>O contrato do memo:</strong> <code>React.memo</code> em um componente filho só previne re-renderizações se <em>todas</em> as suas props forem estáveis entre renderizações do pai. Se o pai cria uma nova função ou objeto inline, a prop é uma nova referência a cada renderização e <code>memo</code> não faz nada. <code>useCallback</code> e <code>useMemo</code> só são úteis quando seu resultado é passado para um componente envolvido em <code>React.memo</code> ou é usado como uma dependência.</span></p>
+  </div>
+
+  <h2><span lang="en">5. Code Splitting and Lazy Loading</span><span lang="pt" hidden>5. Code Splitting e Lazy Loading</span></h2>
+
+  <div class="code-block"><code><span lang="en">// Lazy load route-level components — initial bundle contains only the shell</span><span lang="pt" hidden>// Lazy load em componentes de nível de rota — bundle inicial contém apenas o shell</span>
+const UserPage = lazy(() => import('./features/users/UserPage'));
+const OrdersPage = lazy(() => import('./features/orders/OrdersPage'));
+
+function App() {
+  return (
+    &lt;Suspense fallback={&lt;PageSkeleton /&gt;}&gt;
+      &lt;Routes&gt;
+        &lt;Route path="/users" element={&lt;UserPage /&gt;} /&gt;
+        &lt;Route path="/orders" element={&lt;OrdersPage /&gt;} /&gt;
+      &lt;/Routes&gt;
+    &lt;/Suspense&gt;
+  );
+}
+
+<span lang="en">// Lazy load heavy non-route components too — charts, rich text editors, modals</span><span lang="pt" hidden>// Lazy load em componentes pesados não rota também — gráficos, editores, modais</span>
+const Chart = lazy(() => import('./components/Chart'));
+{showChart &amp;&amp; &lt;Suspense fallback={&lt;ChartSkeleton /&gt;}&gt;&lt;Chart /&gt;&lt;/Suspense&gt;}</code></div>
+
+  <p><span lang="en">Route-level splitting should be non-negotiable. A React SPA that doesn't code-split loads the JavaScript for every feature on every page load — users pay the cost of features they never visit. Bundle analysis with <code>vite-bundle-analyzer</code> or <code>webpack-bundle-analyzer</code> makes the cost visible.</span><span lang="pt" hidden>O splitting por rota deve ser inegociável. Uma SPA React que não faz code-splitting carrega o JavaScript de cada feature em cada carregamento de página — os usuários pagam o custo de features que nunca visitam. A análise de bundle com <code>vite-bundle-analyzer</code> ou <code>webpack-bundle-analyzer</code> torna o custo visível.</span></p>
+
+  <h2><span lang="en">6. Project Structure That Scales</span><span lang="pt" hidden>6. Estrutura de Projeto que Escala</span></h2>
+
+  <div class="code-block"><code>src/
+├── features/               <span lang="en"># one folder per domain feature</span><span lang="pt" hidden># uma pasta por feature de domínio</span>
+│   ├── users/
+│   │   ├── components/     <span lang="en"># presentational, feature-scoped</span><span lang="pt" hidden># apresentacional, escopo de feature</span>
+│   │   ├── hooks/          <span lang="en"># custom hooks for this feature</span><span lang="pt" hidden># custom hooks para esta feature</span>
+│   │   ├── api/            <span lang="en"># React Query hooks (useUsers, useCreateUser)</span><span lang="pt" hidden># hooks React Query (useUsers, useCreateUser)</span>
+│   │   ├── store/          <span lang="en"># Zustand slice or Redux slice if needed</span><span lang="pt" hidden># slice Zustand ou Redux se necessário</span>
+│   │   ├── types.ts        <span lang="en"># domain types scoped to this feature</span><span lang="pt" hidden># tipos de domínio com escopo desta feature</span>
+│   │   └── index.ts        <span lang="en"># public API — only export what other features need</span><span lang="pt" hidden># API pública — exporte apenas o que outras features precisam</span>
+│   └── orders/
+├── shared/                 <span lang="en"># truly shared UI — Button, Modal, Input, Table</span><span lang="pt" hidden># UI verdadeiramente compartilhada — Button, Modal, Input, Table</span>
+│   └── components/
+├── lib/                    <span lang="en"># framework setup — queryClient, store, router</span><span lang="pt" hidden># setup de framework — queryClient, store, router</span>
+└── app/                    <span lang="en"># routes, App component, providers</span><span lang="pt" hidden># rotas, componente App, providers</span></code></div>
+
+  <p><span lang="en">The <code>index.ts</code> barrel file at each feature boundary acts as an explicit public API. Other features import from <code>features/users</code>, not from <code>features/users/components/UserCard/UserCard.tsx</code>. This encapsulation makes refactoring within a feature safe and makes cross-feature dependencies explicit and reviewable.</span><span lang="pt" hidden>O arquivo barrel <code>index.ts</code> em cada limite de feature atua como uma API pública explícita. Outras features importam de <code>features/users</code>, não de <code>features/users/components/UserCard/UserCard.tsx</code>. Esse encapsulamento torna a refatoração dentro de uma feature segura e torna as dependências entre features explícitas e revisáveis.</span></p>
+
+  <h2><span lang="en">7. Forms: Controlled vs. Uncontrolled</span><span lang="pt" hidden>7. Formulários: Controlado vs. Não Controlado</span></h2>
+
+  <p><span lang="en">Controlled inputs (<code>value={state}</code>) are the React default and give you fine-grained control. But they re-render on every keystroke. For large forms (20+ fields), this is measurable. Uncontrolled inputs with <code>useRef</code> or a form library like React Hook Form (which uses uncontrolled inputs internally) are significantly faster for complex forms.</span><span lang="pt" hidden>Inputs controlados (<code>value={state}</code>) são o padrão React e dão controle granular. Mas re-renderizam a cada tecla digitada. Para formulários grandes (20+ campos), isso é mensurável. Inputs não controlados com <code>useRef</code> ou uma biblioteca de formulários como React Hook Form (que usa inputs não controlados internamente) são significativamente mais rápidos para formulários complexos.</span></p>
+
+  <div class="code-block"><code><span lang="en">// React Hook Form — uncontrolled under the hood, minimal re-renders</span><span lang="pt" hidden>// React Hook Form — não controlado por baixo, re-renderizações mínimas</span>
+const { register, handleSubmit, formState: { errors } } = useForm&lt;UserForm&gt;({
+  resolver: zodResolver(userSchema)  <span lang="en">// Zod schema for validation</span><span lang="pt" hidden>// schema Zod para validação</span>
+});
+
+return (
+  &lt;form onSubmit={handleSubmit(onSubmit)}&gt;
+    &lt;input {...register('email')} /&gt;
+    {errors.email &amp;&amp; &lt;span&gt;{errors.email.message}&lt;/span&gt;}
+  &lt;/form&gt;
+);</code></div>
+
+  <h2><span lang="en">8. Error Boundaries: Failing Gracefully</span><span lang="pt" hidden>8. Error Boundaries: Falhando Graciosamente</span></h2>
+
+  <p><span lang="en">A runtime error in any component without an Error Boundary crashes the entire React tree. Error Boundaries are class components (or use the <code>react-error-boundary</code> library) that catch render errors and display fallback UI instead of a blank page.</span><span lang="pt" hidden>Um erro em runtime em qualquer componente sem um Error Boundary derruba toda a árvore React. Error Boundaries são class components (ou use a biblioteca <code>react-error-boundary</code>) que capturam erros de renderização e exibem UI de fallback em vez de uma página em branco.</span></p>
+
+  <div class="code-block"><code><span lang="en">// Wrap every major section — not just the root</span><span lang="pt" hidden>// Envolva cada seção principal — não apenas a raiz</span>
+import { ErrorBoundary } from 'react-error-boundary';
+
+function App() {
+  return (
+    &lt;ErrorBoundary fallback={&lt;AppCrash /&gt;}&gt;
+      &lt;Header /&gt;
+      &lt;ErrorBoundary fallback={&lt;SectionError section="dashboard" /&gt;}&gt;
+        &lt;Dashboard /&gt;
+      &lt;/ErrorBoundary&gt;
+      &lt;ErrorBoundary fallback={&lt;SectionError section="sidebar" /&gt;}&gt;
+        &lt;Sidebar /&gt;
+      &lt;/ErrorBoundary&gt;
+    &lt;/ErrorBoundary&gt;
+  );
+}</code></div>
+
+  <h2><span lang="en">9. Testing with React Testing Library</span><span lang="pt" hidden>9. Testes com React Testing Library</span></h2>
+
+  <p><span lang="en">React Testing Library's guiding principle: test behavior, not implementation. Query by what the user sees (text, role, label), not by class names or component internals. Tests that break when you refactor without changing behavior are not tests — they're maintenance liabilities.</span><span lang="pt" hidden>O princípio orientador do React Testing Library: teste comportamento, não implementação. Consulte pelo que o usuário vê (texto, role, label), não por nomes de classes ou internos do componente. Testes que quebram quando você refatora sem mudar o comportamento não são testes — são passivos de manutenção.</span></p>
+
+  <div class="code-block"><code><span lang="en">// ✗ Tests implementation details — breaks on any refactor</span><span lang="pt" hidden>// ✗ Testa detalhes de implementação — quebra em qualquer refatoração</span>
+expect(wrapper.find('.user-card__title').text()).toBe('Alice');
+
+<span lang="en">// ✓ Tests what the user sees — survives any refactor that keeps the behavior</span><span lang="pt" hidden>// ✓ Testa o que o usuário vê — sobrevive a qualquer refatoração que mantém o comportamento</span>
+render(&lt;UserCard user={alice} /&gt;);
+expect(screen.getByRole('heading', { name: 'Alice' })).toBeInTheDocument();
+
+<span lang="en">// ✓ Testing an interaction</span><span lang="pt" hidden>// ✓ Testando uma interação</span>
+await userEvent.click(screen.getByRole('button', { name: /delete/i }));
+expect(screen.queryByText('Alice')).not.toBeInTheDocument();</code></div>
+
+  <p><span lang="en">Query priority in RTL: <code>getByRole</code> &gt; <code>getByLabelText</code> &gt; <code>getByPlaceholderText</code> &gt; <code>getByText</code>. Roles map to what screen readers announce — tests that use them double as accessibility checks.</span><span lang="pt" hidden>Prioridade de queries no RTL: <code>getByRole</code> &gt; <code>getByLabelText</code> &gt; <code>getByPlaceholderText</code> &gt; <code>getByText</code>. Roles mapeiam para o que leitores de tela anunciam — testes que os usam funcionam também como verificações de acessibilidade.</span></p>
+
+  <h2><span lang="en">10. Common Mistakes That Compound Over Time</span><span lang="pt" hidden>10. Erros Comuns que se Agravam com o Tempo</span></h2>
+
+  <ul>
+    <li><span lang="en"><strong>Prop drilling beyond two levels.</strong> Passing props through three or more component layers creates invisible coupling. Extract to Context or move the consuming component closer to the state.</span><span lang="pt" hidden><strong>Prop drilling além de dois níveis.</strong> Passar props por três ou mais camadas de componentes cria acoplamento invisível. Extraia para Context ou mova o componente consumidor para mais perto do estado.</span></li>
+    <li><span lang="en"><strong>Huge component files with multiple exported components.</strong> One component per file (with its types and helpers in the same file) is the standard that makes navigation predictable. A 400-line file with five components is a refactoring trigger.</span><span lang="pt" hidden><strong>Arquivos de componente enormes com múltiplos componentes exportados.</strong> Um componente por arquivo (com seus tipos e helpers no mesmo arquivo) é o padrão que torna a navegação previsível. Um arquivo de 400 linhas com cinco componentes é um gatilho de refatoração.</span></li>
+    <li><span lang="en"><strong>Inconsistent async error handling.</strong> Components that don't show errors look like they're working. Always handle the error state in data-fetching components — an empty error state is worse than a visible one because it silently tells the user nothing went wrong when something did.</span><span lang="pt" hidden><strong>Tratamento inconsistente de erros assíncronos.</strong> Componentes que não mostram erros parecem estar funcionando. Sempre trate o estado de erro em componentes de busca de dados — um estado de erro vazio é pior do que um visível porque silenciosamente diz ao usuário que nada deu errado quando algo deu.</span></li>
+    <li><span lang="en"><strong>Re-creating context values inline.</strong> <code>&lt;ThemeContext.Provider value={{ theme, toggleTheme }}&gt;</code> creates a new object on every render, causing all consumers to re-render. Memoize the context value.</span><span lang="pt" hidden><strong>Recriar valores de context inline.</strong> <code>&lt;ThemeContext.Provider value={{ theme, toggleTheme }}&gt;</code> cria um novo objeto a cada renderização, fazendo todos os consumidores re-renderizarem. Memoize o valor do context.</span></li>
+  </ul>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+  <ul>
+    <li><span lang="en"><strong>Composition over abstraction.</strong> Split components by concern, not by line count. A component that renders three visual sections should be three components, not one with if-blocks.</span><span lang="pt" hidden><strong>Composição em vez de abstração.</strong> Divida componentes por responsabilidade, não por contagem de linhas. Um componente que renderiza três seções visuais deve ser três componentes, não um com if-blocks.</span></li>
+    <li><span lang="en"><strong>Stop putting useEffect where it doesn't belong.</strong> Derived state is a calculation. Event responses are handlers. Data fetching is React Query. If you're reaching for useEffect, ask whether one of these fits first.</span><span lang="pt" hidden><strong>Pare de colocar useEffect onde não pertence.</strong> Estado derivado é um cálculo. Respostas a eventos são handlers. Busca de dados é React Query. Se você está recorrendo ao useEffect, pergunte se um desses se encaixa primeiro.</span></li>
+    <li><span lang="en"><strong>Server state and client state are different problems.</strong> React Query for remote data, Context or Zustand for genuine client state. Most apps have far less client state than they think.</span><span lang="pt" hidden><strong>Estado do servidor e estado do cliente são problemas diferentes.</strong> React Query para dados remotos, Context ou Zustand para estado genuíno do cliente. A maioria dos apps tem muito menos estado do cliente do que pensa.</span></li>
+    <li><span lang="en"><strong>memo is a last resort, not a default.</strong> Profile first, then memoize where the profiler shows a genuine cost. Premature memoization adds complexity without measurable benefit.</span><span lang="pt" hidden><strong>memo é um último recurso, não um padrão.</strong> Faça profiling primeiro, depois memoize onde o profiler mostra um custo genuíno. Memoização prematura adiciona complexidade sem benefício mensurável.</span></li>
+    <li><span lang="en"><strong>Feature-based structure with explicit public APIs (index.ts)</strong> keeps cross-feature dependencies visible and refactoring safe. Layer-based structure (<code>components/</code>, <code>hooks/</code>, <code>services/</code> at the root) doesn't scale past 10 features.</span><span lang="pt" hidden><strong>Estrutura por feature com APIs públicas explícitas (index.ts)</strong> mantém as dependências entre features visíveis e a refatoração segura. Estrutura por camada (<code>components/</code>, <code>hooks/</code>, <code>services/</code> na raiz) não escala além de 10 features.</span></li>
+    <li><span lang="en"><strong>Test behavior, not implementation.</strong> RTL queries by role and text survive refactoring. Snapshot tests and class-name queries do not.</span><span lang="pt" hidden><strong>Teste comportamento, não implementação.</strong> Queries RTL por role e texto sobrevivem à refatoração. Snapshot tests e queries por nome de classe não sobrevivem.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+<footer><p>&copy; 2025 Jefferson Valandro. Built with care.</p></footer>
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>

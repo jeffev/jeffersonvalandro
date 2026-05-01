@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Angular Best Practices: Architecture, Performance, and Quality in 2025 — Jefferson Valandro</title>
+  <meta name="description" content="Smart/dumb components, OnPush change detection, RxJS pitfalls, standalone components, state management with Signals, lazy loading, and testing patterns for production Angular apps.">
+  <meta name="author" content="Jefferson Valandro">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/articles/angular-best-practices.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/articles/angular-best-practices.html">
+  <meta property="og:title" content="Angular Best Practices: Architecture, Performance, and Quality in 2025 — Jefferson Valandro">
+  <meta property="og:description" content="Smart/dumb components, OnPush, RxJS pitfalls, Signals, lazy loading, and testing patterns for production Angular apps.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/cover_bg_3.png">
+  <meta name="theme-color" content="#070d1a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../css/articles.css">
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" aria-label="Switch to Portuguese">
+    <span id="langFlag" aria-hidden="true">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-code"></i> <span lang="en">Frontend · Angular</span><span lang="pt" hidden>Frontend · Angular</span></div>
+    <h1><span lang="en">Angular Best Practices: Architecture, Performance, and Quality in 2025</span><span lang="pt" hidden>Boas Práticas em Angular: Arquitetura, Performance e Qualidade em 2025</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> April 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">15 min read</span><span lang="pt" hidden>15 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">Angular</span>
+      <span class="tag">TypeScript</span>
+      <span class="tag">RxJS</span>
+      <span class="tag">Signals</span>
+      <span class="tag">performance</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">Angular is an opinionated framework — it makes many decisions for you. That's a strength in large teams, but it also means there's a clear gap between "code that compiles" and "code that scales." The patterns covered here separate Angular codebases that hold up over three years from ones that become unmaintainable after the first major feature.</span><span lang="pt" hidden>Angular é um framework opinativo — ele toma muitas decisões por você. Isso é uma força em times grandes, mas também significa que há uma lacuna clara entre "código que compila" e "código que escala". Os padrões abordados aqui separam codebases Angular que resistem por três anos daqueles que se tornam impossíveis de manter após a primeira feature importante.</span></p>
+
+  <h2><span lang="en">1. Component Architecture: Smart vs. Dumb</span><span lang="pt" hidden>1. Arquitetura de Componentes: Smart vs. Dumb</span></h2>
+
+  <p><span lang="en">The most impactful pattern in Angular component design is the split between <strong>smart (container) components</strong> and <strong>dumb (presentational) components</strong>. Smart components know about services, state, and routing. Dumb components receive data via <code>@Input()</code>, emit events via <code>@Output()</code>, and know nothing about the world outside them.</span><span lang="pt" hidden>O padrão mais impactante no design de componentes Angular é a divisão entre <strong>componentes smart (container)</strong> e <strong>componentes dumb (apresentação)</strong>. Componentes smart conhecem serviços, estado e roteamento. Componentes dumb recebem dados via <code>@Input()</code>, emitem eventos via <code>@Output()</code> e não sabem nada sobre o mundo fora deles.</span></p>
+
+  <div class="code-block"><code><span lang="en">// ✗ Dumb component doing smart things — untestable in isolation</span><span lang="pt" hidden>// ✗ Componente dumb fazendo coisas smart — não testável em isolamento</span>
+@Component({ selector: 'app-user-card' })
+export class UserCardComponent {
+  user$ = inject(UserService).getUser(this.route.snapshot.params['id']);
+  onDelete() { inject(UserService).delete(this.userId).subscribe(); }
+}
+
+<span lang="en">// ✓ Smart container handles data; dumb component handles display</span><span lang="pt" hidden>// ✓ Container smart lida com dados; componente dumb lida com exibição</span>
+@Component({ selector: 'app-user-page' })   <span lang="en">// smart</span><span lang="pt" hidden>// smart</span>
+export class UserPageComponent {
+  user$ = inject(UserService).getUser(this.route.snapshot.params['id']);
+  onDelete(id: string) { inject(UserService).delete(id).subscribe(); }
+}
+
+@Component({ selector: 'app-user-card' })   <span lang="en">// dumb</span><span lang="pt" hidden>// dumb</span>
+export class UserCardComponent {
+  @Input({ required: true }) user!: User;
+  @Output() delete = new EventEmitter&lt;string&gt;();
+}</code></div>
+
+  <p><span lang="en">Dumb components are trivial to test (just pass inputs, assert outputs), trivial to reuse, and trivial to move. Aim for 80% dumb components in any non-trivial Angular app.</span><span lang="pt" hidden>Componentes dumb são triviais de testar (apenas passe inputs, verifique outputs), triviais de reutilizar e triviais de mover. Busque 80% de componentes dumb em qualquer app Angular não trivial.</span></p>
+
+  <h2><span lang="en">2. OnPush Change Detection: Default for Everything</span><span lang="pt" hidden>2. OnPush Change Detection: Padrão para Tudo</span></h2>
+
+  <p><span lang="en">Angular's default change detection checks every component on every event. <code>ChangeDetectionStrategy.OnPush</code> restricts checks to when an <code>@Input()</code> reference changes, an async pipe resolves, or <code>markForCheck()</code> is called explicitly. On a page with 50+ components, this is the difference between smooth and jank.</span><span lang="pt" hidden>A detecção de mudanças padrão do Angular verifica cada componente em cada evento. <code>ChangeDetectionStrategy.OnPush</code> restringe as verificações para quando uma referência de <code>@Input()</code> muda, um async pipe resolve ou <code>markForCheck()</code> é chamado explicitamente. Em uma página com 50+ componentes, esta é a diferença entre suave e travado.</span></p>
+
+  <div class="code-block"><code><span lang="en">// Set this on every component — make it your team's default</span><span lang="pt" hidden>// Defina isso em todos os componentes — torne-o o padrão do seu time</span>
+@Component({
+  selector: 'app-user-card',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `&lt;div&gt;{{ user.name }}&lt;/div&gt;`
+})
+export class UserCardComponent {
+  @Input({ required: true }) user!: User;
+}
+
+<span lang="en">// With OnPush, mutations to the same object won't trigger re-render</span><span lang="pt" hidden>// Com OnPush, mutações no mesmo objeto não acionarão re-renderização</span>
+<span lang="en">// ✗ Won't update the view</span><span lang="pt" hidden>// ✗ Não vai atualizar a view</span>
+this.user.name = 'New Name';
+<span lang="en">// ✓ New reference — triggers re-render</span><span lang="pt" hidden>// ✓ Nova referência — aciona re-renderização</span>
+this.user = { ...this.user, name: 'New Name' };</code></div>
+
+  <div class="callout">
+    <p><span lang="en"><strong>Enforce it with a linter rule:</strong> Add <code>@angular-eslint/prefer-on-push-component-change-detection</code> to your ESLint config. The rule flags any component missing <code>OnPush</code>, making it a team standard rather than a personal discipline.</span><span lang="pt" hidden><strong>Aplique com uma regra de linter:</strong> Adicione <code>@angular-eslint/prefer-on-push-component-change-detection</code> à sua config ESLint. A regra sinaliza qualquer componente sem <code>OnPush</code>, tornando-o um padrão do time em vez de disciplina pessoal.</span></p>
+  </div>
+
+  <h2><span lang="en">3. RxJS: The Five Pitfalls That Kill Angular Apps</span><span lang="pt" hidden>3. RxJS: Os Cinco Armadilhas que Matam Apps Angular</span></h2>
+
+  <h3><span lang="en">Memory leaks from unmanaged subscriptions</span><span lang="pt" hidden>Memory leaks por assinaturas não gerenciadas</span></h3>
+
+  <div class="code-block"><code><span lang="en">// ✗ Subscription never cleaned up — leaks on component destroy</span><span lang="pt" hidden>// ✗ Assinatura nunca limpa — vaza ao destruir o componente</span>
+ngOnInit() {
+  this.userService.users$.subscribe(users => this.users = users);
+}
+
+<span lang="en">// ✓ Option 1: async pipe (Angular manages lifecycle automatically)</span><span lang="pt" hidden>// ✓ Opção 1: async pipe (Angular gerencia o ciclo de vida automaticamente)</span>
+users$ = this.userService.users$;
+<span lang="en">// template: {{ users$ | async }}</span><span lang="pt" hidden>// template: {{ users$ | async }}</span>
+
+<span lang="en">// ✓ Option 2: takeUntilDestroyed (Angular 16+)</span><span lang="pt" hidden>// ✓ Opção 2: takeUntilDestroyed (Angular 16+)</span>
+private destroyRef = inject(DestroyRef);
+ngOnInit() {
+  this.userService.users$
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe(users => this.users = users);
+}</code></div>
+
+  <h3><span lang="en">Nested subscribes instead of flattening operators</span><span lang="pt" hidden>Subscribes aninhados em vez de operadores de flattening</span></h3>
+
+  <div class="code-block"><code><span lang="en">// ✗ Nested subscribe — creates race conditions and leaks</span><span lang="pt" hidden>// ✗ Subscribe aninhado — cria race conditions e vazamentos</span>
+this.route.params.subscribe(params => {
+  this.userService.getUser(params['id']).subscribe(user => {
+    this.user = user;
+  });
+});
+
+<span lang="en">// ✓ switchMap cancels the inner observable when a new outer value arrives</span><span lang="pt" hidden>// ✓ switchMap cancela o observable interno quando um novo valor externo chega</span>
+user$ = this.route.params.pipe(
+  switchMap(params => this.userService.getUser(params['id']))
+);</code></div>
+
+  <h3><span lang="en">Wrong flattening operator</span><span lang="pt" hidden>Operador de flattening errado</span></h3>
+
+  <p><span lang="en">The four flattening operators are not interchangeable. Using the wrong one causes race conditions or dropped emissions silently:</span><span lang="pt" hidden>Os quatro operadores de flattening não são intercambiáveis. Usar o errado causa race conditions ou emissões descartadas silenciosamente:</span></p>
+
+  <div class="code-block"><code><span lang="en">// switchMap  — cancels previous inner obs on new emission. Use: search, route params
+// mergeMap   — runs all inner obs concurrently. Use: parallel, order doesn't matter
+// concatMap  — queues inner obs sequentially. Use: ordered writes, upload queue
+// exhaustMap — ignores new emissions while inner obs is active. Use: login button</span>
+<span lang="pt" hidden>// switchMap  — cancela obs interno anterior na nova emissão. Use: busca, route params
+// mergeMap   — executa todos os obs internos concorrentemente. Use: paralelo, ordem não importa
+// concatMap  — enfileira obs internos sequencialmente. Use: escritas ordenadas, fila de upload
+// exhaustMap — ignora novas emissões enquanto obs interno está ativo. Use: botão de login</span>
+
+<span lang="en">// ✗ mergeMap on a search input — all requests run, responses arrive out of order</span><span lang="pt" hidden>// ✗ mergeMap em input de busca — todas as requisições executam, respostas chegam fora de ordem</span>
+searchTerm$.pipe(mergeMap(term => this.api.search(term)))
+
+<span lang="en">// ✓ switchMap cancels stale requests automatically</span><span lang="pt" hidden>// ✓ switchMap cancela requisições obsoletas automaticamente</span>
+searchTerm$.pipe(debounceTime(300), switchMap(term => this.api.search(term)))</code></div>
+
+  <h3><span lang="en">Sharing expensive observables</span><span lang="pt" hidden>Compartilhando observables custosos</span></h3>
+
+  <div class="code-block"><code><span lang="en">// ✗ Each subscriber triggers a new HTTP call</span><span lang="pt" hidden>// ✗ Cada subscriber aciona uma nova chamada HTTP</span>
+users$ = this.http.get&lt;User[]&gt;('/api/users');
+
+<span lang="en">// ✓ shareReplay multicasts to all subscribers, replays last value to late subscribers</span><span lang="pt" hidden>// ✓ shareReplay faz multicast para todos os subscribers, repete o último valor para tardios</span>
+users$ = this.http.get&lt;User[]&gt;('/api/users').pipe(
+  shareReplay({ bufferSize: 1, refCount: true })
+);</code></div>
+
+  <h3><span lang="en">Mixing subscribe with async/await</span><span lang="pt" hidden>Misturando subscribe com async/await</span></h3>
+
+  <p><span lang="en">Calling <code>firstValueFrom()</code> or <code>lastValueFrom()</code> to bridge RxJS and async/await is fine for one-shot operations. But mixing subscription patterns in the same component creates inconsistent teardown logic. Pick one style per component and be consistent.</span><span lang="pt" hidden>Chamar <code>firstValueFrom()</code> ou <code>lastValueFrom()</code> para fazer bridge entre RxJS e async/await é válido para operações one-shot. Mas misturar padrões de assinatura no mesmo componente cria lógica de teardown inconsistente. Escolha um estilo por componente e seja consistente.</span></p>
+
+  <h2><span lang="en">4. Signals: The New State Primitive</span><span lang="pt" hidden>4. Signals: O Novo Primitivo de Estado</span></h2>
+
+  <p><span lang="en">Angular 16+ introduced Signals as a fine-grained reactivity primitive. Unlike observables, signals are synchronous, don't need unsubscription, and integrate natively with change detection — a component using a signal automatically re-renders when the signal changes, with no <code>async</code> pipe needed.</span><span lang="pt" hidden>Angular 16+ introduziu Signals como um primitivo de reatividade granular. Ao contrário dos observables, signals são síncronos, não precisam de cancelamento de assinatura e se integram nativamente com a detecção de mudanças — um componente usando um signal re-renderiza automaticamente quando o signal muda, sem necessidade de pipe <code>async</code>.</span></p>
+
+  <div class="code-block"><code><span lang="en">// Signals for local component state — cleaner than BehaviorSubject</span><span lang="pt" hidden>// Signals para estado local de componente — mais limpo que BehaviorSubject</span>
+@Component({
+  template: `
+    &lt;p&gt;Count: {{ count() }}&lt;/p&gt;
+    &lt;p&gt;Double: {{ double() }}&lt;/p&gt;
+    &lt;button (click)="increment()"&gt;+&lt;/button&gt;
+  `
+})
+export class CounterComponent {
+  count = signal(0);
+  double = computed(() => this.count() * 2);
+  increment() { this.count.update(c => c + 1); }
+}
+
+<span lang="en">// toSignal bridges RxJS observables to signals — best of both worlds</span><span lang="pt" hidden>// toSignal faz bridge de observables RxJS para signals — o melhor dos dois mundos</span>
+users = toSignal(this.userService.users$, { initialValue: [] });</code></div>
+
+  <p><span lang="en"><strong>When to use Signals vs. Observables:</strong> Signals are ideal for local component state, derived UI values, and anything that doesn't involve async streams. Observables remain the right tool for HTTP calls, WebSocket streams, timer-based flows, and complex async transformations. <code>toSignal()</code> and <code>toObservable()</code> bridge the two where needed.</span><span lang="pt" hidden><strong>Quando usar Signals vs. Observables:</strong> Signals são ideais para estado local de componente, valores derivados de UI e qualquer coisa que não envolva streams assíncronos. Observables continuam sendo a ferramenta certa para chamadas HTTP, streams WebSocket, fluxos baseados em timer e transformações assíncronas complexas. <code>toSignal()</code> e <code>toObservable()</code> fazem bridge entre os dois quando necessário.</span></p>
+
+  <h2><span lang="en">5. Standalone Components and Feature-Based Structure</span><span lang="pt" hidden>5. Componentes Standalone e Estrutura por Feature</span></h2>
+
+  <p><span lang="en">Since Angular 14, components can be standalone — no NgModule required. Angular 17+ makes standalone the default. This removes one of the most common Angular pain points (where to declare a component) and makes lazy loading trivial.</span><span lang="pt" hidden>Desde o Angular 14, componentes podem ser standalone — sem necessidade de NgModule. Angular 17+ torna standalone o padrão. Isso remove um dos pontos de dor mais comuns no Angular (onde declarar um componente) e torna o lazy loading trivial.</span></p>
+
+  <div class="code-block"><code><span lang="en">// Feature-based folder structure (not layer-based)</span><span lang="pt" hidden>// Estrutura de pastas por feature (não por camada)</span>
+src/app/
+├── features/
+│   ├── users/
+│   │   ├── components/         <span lang="en"># dumb components local to this feature</span><span lang="pt" hidden># componentes dumb locais desta feature</span>
+│   │   ├── pages/              <span lang="en"># smart components (routable)</span><span lang="pt" hidden># componentes smart (roteáveis)</span>
+│   │   ├── services/           <span lang="en"># data access, business logic</span><span lang="pt" hidden># acesso a dados, lógica de negócio</span>
+│   │   ├── models/             <span lang="en"># types and interfaces</span><span lang="pt" hidden># types e interfaces</span>
+│   │   └── users.routes.ts     <span lang="en"># lazy-loaded route config</span><span lang="pt" hidden># config de rota com lazy load</span>
+│   └── orders/
+├── shared/                     <span lang="en"># components/pipes/directives used across features</span><span lang="pt" hidden># componentes/pipes/diretivas usados em múltiplas features</span>
+└── core/                       <span lang="en"># singleton services, guards, interceptors</span><span lang="pt" hidden># serviços singleton, guards, interceptors</span>
+
+<span lang="en">// Lazy loading a standalone component — one line</span><span lang="pt" hidden>// Lazy loading de um componente standalone — uma linha</span>
+{ path: 'users', loadChildren: () => import('./features/users/users.routes') }</code></div>
+
+  <p><span lang="en">Feature-based structure scales better than layer-based (<code>components/</code>, <code>services/</code>, <code>models/</code> at the root). When a feature grows, everything related to it lives in one place. When you remove a feature, you delete one folder.</span><span lang="pt" hidden>Estrutura por feature escala melhor do que por camada (<code>components/</code>, <code>services/</code>, <code>models/</code> na raiz). Quando uma feature cresce, tudo relacionado a ela vive em um lugar. Quando você remove uma feature, deleta uma pasta.</span></p>
+
+  <h2><span lang="en">6. Services and Dependency Injection</span><span lang="pt" hidden>6. Serviços e Injeção de Dependência</span></h2>
+
+  <div class="code-block"><code><span lang="en">// ✓ providedIn: 'root' — singleton, tree-shakeable if unused</span><span lang="pt" hidden>// ✓ providedIn: 'root' — singleton, tree-shakeable se não usado</span>
+@Injectable({ providedIn: 'root' })
+export class UserService { ... }
+
+<span lang="en">// ✓ inject() function — cleaner than constructor injection, works in standalone</span><span lang="pt" hidden>// ✓ função inject() — mais limpa que injeção por construtor, funciona em standalone</span>
+@Component({ ... })
+export class UserPageComponent {
+  private userService = inject(UserService);
+  private router = inject(Router);
+}
+
+<span lang="en">// ✓ Feature-scoped service — provided at the feature level, not root</span><span lang="pt" hidden>// ✓ Serviço com escopo de feature — fornecido no nível da feature, não na raiz</span>
+@Injectable()  <span lang="en">// no providedIn</span><span lang="pt" hidden>// sem providedIn</span>
+export class CartService { ... }
+<span lang="en">// Provided in the feature route: { providers: [CartService] }</span><span lang="pt" hidden>// Fornecido na rota da feature: { providers: [CartService] }</span></code></div>
+
+  <h2><span lang="en">7. Performance: What Actually Moves the Needle</span><span lang="pt" hidden>7. Performance: O Que Realmente Faz Diferença</span></h2>
+
+  <div class="diagram">
+    <div style="display:flex; flex-direction:column; gap:0.7rem; max-width:560px; margin:0 auto;">
+
+      <div style="display:flex; align-items:flex-start; gap:0.8rem; background:rgba(6,214,160,0.07); border:1px solid rgba(6,214,160,0.25); border-radius:10px; padding:0.8rem 1rem;">
+        <div style="font-size:1rem; color:var(--accent2); margin-top:0.1rem; flex-shrink:0;">①</div>
+        <div>
+          <div style="font-size:0.78rem; font-weight:700; color:var(--accent2); margin-bottom:0.25rem;"><span lang="en">Lazy load every feature route</span><span lang="pt" hidden>Lazy load em cada rota de feature</span></div>
+          <div style="font-size:0.7rem; color:var(--muted); line-height:1.5;"><span lang="en">Initial bundle should contain only the shell (nav, root component). Every feature loaded on demand. <code>loadChildren</code> or <code>loadComponent</code> on every non-root route.</span><span lang="pt" hidden>O bundle inicial deve conter apenas o shell (nav, componente raiz). Cada feature carregada sob demanda. <code>loadChildren</code> ou <code>loadComponent</code> em cada rota não raiz.</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:0.8rem; background:rgba(79,142,247,0.07); border:1px solid rgba(79,142,247,0.25); border-radius:10px; padding:0.8rem 1rem;">
+        <div style="font-size:1rem; color:var(--accent); margin-top:0.1rem; flex-shrink:0;">②</div>
+        <div>
+          <div style="font-size:0.78rem; font-weight:700; color:var(--accent); margin-bottom:0.25rem;"><span lang="en">OnPush everywhere + trackBy on every *ngFor</span><span lang="pt" hidden>OnPush em todo lugar + trackBy em todo *ngFor</span></div>
+          <div style="font-size:0.7rem; color:var(--muted); line-height:1.5;"><span lang="en">Without <code>trackBy</code>, Angular re-creates every DOM node on list updates even if only one item changed. Always provide a unique key.</span><span lang="pt" hidden>Sem <code>trackBy</code>, o Angular recria cada nó DOM em atualizações de lista mesmo que apenas um item tenha mudado. Sempre forneça uma chave única.</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:0.8rem; background:rgba(255,209,102,0.07); border:1px solid rgba(255,209,102,0.25); border-radius:10px; padding:0.8rem 1rem;">
+        <div style="font-size:1rem; color:#ffd166; margin-top:0.1rem; flex-shrink:0;">③</div>
+        <div>
+          <div style="font-size:0.78rem; font-weight:700; color:#ffd166; margin-bottom:0.25rem;"><span lang="en">Avoid function calls in templates</span><span lang="pt" hidden>Evite chamadas de função em templates</span></div>
+          <div style="font-size:0.7rem; color:var(--muted); line-height:1.5;"><span lang="en"><code>{{ computeTotal() }}</code> is called on every change detection cycle. Use <code>computed()</code>, a pure pipe, or a property instead. Functions in templates are one of the most common Angular performance bugs.</span><span lang="pt" hidden><code>{{ computeTotal() }}</code> é chamado em cada ciclo de detecção de mudanças. Use <code>computed()</code>, um pipe puro ou uma propriedade no lugar. Funções em templates são um dos bugs de performance mais comuns no Angular.</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:0.8rem; background:rgba(247,37,133,0.07); border:1px solid rgba(247,37,133,0.2); border-radius:10px; padding:0.8rem 1rem;">
+        <div style="font-size:1rem; color:#f87db0; margin-top:0.1rem; flex-shrink:0;">④</div>
+        <div>
+          <div style="font-size:0.78rem; font-weight:700; color:#f87db0; margin-bottom:0.25rem;"><span lang="en">Defer heavy components with @defer</span><span lang="pt" hidden>Adie componentes pesados com @defer</span></div>
+          <div style="font-size:0.7rem; color:var(--muted); line-height:1.5;"><span lang="en">Angular 17+ <code>@defer</code> block loads a component's bundle only when triggered (viewport, interaction, idle). Charts, rich text editors, and third-party widgets are prime candidates.</span><span lang="pt" hidden>O bloco <code>@defer</code> do Angular 17+ carrega o bundle de um componente apenas quando acionado (viewport, interação, idle). Gráficos, editores de texto rico e widgets de terceiros são candidatos ideais.</span></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="diagram-label"><span lang="en">In roughly this priority order — lazy loading and OnPush give the biggest return per effort</span><span lang="pt" hidden>Aproximadamente nesta ordem de prioridade — lazy loading e OnPush dão o maior retorno por esforço</span></div>
+  </div>
+
+  <h2><span lang="en">8. State Management: When to Reach for NgRx</span><span lang="pt" hidden>8. Gerenciamento de Estado: Quando Usar NgRx</span></h2>
+
+  <p><span lang="en">NgRx is powerful and costly. The boilerplate is justified when: multiple unrelated components share the same state, state changes need to be auditable (time-travel debugging), or the team is large enough that unstructured state leads to conflicts. For everything else, services with Signals or BehaviorSubjects are sufficient and far simpler.</span><span lang="pt" hidden>NgRx é poderoso e custoso. O boilerplate é justificado quando: múltiplos componentes não relacionados compartilham o mesmo estado, mudanças de estado precisam ser auditáveis (time-travel debugging) ou o time é grande o suficiente para que estado não estruturado leve a conflitos. Para todo o resto, serviços com Signals ou BehaviorSubjects são suficientes e muito mais simples.</span></p>
+
+  <div class="code-block"><code><span lang="en">// Lightweight state service with Signals — covers 80% of use cases</span><span lang="pt" hidden>// Serviço de estado leve com Signals — cobre 80% dos casos de uso</span>
+@Injectable({ providedIn: 'root' })
+export class CartStateService {
+  private items = signal&lt;CartItem[]&gt;([]);
+
+  readonly count = computed(() => this.items().length);
+  readonly total = computed(() =>
+    this.items().reduce((sum, item) => sum + item.price * item.qty, 0)
+  );
+
+  add(item: CartItem) { this.items.update(list => [...list, item]); }
+  remove(id: string) { this.items.update(list => list.filter(i => i.id !== id)); }
+
+  readonly items$ = toObservable(this.items); <span lang="en">// bridge to RxJS when needed</span><span lang="pt" hidden>// bridge para RxJS quando necessário</span>
+}</code></div>
+
+  <h2><span lang="en">9. Testing Strategy</span><span lang="pt" hidden>9. Estratégia de Testes</span></h2>
+
+  <p><span lang="en">Angular's <code>TestBed</code> is thorough but slow. A pragmatic testing strategy distinguishes three levels:</span><span lang="pt" hidden>O <code>TestBed</code> do Angular é completo, mas lento. Uma estratégia de testes pragmática distingue três níveis:</span></p>
+
+  <div class="code-block"><code><span lang="en">// Level 1: Pure unit tests — no TestBed, fast, for services and pure logic</span><span lang="pt" hidden>// Nível 1: Testes unitários puros — sem TestBed, rápido, para serviços e lógica pura</span>
+it('calculates total correctly', () => {
+  const service = new CartStateService();
+  service.add({ id: '1', price: 10, qty: 2 });
+  expect(service.total()).toBe(20);
+});
+
+<span lang="en">// Level 2: Shallow component tests — TestBed but NO_ERRORS_SCHEMA for children</span><span lang="pt" hidden>// Nível 2: Testes de componente shallow — TestBed mas NO_ERRORS_SCHEMA para filhos</span>
+await TestBed.configureTestingModule({
+  imports: [UserCardComponent],
+  schemas: [NO_ERRORS_SCHEMA]   <span lang="en">// don't render child components</span><span lang="pt" hidden>// não renderiza componentes filhos</span>
+}).compileComponents();
+
+<span lang="en">// Level 3: Integration — for critical user flows (login, checkout) with real child tree</span><span lang="pt" hidden>// Nível 3: Integração — para fluxos críticos de usuário (login, checkout) com árvore de filhos real</span></code></div>
+
+  <p><span lang="en">The most common Angular testing mistake is over-relying on <code>TestBed</code> for everything. Dumb components don't need <code>TestBed</code> — just instantiate them, pass inputs, and assert on outputs. Reserve <code>TestBed</code> for components that interact with routing, DI, or the DOM in ways that require Angular's machinery.</span><span lang="pt" hidden>O erro de teste Angular mais comum é depender excessivamente do <code>TestBed</code> para tudo. Componentes dumb não precisam de <code>TestBed</code> — apenas instancie-os, passe inputs e verifique outputs. Reserve <code>TestBed</code> para componentes que interagem com roteamento, DI ou o DOM de formas que requerem a maquinaria do Angular.</span></p>
+
+  <h2><span lang="en">10. Common Mistakes That Compound Over Time</span><span lang="pt" hidden>10. Erros Comuns que se Agravam com o Tempo</span></h2>
+
+  <ul>
+    <li><span lang="en"><strong>Shared NgModules that import too much.</strong> A <code>SharedModule</code> that re-exports 30 components and all of Angular Material means every feature that imports it pays the full cost. Prefer fine-grained imports in standalone components.</span><span lang="pt" hidden><strong>NgModules compartilhados que importam demais.</strong> Um <code>SharedModule</code> que re-exporta 30 componentes e todo o Angular Material significa que cada feature que o importa paga o custo total. Prefira importações granulares em componentes standalone.</span></li>
+    <li><span lang="en"><strong>Services with state and side effects mixed together.</strong> A service that both fetches data and stores it as mutable fields is hard to test and makes race conditions likely. Separate data fetching (stateless) from state management (stateful).</span><span lang="pt" hidden><strong>Serviços com estado e side effects misturados.</strong> Um serviço que tanto busca dados quanto os armazena como campos mutáveis é difícil de testar e torna race conditions prováveis. Separe busca de dados (sem estado) do gerenciamento de estado (com estado).</span></li>
+    <li><span lang="en"><strong>Logic in HTML templates.</strong> Ternaries are fine; complex conditionals, array operations, and method calls in templates are not. Move logic to the component class or a pipe where it's testable.</span><span lang="pt" hidden><strong>Lógica em templates HTML.</strong> Ternários são bons; condicionais complexas, operações de array e chamadas de métodos em templates não são. Mova a lógica para a classe do componente ou um pipe onde é testável.</span></li>
+    <li><span lang="en"><strong>Ignoring hydration in SSR apps.</strong> Angular Universal apps that don't configure hydration correctly destroy and rebuild the full DOM on client-side bootstrap, negating SSR's performance benefit and causing layout flashes.</span><span lang="pt" hidden><strong>Ignorar hidratação em apps SSR.</strong> Apps Angular Universal que não configuram a hidratação corretamente destroem e reconstroem o DOM completo no bootstrap client-side, negando o benefício de performance do SSR e causando flashes de layout.</span></li>
+  </ul>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+  <ul>
+    <li><span lang="en"><strong>Smart/dumb split is the most valuable component pattern.</strong> Dumb components are testable in isolation and reusable by definition. Treat any component that injects a service as a smell unless it's explicitly a container.</span><span lang="pt" hidden><strong>A separação smart/dumb é o padrão de componente mais valioso.</strong> Componentes dumb são testáveis em isolamento e reutilizáveis por definição. Trate qualquer componente que injeta um serviço como um smell a menos que seja explicitamente um container.</span></li>
+    <li><span lang="en"><strong><code>OnPush</code> on every component, <code>trackBy</code> on every list.</strong> These two together eliminate the most common Angular performance issues and should be team standards enforced by linting.</span><span lang="pt" hidden><strong><code>OnPush</code> em todo componente, <code>trackBy</code> em toda lista.</strong> Esses dois juntos eliminam os problemas de performance Angular mais comuns e devem ser padrões do time aplicados por linting.</span></li>
+    <li><span lang="en"><strong>Learn the four RxJS flattening operators and use the right one.</strong> The wrong operator causes silent bugs. <code>switchMap</code> for user-driven requests, <code>exhaustMap</code> for submit buttons, <code>concatMap</code> for ordered queues, <code>mergeMap</code> for fire-and-forget parallel flows.</span><span lang="pt" hidden><strong>Aprenda os quatro operadores de flattening RxJS e use o correto.</strong> O operador errado causa bugs silenciosos. <code>switchMap</code> para requisições guiadas pelo usuário, <code>exhaustMap</code> para botões de submit, <code>concatMap</code> para filas ordenadas, <code>mergeMap</code> para fluxos paralelos fire-and-forget.</span></li>
+    <li><span lang="en"><strong>Signals replace BehaviorSubject for local state.</strong> They're simpler, don't need unsubscription, and integrate directly with Angular's change detection. Adopt them for new component state; keep Observables for async streams.</span><span lang="pt" hidden><strong>Signals substituem BehaviorSubject para estado local.</strong> São mais simples, não precisam de cancelamento de assinatura e se integram diretamente com a detecção de mudanças do Angular. Adote-os para novo estado de componente; mantenha Observables para streams assíncronos.</span></li>
+    <li><span lang="en"><strong>Reach for NgRx only when services with Signals aren't enough.</strong> The boilerplate is real. A well-designed service with Signals handles most state management needs without the complexity.</span><span lang="pt" hidden><strong>Recorra ao NgRx apenas quando serviços com Signals não forem suficientes.</strong> O boilerplate é real. Um serviço bem projetado com Signals lida com a maioria das necessidades de gerenciamento de estado sem a complexidade.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+<footer><p>&copy; 2025 Jefferson Valandro. Built with care.</p></footer>
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>
