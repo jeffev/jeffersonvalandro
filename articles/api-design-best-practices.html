@@ -257,6 +257,70 @@ paths:
     <p><span lang="en"><strong>Practice:</strong> Use <code>openapi-generator</code> to generate Spring controller interfaces from the spec. Your implementation must satisfy the contract — not the other way around. This prevents the spec from drifting out of sync with the real API.</span><span lang="pt" hidden><strong>Prática:</strong> Use <code>openapi-generator</code> para gerar interfaces de controller do Spring a partir da especificação. Sua implementação deve satisfazer o contrato — não o contrário. Isso evita que a especificação fique desatualizada em relação à API real.</span></p>
   </div>
 
+  <h2><span lang="en">Webhooks: Push-Based API Events</span><span lang="pt" hidden>Webhooks: Eventos de API no Modelo Push</span></h2>
+
+  <p><span lang="en">REST APIs are pull-based: the client asks, the server responds. Webhooks invert this — the server pushes events to a client-provided URL when something happens (payment authorized, order shipped, user signed up). This eliminates polling and delivers events in near-real-time without the client maintaining a persistent connection.</span><span lang="pt" hidden>APIs REST são baseadas em pull: o cliente pergunta, o servidor responde. Webhooks invertem isso — o servidor envia eventos para uma URL fornecida pelo cliente quando algo acontece (pagamento autorizado, pedido enviado, usuário cadastrado). Isso elimina o polling e entrega eventos em tempo quase real sem que o cliente mantenha uma conexão persistente.</span></p>
+
+  <h3><span lang="en">Event Payload Design</span><span lang="pt" hidden>Design do Payload de Evento</span></h3>
+  <p><span lang="en">Use a consistent envelope for every webhook event. Include a unique event ID, the event type, a timestamp, and the versioned payload. The event ID is critical for idempotency on the receiver side:</span><span lang="pt" hidden>Use um envelope consistente para todo evento de webhook. Inclua um ID único de evento, o tipo do evento, um timestamp e o payload versionado. O ID do evento é crítico para idempotência no lado receptor:</span></p>
+
+  <div class="code-block"><code>// Standard webhook event envelope
+{
+  "id":         "evt_01HZBKJ8T2PRXM7FQD4AKVY9GN",   // unique — used as idempotency key
+  "type":       "order.shipped",
+  "apiVersion": "2025-03-01",
+  "createdAt":  "2025-04-15T14:22:00Z",
+  "data": {
+    "orderId":    "ord_789xyz",
+    "customerId": "cust_123",
+    "trackingId": "BR123456789",
+    "shippedAt":  "2025-04-15T14:20:00Z"
+  }
+}</code></div>
+
+  <h3><span lang="en">Signature Verification (HMAC-SHA256)</span><span lang="pt" hidden>Verificação de Assinatura (HMAC-SHA256)</span></h3>
+  <p><span lang="en">Webhooks are unauthenticated HTTP requests from the receiver's perspective — anyone who discovers your endpoint URL can send fake events. Sign every delivery with HMAC-SHA256 using a shared secret, and verify before processing:</span><span lang="pt" hidden>Webhooks são requisições HTTP não autenticadas da perspectiva do receptor — qualquer pessoa que descubra a URL do seu endpoint pode enviar eventos falsos. Assine cada entrega com HMAC-SHA256 usando um segredo compartilhado e verifique antes de processar:</span></p>
+
+  <div class="code-block"><code># Sender — sign the raw request body
+import hmac, hashlib
+
+def sign_webhook(payload: bytes, secret: str) -> str:
+    return "sha256=" + hmac.new(secret.encode(), payload, hashlib.sha256).hexdigest()
+
+# Header added to every delivery:  Webhook-Signature: sha256=abc123...
+
+# Receiver — verify before trusting the payload
+def verify_webhook(payload: bytes, header_sig: str, secret: str) -> bool:
+    expected = sign_webhook(payload, secret)
+    return hmac.compare_digest(expected, header_sig)  # constant-time — never use ==</code></div>
+
+  <div class="callout red">
+    <p><span lang="en"><strong>Always use <code>hmac.compare_digest</code></strong> (or its language equivalent) — never <code>==</code>. Regular string equality short-circuits on the first differing byte, leaking timing information that attackers can exploit to forge valid signatures character by character.</span><span lang="pt" hidden><strong>Sempre use <code>hmac.compare_digest</code></strong> (ou equivalente na sua linguagem) — nunca <code>==</code>. Igualdade de strings faz curto-circuito no primeiro byte diferente, vazando informações de timing que atacantes podem explorar para forjar assinaturas válidas caractere por caractere.</span></p>
+  </div>
+
+  <h3><span lang="en">Retries and Idempotency</span><span lang="pt" hidden>Retries e Idempotência</span></h3>
+  <p><span lang="en">Your delivery system will retry on timeout or non-2xx response. The receiver must be idempotent — use the event <code>id</code> as the key in a processed-events table so duplicate deliveries are silently discarded, and always respond fast:</span><span lang="pt" hidden>Seu sistema de entrega fará retry em caso de timeout ou resposta não-2xx. O receptor deve ser idempotente — use o <code>id</code> do evento como chave numa tabela de eventos processados para que entregas duplicadas sejam silenciosamente descartadas, e sempre responda rapidamente:</span></p>
+
+  <div class="code-block"><code># Retry schedule (exponential backoff)
+Attempt 1: immediate
+Attempt 2: 30 seconds
+Attempt 3: 5 minutes
+Attempt 4: 30 minutes
+Attempt 5: 2 hours  →  dead letter after final failure
+
+# Receiver — idempotency guard + async processing
+def handle_webhook(event: dict):
+    if ProcessedEvent.exists(event["id"]):
+        return 200        # already handled — return OK so retries stop
+
+    queue.enqueue("process_event", event)  # enqueue immediately
+    ProcessedEvent.create(event["id"])
+    return 200            # respond within 5s or sender considers it a timeout</code></div>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>Respond fast, process async.</strong> Never do slow work — DB queries, API calls, email sends — synchronously in a webhook handler. Accept the event, enqueue it (SQS, RabbitMQ, BullMQ), and return <code>200</code> immediately. If your handler takes more than ~5 seconds, the sender retries the delivery and you process the event twice.</span><span lang="pt" hidden><strong>Responda rápido, processe de forma assíncrona.</strong> Nunca faça trabalho lento — queries de banco, chamadas de API, envios de e-mail — de forma síncrona num handler de webhook. Aceite o evento, coloque-o numa fila (SQS, RabbitMQ, BullMQ) e retorne <code>200</code> imediatamente. Se o handler demorar mais de ~5 segundos, o remetente fará retry e o evento será processado duas vezes.</span></p>
+  </div>
+
   <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Conclusões Principais</span></h2>
   <ul>
     <li><span lang="en">Model resources as nouns; use HTTP methods for semantics. Reserve sub-resource actions for complex commands.</span><span lang="pt" hidden>Modele recursos como substantivos; use métodos HTTP para semântica. Reserve ações de sub-recurso para comandos complexos.</span></li>
@@ -267,6 +331,7 @@ paths:
     <li><span lang="en">Define your contract in OpenAPI first; generate stubs from it to prevent drift.</span><span lang="pt" hidden>Defina seu contrato em OpenAPI primeiro; gere stubs a partir dele para evitar divergências.</span></li>
     <li><span lang="en">Implement rate limiting and input validation at the boundary — these protect your system regardless of what clients do.</span><span lang="pt" hidden>Implemente limitação de taxa e validação de entrada na fronteira — elas protegem seu sistema independentemente do que os clientes façam.</span></li>
     <li><span lang="en">Require idempotency keys on POST endpoints that trigger non-reversible side effects (payments, emails, order creation). They are the difference between a safe retry and a duplicate charge.</span><span lang="pt" hidden>Exija chaves de idempotência em endpoints POST que disparam efeitos colaterais irreversíveis (pagamentos, e-mails, criação de pedidos). Elas são a diferença entre um retry seguro e uma cobrança duplicada.</span></li>
+    <li><span lang="en">Sign webhook deliveries with HMAC-SHA256 and always verify the signature before processing. Receivers must be idempotent using the event ID, and must respond within 5 seconds — process async.</span><span lang="pt" hidden>Assine entregas de webhooks com HMAC-SHA256 e sempre verifique a assinatura antes de processar. Receptores devem ser idempotentes usando o ID do evento e devem responder em até 5 segundos — processe de forma assíncrona.</span></li>
   </ul>
 
 </article>

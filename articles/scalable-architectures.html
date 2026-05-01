@@ -202,6 +202,40 @@ def call_with_retry(fn, max_attempts=3):
     <p><span lang="en"><strong>Sequence:</strong> Before sharding, try read replicas + caching (Redis/Memcached) + query optimization. Sharding should be the last resort — it solves a write-throughput problem that most systems never reach. The teams that shard prematurely spend engineering cycles fighting the complexity instead of shipping features.</span><span lang="pt" hidden><strong>Sequência:</strong> Antes do sharding, tente réplicas de leitura + cache (Redis/Memcached) + otimização de queries. Sharding deve ser o último recurso — resolve um problema de throughput de escrita que a maioria dos sistemas nunca atinge. Times que fazem sharding prematuramente gastam ciclos de engenharia lutando contra a complexidade em vez de entregar features.</span></p>
   </div>
 
+  <h2><span lang="en">Caching: The First Scalability Lever</span><span lang="pt" hidden>Cache: A Primeira Alavanca de Escalabilidade</span></h2>
+
+  <p><span lang="en">Before reaching for read replicas or sharding, apply caching. A cache hit costs microseconds; a database query costs milliseconds. At scale, that difference is what separates a system that handles peak load from one that collapses under it.</span><span lang="pt" hidden>Antes de recorrer a réplicas de leitura ou sharding, aplique cache. Um cache hit custa microssegundos; uma query no banco custa milissegundos. Em escala, essa diferença é o que separa um sistema que aguenta o pico de carga de um que colapsa sob ele.</span></p>
+
+  <h3><span lang="en">Cache-Aside (Lazy Loading)</span><span lang="pt" hidden>Cache-Aside (Lazy Loading)</span></h3>
+  <p><span lang="en">The application checks the cache first. On a miss, it fetches from the database, writes the result to the cache, and returns it. Only data that is actually requested gets cached — cold data never consumes cache memory.</span><span lang="pt" hidden>A aplicação verifica o cache primeiro. Em um miss, busca no banco de dados, escreve o resultado no cache e retorna. Apenas os dados que são realmente solicitados são armazenados — dados frios nunca consomem memória de cache.</span></p>
+
+  <div class="code-block"><code># Cache-aside pattern with Redis
+def get_order(order_id: str) -> Order:
+    cache_key = f"order:{order_id}"
+
+    cached = redis.get(cache_key)
+    if cached:
+        return Order.parse(cached)           # cache hit — microseconds
+
+    order = db.orders.find_by_id(order_id)   # cache miss — query DB
+    redis.setex(cache_key, ttl=300, value=order.to_json())  # cache 5 min
+    return order</code></div>
+
+  <h3><span lang="en">Write-Through</span><span lang="pt" hidden>Write-Through</span></h3>
+  <p><span lang="en">On every write, update both the cache and the database synchronously. Reads are always fast — no cache misses after the first write. Best for data that is read far more often than it is written (product catalog, user profiles, configuration). The trade-off: every write pays double latency.</span><span lang="pt" hidden>A cada escrita, atualize o cache e o banco de dados de forma síncrona. Leituras são sempre rápidas — sem cache misses após a primeira escrita. Melhor para dados lidos muito mais frequentemente do que escritos (catálogo de produtos, perfis de usuário, configuração). O trade-off: cada escrita paga latência dupla.</span></p>
+
+  <h3><span lang="en">Cache Invalidation: The Hard Part</span><span lang="pt" hidden>Invalidação de Cache: A Parte Difícil</span></h3>
+  <p><span lang="en">Cache invalidation is one of the two famously hard problems in computer science. Three practical strategies:</span><span lang="pt" hidden>Invalidação de cache é um dos dois problemas famosamente difíceis em ciência da computação. Três estratégias práticas:</span></p>
+  <ul>
+    <li><span lang="en"><strong>TTL:</strong> Expire the entry after N seconds. Simple, but risks serving stale data up to the TTL window. Choose TTL based on how much staleness the business can tolerate.</span><span lang="pt" hidden><strong>TTL:</strong> Expire a entrada após N segundos. Simples, mas arrisca servir dados desatualizados até a janela do TTL. Escolha o TTL com base em quanto desatualização o negócio pode tolerar.</span></li>
+    <li><span lang="en"><strong>Event-driven invalidation:</strong> Publish a cache-invalidation event when data changes. Consumers delete the relevant entry immediately. More consistent, but adds event infrastructure.</span><span lang="pt" hidden><strong>Invalidação orientada a eventos:</strong> Publique um evento de invalidação de cache quando os dados mudam. Os consumidores deletam a entrada relevante imediatamente. Mais consistente, mas adiciona infraestrutura de eventos.</span></li>
+    <li><span lang="en"><strong>Write-invalidate:</strong> On write, delete the cache entry (don't update it). The next read repopulates from the database. Simpler than write-through and avoids stale reads, at the cost of one cache miss per write cycle.</span><span lang="pt" hidden><strong>Write-invalidate:</strong> Na escrita, delete a entrada do cache (não atualize). A próxima leitura reabastece do banco. Mais simples que write-through e evita leituras obsoletas, ao custo de um cache miss por ciclo de escrita.</span></li>
+  </ul>
+
+  <div class="callout red">
+    <p><span lang="en"><strong>Anti-pattern: Cache stampede.</strong> When a popular entry expires, thousands of requests hit the database simultaneously to repopulate it. Solution: add a short random jitter to TTLs so entries don't expire in sync, or recompute the entry on a background thread slightly before expiry while still serving the old value.</span><span lang="pt" hidden><strong>Anti-padrão: Cache stampede.</strong> Quando uma entrada popular expira, milhares de requisições acessam o banco simultaneamente para reabastecê-la. Solução: adicione um jitter aleatório curto aos TTLs para que entradas não expirem em sincronia, ou recalcule a entrada numa thread de background ligeiramente antes da expiração enquanto ainda serve o valor antigo.</span></p>
+  </div>
+
   <h2><span lang="en">Observability: The Invisible Pillar</span><span lang="pt" hidden>Observabilidade: O Pilar Invisível</span></h2>
 
   <p><span lang="en">A system you cannot observe is a system you cannot operate. The three pillars of observability are:</span><span lang="pt" hidden>Um sistema que você não pode observar é um sistema que você não pode operar. Os três pilares da observabilidade são:</span></p>
@@ -223,6 +257,7 @@ def call_with_retry(fn, max_attempts=3):
     <li><span lang="en">Use DDD Bounded Contexts to find service boundaries; let data ownership guide decomposition.</span><span lang="pt" hidden>Use Contextos Delimitados do DDD para encontrar fronteiras de serviço; deixe a propriedade dos dados guiar a decomposição.</span></li>
     <li><span lang="en">CQRS lets read and write sides evolve and scale independently — apply it where query patterns diverge from write patterns.</span><span lang="pt" hidden>CQRS permite que os lados de leitura e escrita evoluam e escalem independentemente — aplique-o onde os padrões de consulta divergem dos padrões de escrita.</span></li>
     <li><span lang="en">Event-driven communication removes temporal coupling but requires idempotent consumers.</span><span lang="pt" hidden>A comunicação orientada a eventos remove o acoplamento temporal, mas requer consumidores idempotentes.</span></li>
+    <li><span lang="en">Apply caching (cache-aside with Redis) before read replicas or sharding — a cache hit is orders of magnitude cheaper than any database query.</span><span lang="pt" hidden>Aplique cache (cache-aside com Redis) antes de réplicas de leitura ou sharding — um cache hit é ordens de magnitude mais barato do que qualquer query no banco.</span></li>
     <li><span lang="en">Scale databases progressively: read replicas before sharding. Sharding adds complexity that kills velocity — defer it until write throughput actually demands it.</span><span lang="pt" hidden>Escale bancos progressivamente: réplicas de leitura antes do sharding. Sharding adiciona complexidade que mata a velocidade — adie até que o throughput de escrita realmente exija.</span></li>
     <li><span lang="en">Instrument from day one: metrics, structured logs, and distributed traces are not optional in production.</span><span lang="pt" hidden>Instrumente desde o primeiro dia: métricas, logs estruturados e traces distribuídos não são opcionais em produção.</span></li>
   </ul>

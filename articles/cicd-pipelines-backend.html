@@ -198,6 +198,57 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]</code></div>
     }
 }</code></div>
 
+  <h2><span lang="en">Secrets Management in Pipelines</span><span lang="pt" hidden>Gerenciamento de Segredos nos Pipelines</span></h2>
+
+  <p><span lang="en">A pipeline that builds Docker images, deploys to Kubernetes, and calls external APIs needs credentials: registry passwords, database URLs, API keys, signing certificates. How those secrets reach the pipeline is one of the most commonly neglected security decisions in CI/CD.</span><span lang="pt" hidden>Um pipeline que constrói imagens Docker, faz deploy no Kubernetes e chama APIs externas precisa de credenciais: senhas de registry, URLs de banco de dados, chaves de API, certificados de assinatura. Como esses segredos chegam ao pipeline é uma das decisões de segurança mais negligenciadas em CI/CD.</span></p>
+
+  <div class="callout red">
+    <p><span lang="en"><strong>Hard rule:</strong> Secrets must never appear in source code, Dockerfiles, build scripts, or commit history — not even in private repositories. Leaked secrets in git history account for a significant share of production security incidents. Use <code>git-secrets</code> or pre-commit hooks to catch accidental commits before they reach the remote.</span><span lang="pt" hidden><strong>Regra inflexível:</strong> Segredos nunca devem aparecer em código-fonte, Dockerfiles, scripts de build ou histórico de commits — nem mesmo em repositórios privados. Segredos vazados no histórico do git são responsáveis por uma parcela significativa de incidentes de segurança em produção. Use <code>git-secrets</code> ou pre-commit hooks para detectar commits acidentais antes que cheguem ao repositório remoto.</span></p>
+  </div>
+
+  <h3><span lang="en">CI Platform Encrypted Secrets (Baseline)</span><span lang="pt" hidden>Segredos Cifrados da Plataforma CI (Linha de Base)</span></h3>
+  <p><span lang="en">GitHub Actions, GitLab CI, and Jenkins all offer encrypted secret stores. Secrets are injected as environment variables at runtime — never printed in logs, never written to disk. This is the minimum acceptable baseline for any pipeline.</span><span lang="pt" hidden>GitHub Actions, GitLab CI e Jenkins oferecem armazenamentos de segredos cifrados. Os segredos são injetados como variáveis de ambiente em tempo de execução — nunca impressos em logs, nunca escritos em disco. Este é o mínimo aceitável para qualquer pipeline.</span></p>
+
+  <div class="code-block"><code># GitHub Actions — secrets injected at runtime, never visible in logs
+jobs:
+  build:
+    steps:
+      - name: Build and push Docker image
+        env:
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          echo "$REGISTRY_PASSWORD" | docker login registry.example.com -u ci --password-stdin
+          mvn sonar:sonar -Dsonar.token=$SONAR_TOKEN</code></div>
+
+  <h3><span lang="en">HashiCorp Vault (Production Grade)</span><span lang="pt" hidden>HashiCorp Vault (Nível de Produção)</span></h3>
+  <p><span lang="en">For production systems, use a dedicated secrets manager. Vault provides <strong>dynamic secrets</strong> — database credentials that are generated for a specific pipeline run and expire automatically when the stage finishes. The pipeline authenticates to Vault using a short-lived token (AppRole or Kubernetes auth) and retrieves only the secrets it needs for that run.</span><span lang="pt" hidden>Para sistemas em produção, use um gerenciador de segredos dedicado. O Vault fornece <strong>segredos dinâmicos</strong> — credenciais de banco de dados geradas para uma execução específica do pipeline e que expiram automaticamente quando a etapa termina. O pipeline se autentica no Vault usando um token de curta duração (AppRole ou autenticação Kubernetes) e recupera apenas os segredos necessários para aquela execução.</span></p>
+
+  <div class="code-block"><code>stage('Build') {
+    steps {
+        withVault(
+            vaultSecrets: [[
+                path: 'secret/ci/order-service',
+                secretValues: [
+                    [envVar: 'DB_PASSWORD',    vaultKey: 'db_password'],
+                    [envVar: 'STRIPE_API_KEY', vaultKey: 'stripe_key']
+                ]
+            ]]
+        ) {
+            sh 'mvn clean verify'
+            // DB_PASSWORD and STRIPE_API_KEY available as env vars
+            // credentials are revoked when the stage completes
+        }
+    }
+}</code></div>
+
+  <h3><span lang="en">Kubernetes Secrets at Runtime</span><span lang="pt" hidden>Kubernetes Secrets em Runtime</span></h3>
+  <p><span lang="en">Secrets that the running application needs (not the build pipeline) should live as Kubernetes Secrets — ideally as <strong>Sealed Secrets</strong> (Bitnami) or synced from Vault via the Vault Agent Injector. Mount them as files rather than environment variables: processes that crash dump their environment to logs, which can inadvertently expose secrets.</span><span lang="pt" hidden>Segredos que a aplicação em execução precisa (não o pipeline de build) devem viver como Kubernetes Secrets — idealmente como <strong>Sealed Secrets</strong> (Bitnami) ou sincronizados do Vault via Vault Agent Injector. Monte-os como arquivos em vez de variáveis de ambiente: processos que travam fazem dump do ambiente para os logs, o que pode expor segredos inadvertidamente.</span></p>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>Audit trail:</strong> Vault logs every secret access with a timestamp, pipeline identity, and the exact secret path. When a credential is compromised, you know immediately which pipeline accessed it and when — without that audit trail, incident response is archaeology.</span><span lang="pt" hidden><strong>Trilha de auditoria:</strong> O Vault registra cada acesso a segredos com timestamp, identidade do pipeline e o caminho exato do segredo. Quando uma credencial é comprometida, você sabe imediatamente qual pipeline a acessou e quando — sem essa trilha de auditoria, a resposta a incidentes vira arqueologia.</span></p>
+  </div>
+
   <h2><span lang="en">GitOps: Separating Application and Infrastructure Repos</span><span lang="pt" hidden>GitOps: Separando Repositorios de Aplicacao e Infraestrutura</span></h2>
 
   <p><span lang="en">In a GitOps model, the desired state of the infrastructure is stored in a Git repository (the "config repo"), separate from the application code repo. The pipeline's job is to update the config repo with the new image tag — not to apply Kubernetes manifests directly.</span><span lang="pt" hidden>No modelo GitOps, o estado desejado da infraestrutura é armazenado em um repositório Git (o "config repo"), separado do repositório de código da aplicação. O trabalho do pipeline é atualizar o config repo com a nova tag de imagem — não aplicar os manifests do Kubernetes diretamente.</span></p>
@@ -261,6 +312,7 @@ stage('Update Config Repo') {
     <li><span lang="en">Use multi-stage Docker builds to minimize image size and attack surface.</span><span lang="pt" hidden>Use builds Docker multi-stage para minimizar o tamanho da imagem e a superfície de ataque.</span></li>
     <li><span lang="en">Adopt GitOps: the pipeline updates a config repo; a CD tool (ArgoCD/Flux) applies to the cluster. Every deployment is auditable and reversible.</span><span lang="pt" hidden>Adote GitOps: o pipeline atualiza um config repo; uma ferramenta de CD (ArgoCD/Flux) aplica ao cluster. Todo deploy é auditável e reversível.</span></li>
     <li><span lang="en">Choose deployment strategy by risk: rolling for routine, blue/green for migrations, canary for critical paths.</span><span lang="pt" hidden>Escolha a estratégia de deploy pelo risco: rolling para rotina, blue/green para migrações, canary para caminhos críticos.</span></li>
+    <li><span lang="en">Never store secrets in source code or commit history. Use the CI platform's encrypted secret store as a baseline; use Vault with dynamic credentials for production pipelines.</span><span lang="pt" hidden>Nunca armazene segredos em código-fonte ou histórico de commits. Use o armazenamento de segredos cifrados da plataforma CI como linha de base; use o Vault com credenciais dinâmicas para pipelines em produção.</span></li>
     <li><span lang="en">Track DORA metrics — they reveal systemic bottlenecks that code reviews alone cannot surface.</span><span lang="pt" hidden>Acompanhe métricas DORA — elas revelam gargalos sistêmicos que revisões de código sozinhas não conseguem expor.</span></li>
   </ul>
 
