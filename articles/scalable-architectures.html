@@ -80,12 +80,12 @@
   <p><span lang="en">A Bounded Context defines the scope within which a particular domain model applies. The same term ("Order") can mean very different things in <em>Billing</em>, <em>Logistics</em>, and <em>Customer Support</em>. Each context owns its model, its data, and its schema.</span><span lang="pt" hidden>Um Contexto Delimitado define o escopo no qual um modelo de domínio específico se aplica. O mesmo termo ("Pedido") pode significar coisas muito diferentes em <em>Faturamento</em>, <em>Logística</em> e <em>Suporte ao Cliente</em>. Cada contexto possui seu modelo, seus dados e seu schema.</span></p>
 
   <div class="diagram">
-    <div class="diagram-nodes">
-      <div class="node accent">Order Service<br><small>lifecycle, status</small></div>
-      <div class="arrow">⟷</div>
-      <div class="node green">Billing Service<br><small>invoices, payments</small></div>
-      <div class="arrow">⟷</div>
-      <div class="node red">Logistics Service<br><small>shipment, tracking</small></div>
+    <div class="diagram-row">
+      <div class="d-node blue">Order Service<br><small>lifecycle, status</small></div>
+      <div class="d-arrow">⟷</div>
+      <div class="d-node green">Billing Service<br><small>invoices, payments</small></div>
+      <div class="d-arrow">⟷</div>
+      <div class="d-node red">Logistics Service<br><small>shipment, tracking</small></div>
     </div>
     <div class="diagram-label"><span lang="en">Three Bounded Contexts — each owns its data model and communicates via events</span><span lang="pt" hidden>Três Contextos Delimitados — cada um possui seu modelo de dados e se comunica via eventos</span></div>
   </div>
@@ -185,6 +185,23 @@ def call_with_retry(fn, max_attempts=3):
             wait = (2 ** attempt) + random.uniform(0, 1)
             time.sleep(wait)</code></div>
 
+  <h2><span lang="en">Database Scaling Strategies</span><span lang="pt" hidden>Estratégias de Escalabilidade do Banco de Dados</span></h2>
+
+  <p><span lang="en">Application servers are stateless and scale trivially with X-axis replication. Databases are stateful — they are almost always the first bottleneck when traffic grows. Three progressive strategies:</span><span lang="pt" hidden>Servidores de aplicação são sem estado e escalam trivialmente com replicação no eixo X. Bancos de dados são stateful — são quase sempre o primeiro gargalo quando o tráfego cresce. Três estratégias progressivas:</span></p>
+
+  <h3><span lang="en">1. Read Replicas</span><span lang="pt" hidden>1. Réplicas de Leitura</span></h3>
+  <p><span lang="en">Replicate the primary to one or more read replicas. Route all reads to replicas, all writes to the primary. Effective when your workload is read-heavy (typical for user-facing APIs: 80–90% reads). Requires that your application can tolerate replication lag — usually milliseconds, occasionally seconds during high write load.</span><span lang="pt" hidden>Replique o primário para uma ou mais réplicas de leitura. Roteie todas as leituras para as réplicas, todas as escritas para o primário. Eficaz quando sua carga de trabalho é predominantemente de leitura (típico para APIs voltadas ao usuário: 80–90% leituras). Requer que a aplicação tolere o lag de replicação — geralmente milissegundos, ocasionalmente segundos durante alta carga de escrita.</span></p>
+
+  <h3><span lang="en">2. Vertical Partitioning (Decomposition)</span><span lang="pt" hidden>2. Particionamento Vertical (Decomposição)</span></h3>
+  <p><span lang="en">Split a single large database into smaller ones, each owned by a different service (aligns with DDD Bounded Contexts). The Orders service owns its schema; the Billing service owns its schema. This is Y-axis scaling applied to data. The trade-off: cross-service queries require API calls, not JOINs.</span><span lang="pt" hidden>Divida um banco grande em bancos menores, cada um pertencendo a um serviço diferente (alinhado com Contextos Delimitados do DDD). O serviço de Pedidos possui seu schema; o serviço de Faturamento possui o seu. Este é o escalonamento no eixo Y aplicado aos dados. O trade-off: consultas entre serviços exigem chamadas de API, não JOINs.</span></p>
+
+  <h3><span lang="en">3. Horizontal Sharding</span><span lang="pt" hidden>3. Sharding Horizontal</span></h3>
+  <p><span lang="en">Distribute data across multiple database nodes by a <strong>shard key</strong>. All rows for a given customer ID always go to the same shard. Enables linear write scaling — but adds significant complexity: cross-shard queries are expensive, migrations are painful, and choosing the wrong shard key creates hotspots.</span><span lang="pt" hidden>Distribua os dados entre múltiplos nós de banco por uma <strong>chave de shard</strong>. Todas as linhas de um determinado ID de cliente sempre vão para o mesmo shard. Permite escalonamento linear de escrita — mas adiciona complexidade significativa: consultas entre shards são caras, migrations são dolorosas e escolher a chave de shard errada cria hotspots.</span></p>
+
+  <div class="callout">
+    <p><span lang="en"><strong>Sequence:</strong> Before sharding, try read replicas + caching (Redis/Memcached) + query optimization. Sharding should be the last resort — it solves a write-throughput problem that most systems never reach. The teams that shard prematurely spend engineering cycles fighting the complexity instead of shipping features.</span><span lang="pt" hidden><strong>Sequência:</strong> Antes do sharding, tente réplicas de leitura + cache (Redis/Memcached) + otimização de queries. Sharding deve ser o último recurso — resolve um problema de throughput de escrita que a maioria dos sistemas nunca atinge. Times que fazem sharding prematuramente gastam ciclos de engenharia lutando contra a complexidade em vez de entregar features.</span></p>
+  </div>
+
   <h2><span lang="en">Observability: The Invisible Pillar</span><span lang="pt" hidden>Observabilidade: O Pilar Invisível</span></h2>
 
   <p><span lang="en">A system you cannot observe is a system you cannot operate. The three pillars of observability are:</span><span lang="pt" hidden>Um sistema que você não pode observar é um sistema que você não pode operar. Os três pilares da observabilidade são:</span></p>
@@ -206,6 +223,7 @@ def call_with_retry(fn, max_attempts=3):
     <li><span lang="en">Use DDD Bounded Contexts to find service boundaries; let data ownership guide decomposition.</span><span lang="pt" hidden>Use Contextos Delimitados do DDD para encontrar fronteiras de serviço; deixe a propriedade dos dados guiar a decomposição.</span></li>
     <li><span lang="en">CQRS lets read and write sides evolve and scale independently — apply it where query patterns diverge from write patterns.</span><span lang="pt" hidden>CQRS permite que os lados de leitura e escrita evoluam e escalem independentemente — aplique-o onde os padrões de consulta divergem dos padrões de escrita.</span></li>
     <li><span lang="en">Event-driven communication removes temporal coupling but requires idempotent consumers.</span><span lang="pt" hidden>A comunicação orientada a eventos remove o acoplamento temporal, mas requer consumidores idempotentes.</span></li>
+    <li><span lang="en">Scale databases progressively: read replicas before sharding. Sharding adds complexity that kills velocity — defer it until write throughput actually demands it.</span><span lang="pt" hidden>Escale bancos progressivamente: réplicas de leitura antes do sharding. Sharding adiciona complexidade que mata a velocidade — adie até que o throughput de escrita realmente exija.</span></li>
     <li><span lang="en">Instrument from day one: metrics, structured logs, and distributed traces are not optional in production.</span><span lang="pt" hidden>Instrumente desde o primeiro dia: métricas, logs estruturados e traces distribuídos não são opcionais em produção.</span></li>
   </ul>
 

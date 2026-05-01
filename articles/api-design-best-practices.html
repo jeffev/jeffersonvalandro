@@ -187,6 +187,24 @@ X-RateLimit-Remaining: 0
 X-RateLimit-Reset: 1711929600
 Retry-After: 47</code></div>
 
+  <h3><span lang="en">Idempotency Keys for Non-Idempotent Operations</span><span lang="pt" hidden>Chaves de Idempotência para Operações Não Idempotentes</span></h3>
+  <p><span lang="en">POST is not idempotent by default — a retry sends a duplicate request and creates a duplicate resource. For operations that can't be safely retried (charge a payment, send an email, create an order), use an <strong>idempotency key</strong>: a client-generated UUID sent as a header that ties the request to exactly one server-side effect.</span><span lang="pt" hidden>POST não é idempotente por padrão — um retry envia uma requisição duplicada e cria um recurso duplicado. Para operações que não podem ser repetidas com segurança (cobrar um pagamento, enviar um e-mail, criar um pedido), use uma <strong>chave de idempotência</strong>: um UUID gerado pelo cliente enviado como header que vincula a requisição a exatamente um efeito no servidor.</span></p>
+
+  <div class="code-block"><code># Client sends a unique key per logical operation
+POST /v1/payments
+Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000
+Content-Type: application/json
+
+{ "customerId": "cust_123", "amountInCents": 5000, "currency": "BRL" }
+
+# Server stores (idempotency_key, response) in a table for ~24h
+# A second request with the same key returns the cached response
+# without executing the payment again</code></div>
+
+  <div class="callout red">
+    <p><span lang="en"><strong>This is critical for payment flows.</strong> Network timeouts between the client and server leave the client uncertain: did the charge go through? Without idempotency keys, a retry risks double-charging. With them, the server detects the duplicate and returns the original result. Stripe, PayPal, and every serious payment API require this pattern.</span><span lang="pt" hidden><strong>Isso é crítico para fluxos de pagamento.</strong> Timeouts de rede entre o cliente e o servidor deixam o cliente incerto: a cobrança foi processada? Sem chaves de idempotência, um retry arrisca cobrar duas vezes. Com elas, o servidor detecta o duplicado e retorna o resultado original. Stripe, PayPal e toda API de pagamento séria exige esse padrão.</span></p>
+  </div>
+
   <h3><span lang="en">Input Validation</span><span lang="pt" hidden>Validação de Entrada</span></h3>
   <p><span lang="en">Validate at the API boundary — never trust client input. Use Bean Validation in Spring Boot and validate all inputs before they touch business logic:</span><span lang="pt" hidden>Valide na fronteira da API — nunca confie em entradas do cliente. Use Bean Validation no Spring Boot e valide todas as entradas antes de chegarem à lógica de negócio:</span></p>
 
@@ -248,6 +266,7 @@ paths:
     <li><span lang="en">Use cursor-based pagination for collections that change frequently.</span><span lang="pt" hidden>Use paginação baseada em cursor para coleções que mudam com frequência.</span></li>
     <li><span lang="en">Define your contract in OpenAPI first; generate stubs from it to prevent drift.</span><span lang="pt" hidden>Defina seu contrato em OpenAPI primeiro; gere stubs a partir dele para evitar divergências.</span></li>
     <li><span lang="en">Implement rate limiting and input validation at the boundary — these protect your system regardless of what clients do.</span><span lang="pt" hidden>Implemente limitação de taxa e validação de entrada na fronteira — elas protegem seu sistema independentemente do que os clientes façam.</span></li>
+    <li><span lang="en">Require idempotency keys on POST endpoints that trigger non-reversible side effects (payments, emails, order creation). They are the difference between a safe retry and a duplicate charge.</span><span lang="pt" hidden>Exija chaves de idempotência em endpoints POST que disparam efeitos colaterais irreversíveis (pagamentos, e-mails, criação de pedidos). Elas são a diferença entre um retry seguro e uma cobrança duplicada.</span></li>
   </ul>
 
 </article>
