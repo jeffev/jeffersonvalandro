@@ -113,6 +113,25 @@ class OrderReportService {
 
   <p><span lang="en">Shotgun Surgery is the inverse of God Class: a single logical change requires modifications to many unrelated files. Adding a new user field forces changes in the model, the DTO, the mapper, the validator, the API schema, the frontend form, the email template, and three test fixtures. No single file is too large — but every change is expensive because the concern is scattered everywhere.</span><span lang="pt" hidden>Shotgun Surgery é o inverso da God Class: uma única mudança lógica exige modificações em muitos arquivos não relacionados. Adicionar um novo campo de usuário força mudanças no modelo, no DTO, no mapper, no validador, no schema da API, no formulário do frontend, no template de email e em três fixtures de teste. Nenhum arquivo individual é muito grande — mas cada mudança é cara porque a responsabilidade está espalhada por toda parte.</span></p>
 
+  <div class="code-block"><code><span lang="en">// Shotgun Surgery — adding "phone" to User requires changing 7 files</span><span lang="pt" hidden>// Shotgun Surgery — adicionar "phone" ao User requer mudar 7 arquivos</span>
+
+<span lang="en">// user.model.ts, user.dto.ts, user.mapper.ts, user.validator.ts,
+// user.schema.ts (OpenAPI), user-form.component.ts, user-email.template.html</span><span lang="pt" hidden>// user.model.ts, user.dto.ts, user.mapper.ts, user.validator.ts,
+// user.schema.ts (OpenAPI), user-form.component.ts, user-email.template.html</span>
+
+<span lang="en">// ✓ After consolidation: one Zod schema is the canonical source of truth</span><span lang="pt" hidden>// ✓ Após consolidação: um schema Zod é a fonte única de verdade</span>
+const UserSchema = z.object({
+  id:    z.string().uuid(),
+  name:  z.string().min(2),
+  email: z.string().email(),
+  phone: z.string().optional(),          <span lang="en">// added once — derived everywhere</span><span lang="pt" hidden>// adicionado uma vez — derivado em todo lugar</span>
+});
+
+type User    = z.infer&lt;typeof UserSchema&gt;;     <span lang="en">// model derived</span><span lang="pt" hidden>// modelo derivado</span>
+type UserDTO = z.infer&lt;typeof UserSchema&gt;;     <span lang="en">// DTO is the same</span><span lang="pt" hidden>// DTO é o mesmo</span>
+<span lang="en">// Validation: UserSchema.parse(input)   — no separate validator</span><span lang="pt" hidden>// Validação: UserSchema.parse(input)    — sem validador separado</span>
+<span lang="en">// OpenAPI: generated from schema via @asteasolutions/zod-to-openapi</span><span lang="pt" hidden>// OpenAPI: gerado do schema via @asteasolutions/zod-to-openapi</span></code></div>
+
   <p><span lang="en">The root cause is usually missing abstraction: the same concept is represented multiple times in different forms, and there's no single authoritative source that the others derive from. The fix is consolidation — identifying the canonical representation and generating or deriving the others from it.</span><span lang="pt" hidden>A causa raiz geralmente é abstração ausente: o mesmo conceito é representado múltiplas vezes em formas diferentes, e não há uma fonte autoritativa única da qual as outras derivam. A correção é consolidação — identificar a representação canônica e gerar ou derivar as outras a partir dela.</span></p>
 
   <h3><span lang="en">4. Data Clump</span><span lang="pt" hidden>4. Data Clump (Grupo de Dados)</span></h3>
@@ -208,6 +227,148 @@ chargeUser(productId, Money.usd(9.99)); <span lang="en">// type error — Produc
   </div>
 
   <p><span lang="en">A module scoring 30/100 on coupling with 80/100 on cohesion tells a different story than a module scoring 30/100 on cohesion with 80/100 on coupling. The first is tightly integrated with the system but internally well-organized — the fix is decoupling. The second is loosely connected but internally a mess — the fix is decomposition. Knowing <em>which</em> dimension is failing tells you what kind of refactoring to apply.</span><span lang="pt" hidden>Um módulo com pontuação 30/100 em acoplamento e 80/100 em coesão conta uma história diferente de um módulo com 30/100 em coesão e 80/100 em acoplamento. O primeiro está fortemente integrado ao sistema, mas bem organizado internamente — a correção é o desacoplamento. O segundo está fracamente conectado, mas internamente é uma bagunça — a correção é a decomposição. Saber <em>qual</em> dimensão está falhando indica que tipo de refatoração aplicar.</span></p>
+
+  <h2><span lang="en">Cyclomatic Complexity: The Metric With a Number</span><span lang="pt" hidden>Complexidade Ciclomática: A Métrica com um Número</span></h2>
+
+  <p><span lang="en">Cyclomatic complexity measures the number of linearly independent paths through a function. Each <code>if</code>, <code>else</code>, <code>for</code>, <code>while</code>, <code>case</code>, <code>&&</code>, and <code>||</code> adds one to the count. A function with complexity 1 has a single path; a function with complexity 15 has fifteen. The number tells you directly how many test cases you need to achieve full branch coverage — and indirectly how hard the function is to understand, modify, and debug.</span><span lang="pt" hidden>A complexidade ciclomática mede o número de caminhos linearmente independentes por uma função. Cada <code>if</code>, <code>else</code>, <code>for</code>, <code>while</code>, <code>case</code>, <code>&&</code> e <code>||</code> adiciona um ao contador. Uma função com complexidade 1 tem um único caminho; uma função com complexidade 15 tem quinze. O número diz diretamente quantos casos de teste você precisa para atingir cobertura total de branches — e indiretamente o quão difícil é entender, modificar e depurar a função.</span></p>
+
+  <div class="diagram">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.8rem; max-width:560px; margin:0 auto; text-align:center;">
+      <div style="background:rgba(6,214,160,0.08); border:1px solid rgba(6,214,160,0.3); border-radius:10px; padding:0.9rem 0.7rem;">
+        <div style="font-size:1.4rem; font-weight:800; color:var(--accent2);">1–4</div>
+        <div style="font-size:0.7rem; font-weight:600; color:var(--accent2); margin-top:0.2rem;"><span lang="en">Simple</span><span lang="pt" hidden>Simples</span></div>
+        <div style="font-size:0.62rem; color:var(--muted); margin-top:0.3rem; line-height:1.4;"><span lang="en">Easy to test and understand</span><span lang="pt" hidden>Fácil de testar e entender</span></div>
+      </div>
+      <div style="background:rgba(255,209,102,0.08); border:1px solid rgba(255,209,102,0.3); border-radius:10px; padding:0.9rem 0.7rem;">
+        <div style="font-size:1.4rem; font-weight:800; color:#ffd166;">5–10</div>
+        <div style="font-size:0.7rem; font-weight:600; color:#ffd166; margin-top:0.2rem;"><span lang="en">Moderate</span><span lang="pt" hidden>Moderado</span></div>
+        <div style="font-size:0.62rem; color:var(--muted); margin-top:0.3rem; line-height:1.4;"><span lang="en">Review suggested, test all branches</span><span lang="pt" hidden>Revisão sugerida, teste todos os branches</span></div>
+      </div>
+      <div style="background:rgba(247,37,133,0.08); border:1px solid rgba(247,37,133,0.25); border-radius:10px; padding:0.9rem 0.7rem;">
+        <div style="font-size:1.4rem; font-weight:800; color:#f72585;">11–20</div>
+        <div style="font-size:0.7rem; font-weight:600; color:#f72585; margin-top:0.2rem;"><span lang="en">High risk</span><span lang="pt" hidden>Alto risco</span></div>
+        <div style="font-size:0.62rem; color:var(--muted); margin-top:0.3rem; line-height:1.4;"><span lang="en">Refactoring strongly recommended</span><span lang="pt" hidden>Refatoração fortemente recomendada</span></div>
+      </div>
+      <div style="background:rgba(247,37,133,0.15); border:2px solid rgba(247,37,133,0.5); border-radius:10px; padding:0.9rem 0.7rem;">
+        <div style="font-size:1.4rem; font-weight:800; color:#f72585;">&gt;20</div>
+        <div style="font-size:0.7rem; font-weight:600; color:#f72585; margin-top:0.2rem;"><span lang="en">Untestable</span><span lang="pt" hidden>Não testável</span></div>
+        <div style="font-size:0.62rem; color:var(--muted); margin-top:0.3rem; line-height:1.4;"><span lang="en">Must be split before any change</span><span lang="pt" hidden>Deve ser dividida antes de qualquer mudança</span></div>
+      </div>
+    </div>
+    <div class="diagram-label"><span lang="en">Cyclomatic complexity thresholds — the industry standard ceiling for a single function is 10</span><span lang="pt" hidden>Limites de complexidade ciclomática — o teto padrão da indústria para uma única função é 10</span></div>
+  </div>
+
+  <div class="code-block"><code><span lang="en">// Cyclomatic complexity = 9 — one path per branch combination</span><span lang="pt" hidden>// Complexidade ciclomática = 9 — um caminho por combinação de branch</span>
+function applyDiscount(order: Order, user: User): number {
+  let discount = 0;
+  if (user.isPremium) {                     <span lang="en">// +1</span>
+    if (order.total > 100) {               <span lang="en">// +1</span>
+      discount = 0.20;
+    } else {
+      discount = 0.10;
+    }
+  } else if (user.isLoyalty) {             <span lang="en">// +1</span>
+    discount = 0.05;
+  }
+  if (order.hasPromoCode) {                <span lang="en">// +1</span>
+    discount += order.promoCode.value;
+  }
+  if (discount > 0.30) {                   <span lang="en">// +1 — cap at 30%</span><span lang="pt" hidden>// +1 — limite em 30%</span>
+    discount = 0.30;
+  }
+  return order.total * (1 - discount);
+}
+
+<span lang="en">// Refactored: each piece is complexity 1–2, composable and individually testable</span><span lang="pt" hidden>// Refatorado: cada peça é complexidade 1–2, combinável e individualmente testável</span>
+function getUserDiscount(user: User, orderTotal: number): number {
+  if (user.isPremium) return orderTotal > 100 ? 0.20 : 0.10;
+  if (user.isLoyalty) return 0.05;
+  return 0;
+}
+function applyDiscount(order: Order, user: User): number {
+  const discount = Math.min(getUserDiscount(user, order.total) + getPromoDiscount(order), 0.30);
+  return order.total * (1 - discount);
+}</code></div>
+
+  <p><span lang="en">Enforce it in CI: <code>eslint --rule 'complexity: [error, 10]'</code>. Functions exceeding the limit fail the build, which prevents new complexity from being merged without explicit justification. Start lenient (15–20) if your codebase is currently high, then tighten over sprints.</span><span lang="pt" hidden>Aplique no CI: <code>eslint --rule 'complexity: [error, 10]'</code>. Funções que excedem o limite falham o build, o que impede que nova complexidade seja mergeada sem justificativa explícita. Comece com limites mais altos (15–20) se seu codebase já está alto, e aperte ao longo das sprints.</span></p>
+
+  <h2><span lang="en">Technical Debt Has Four Types — and Only Two Are Worth Paying</span><span lang="pt" hidden>Dívida Técnica Tem Quatro Tipos — e Apenas Dois Vale a Pena Pagar</span></h2>
+
+  <p><span lang="en">Martin Fowler's Technical Debt Quadrant is the most useful framework for deciding which debt to tackle. It maps debt along two axes: deliberate vs. inadvertent, and reckless vs. prudent. Teams that treat all debt as equivalent waste effort paying down debt that was intentional and managed, while leaving genuinely destructive debt untouched.</span><span lang="pt" hidden>O Quadrante de Dívida Técnica de Martin Fowler é o framework mais útil para decidir qual dívida atacar. Ele mapeia a dívida em dois eixos: deliberada vs. inadvertida, e imprudente vs. prudente. Times que tratam toda dívida como equivalente desperdiçam esforço pagando dívida que foi intencional e gerenciada, enquanto deixam dívida genuinamente destrutiva intocada.</span></p>
+
+  <div class="diagram" style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:0.72rem;min-width:400px;max-width:580px;margin:0 auto;">
+      <thead>
+        <tr>
+          <th style="padding:0.5rem;border:1px solid var(--border);background:var(--surface);"></th>
+          <th style="padding:0.5rem;border:1px solid var(--border);background:var(--surface);text-align:center;color:#f72585;font-weight:700;"><span lang="en">Reckless</span><span lang="pt" hidden>Imprudente</span></th>
+          <th style="padding:0.5rem;border:1px solid var(--border);background:var(--surface);text-align:center;color:var(--accent2);font-weight:700;"><span lang="en">Prudent</span><span lang="pt" hidden>Prudente</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:0.6rem 0.8rem;border:1px solid var(--border);font-weight:700;color:#ffd166;white-space:nowrap;"><span lang="en">Deliberate</span><span lang="pt" hidden>Deliberada</span></td>
+          <td style="padding:0.7rem;border:1px solid var(--border);background:rgba(247,37,133,0.06);">
+            <div style="font-size:0.7rem; color:#f87db0; line-height:1.5;">
+              <strong style="display:block;margin-bottom:0.3rem;"><span lang="en">"We don't have time for design"</span><span lang="pt" hidden>"Não temos tempo para design"</span></strong>
+              <span lang="en">Avoid — this creates debt with no plan to repay</span><span lang="pt" hidden>Evite — isso cria dívida sem plano de pagamento</span>
+            </div>
+          </td>
+          <td style="padding:0.7rem;border:1px solid var(--border);background:rgba(6,214,160,0.04);">
+            <div style="font-size:0.7rem; color:var(--accent2); line-height:1.5;">
+              <strong style="display:block;margin-bottom:0.3rem;"><span lang="en">"We must ship now, refactor next sprint"</span><span lang="pt" hidden>"Precisamos entregar agora, refatorar na próxima sprint"</span></strong>
+              <span lang="en">Acceptable — conscious decision, tracked, has a repayment plan</span><span lang="pt" hidden>Aceitável — decisão consciente, rastreada, com plano de pagamento</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0.6rem 0.8rem;border:1px solid var(--border);font-weight:700;color:var(--accent);white-space:nowrap;"><span lang="en">Inadvertent</span><span lang="pt" hidden>Inadvertida</span></td>
+          <td style="padding:0.7rem;border:1px solid var(--border);background:rgba(247,37,133,0.06);">
+            <div style="font-size:0.7rem; color:#f87db0; line-height:1.5;">
+              <strong style="display:block;margin-bottom:0.3rem;"><span lang="en">"What's layering?"</span><span lang="pt" hidden>"O que é layering?"</span></strong>
+              <span lang="en">Most dangerous — team doesn't know they're creating debt</span><span lang="pt" hidden>Mais perigosa — o time não sabe que está criando dívida</span>
+            </div>
+          </td>
+          <td style="padding:0.7rem;border:1px solid var(--border);background:rgba(6,214,160,0.04);">
+            <div style="font-size:0.7rem; color:var(--accent2); line-height:1.5;">
+              <strong style="display:block;margin-bottom:0.3rem;"><span lang="en">"Now we know how we should have done it"</span><span lang="pt" hidden>"Agora sabemos como deveríamos ter feito"</span></strong>
+              <span lang="en">Natural — discovered through learning; track and address in future sprints</span><span lang="pt" hidden>Natural — descoberta pelo aprendizado; rastreie e enderece em sprints futuras</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="diagram-label"><span lang="en">Fowler's Technical Debt Quadrant — only the two left cells represent debt worth actively hunting down and eliminating</span><span lang="pt" hidden>Quadrante de Dívida Técnica de Fowler — apenas as duas células da esquerda representam dívida que vale a pena caçar e eliminar ativamente</span></div>
+  </div>
+
+  <p><span lang="en">The practical implication: when you find debt, ask <em>which quadrant it came from</em> before deciding how urgently to fix it. Reckless debt (both types) needs systematic remediation — it's symptomatic of a team culture problem, not just a code quality problem. Prudent deliberate debt needs a tracked repayment plan. Prudent inadvertent debt is a learning outcome — fix it when the refactoring cost is low.</span><span lang="pt" hidden>A implicação prática: quando você encontrar dívida, pergunte <em>de qual quadrante ela veio</em> antes de decidir a urgência da correção. Dívida imprudente (ambos os tipos) precisa de remediação sistemática — é sintomática de um problema de cultura do time, não apenas um problema de qualidade de código. Dívida deliberada prudente precisa de um plano de pagamento rastreado. Dívida inadvertida prudente é um resultado de aprendizado — corrija quando o custo de refatoração for baixo.</span></p>
+
+  <h2><span lang="en">Static Analysis: The First Line of Defense</span><span lang="pt" hidden>Análise Estática: A Primeira Linha de Defesa</span></h2>
+
+  <p><span lang="en">Anti-pattern detection tools like archlens-ai operate at the architectural level. But the first line of defense is simpler: static analysis that runs on every file save and every commit. These tools catch the low-hanging fruit — unused variables, unreachable code, overly complex functions, missing null checks — before a human reviewer ever sees the code.</span><span lang="pt" hidden>Ferramentas de detecção de anti-patterns como o archlens-ai operam no nível arquitetural. Mas a primeira linha de defesa é mais simples: análise estática que roda em cada save de arquivo e cada commit. Essas ferramentas capturam os problemas mais fáceis — variáveis não usadas, código inacessível, funções excessivamente complexas, verificações de null ausentes — antes que um revisor humano veja o código.</span></p>
+
+  <div class="code-block"><code><span lang="en"># Recommended static analysis stack (works across most languages)</span><span lang="pt" hidden># Stack recomendado de análise estática (funciona na maioria das linguagens)</span>
+
+<span lang="en"># TypeScript / JavaScript</span><span lang="pt" hidden># TypeScript / JavaScript</span>
+ESLint          <span lang="en"># style, complexity, dead code, import order</span><span lang="pt" hidden># estilo, complexidade, código morto, ordem de imports</span>
+TypeScript      <span lang="en"># strict mode: noImplicitAny, strictNullChecks, noUnusedLocals</span><span lang="pt" hidden># strict mode: noImplicitAny, strictNullChecks, noUnusedLocals</span>
+Knip            <span lang="en"># unused exports, dead files, unused dependencies</span><span lang="pt" hidden># exports não usados, arquivos mortos, dependências não usadas</span>
+
+<span lang="en"># Python</span><span lang="pt" hidden># Python</span>
+Ruff            <span lang="en"># fast linter + formatter, replaces flake8+isort+pyupgrade</span><span lang="pt" hidden># linter + formatter rápido, substitui flake8+isort+pyupgrade</span>
+mypy            <span lang="en"># static type checking</span><span lang="pt" hidden># verificação estática de tipos</span>
+
+<span lang="en"># Java / Kotlin</span><span lang="pt" hidden># Java / Kotlin</span>
+Checkstyle      <span lang="en"># style and complexity rules</span><span lang="pt" hidden># regras de estilo e complexidade</span>
+SpotBugs        <span lang="en"># bug pattern detection</span><span lang="pt" hidden># detecção de padrões de bug</span>
+SonarQube       <span lang="en"># cross-language: complexity, coverage, smell density</span><span lang="pt" hidden># multi-linguagem: complexidade, cobertura, densidade de smells</span>
+
+<span lang="en"># Pre-commit hook — catches issues before they reach CI</span><span lang="pt" hidden># Pre-commit hook — captura problemas antes de chegarem ao CI</span>
+npx lint-staged <span lang="en"># runs linters only on staged files — fast</span><span lang="pt" hidden>  # roda linters apenas em arquivos staged — rápido</span></code></div>
+
+  <div class="callout">
+    <p><span lang="en"><strong>The Boy Scout Rule in practice:</strong> "Leave the code cleaner than you found it." When a PR touches a file, the author is responsible for leaving it better — not necessarily for a full refactor, but for removing obvious dead code, extracting a clearly misnamed variable, or breaking a function that grew past its complexity limit. Applied consistently, this turns every PR into an incremental quality improvement rather than a neutral or negative event.</span><span lang="pt" hidden><strong>A Regra do Escoteiro na prática:</strong> "Deixe o código mais limpo do que você encontrou." Quando um PR toca um arquivo, o autor é responsável por deixá-lo melhor — não necessariamente para uma refatoração completa, mas para remover código morto óbvio, extrair uma variável claramente mal nomeada, ou dividir uma função que cresceu além do limite de complexidade. Aplicada consistentemente, isso transforma cada PR em uma melhoria incremental de qualidade em vez de um evento neutro ou negativo.</span></p>
+  </div>
 
   <h2><span lang="en">Automating Architecture Quality Analysis</span><span lang="pt" hidden>Automatizando a Análise de Qualidade Arquitetural</span></h2>
 

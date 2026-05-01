@@ -316,7 +316,111 @@ await TestBed.configureTestingModule({
 
   <p><span lang="en">The most common Angular testing mistake is over-relying on <code>TestBed</code> for everything. Dumb components don't need <code>TestBed</code> — just instantiate them, pass inputs, and assert on outputs. Reserve <code>TestBed</code> for components that interact with routing, DI, or the DOM in ways that require Angular's machinery.</span><span lang="pt" hidden>O erro de teste Angular mais comum é depender excessivamente do <code>TestBed</code> para tudo. Componentes dumb não precisam de <code>TestBed</code> — apenas instancie-os, passe inputs e verifique outputs. Reserve <code>TestBed</code> para componentes que interagem com roteamento, DI ou o DOM de formas que requerem a maquinaria do Angular.</span></p>
 
-  <h2><span lang="en">10. Common Mistakes That Compound Over Time</span><span lang="pt" hidden>10. Erros Comuns que se Agravam com o Tempo</span></h2>
+  <h2><span lang="en">10. HTTP Interceptors: The Right Place for Cross-Cutting Concerns</span><span lang="pt" hidden>10. HTTP Interceptors: O Lugar Certo para Preocupações Transversais</span></h2>
+
+  <p><span lang="en">Interceptors sit between your code and every HTTP request/response. They're the correct place for auth token injection, error handling, loading indicators, and request logging — concerns that are universal but shouldn't pollute service methods. Angular 15+ supports functional interceptors, which are cleaner and don't require class boilerplate.</span><span lang="pt" hidden>Interceptors ficam entre seu código e cada requisição/resposta HTTP. São o lugar correto para injeção de token de autenticação, tratamento de erros, indicadores de loading e logging de requisições — preocupações universais que não devem poluir os métodos de serviço. Angular 15+ suporta interceptors funcionais, que são mais limpos e não requerem boilerplate de classe.</span></p>
+
+  <div class="code-block"><code><span lang="en">// auth.interceptor.ts — functional style (Angular 15+)</span><span lang="pt" hidden>// auth.interceptor.ts — estilo funcional (Angular 15+)</span>
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const token = inject(AuthService).getToken();
+  if (!token) return next(req);
+
+  return next(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }));
+};
+
+<span lang="en">// error.interceptor.ts — global error handling with toast notifications</span><span lang="pt" hidden>// error.interceptor.ts — tratamento global de erros com notificações toast</span>
+export const errorInterceptor: HttpInterceptorFn = (req, next) => {
+  const toast = inject(ToastService);
+  return next(req).pipe(
+    catchError((err: HttpErrorResponse) => {
+      if (err.status === 401) inject(AuthService).logout();
+      else if (err.status >= 500) toast.error('Server error. Please try again.');
+      return throwError(() => err);
+    })
+  );
+};
+
+<span lang="en">// loading.interceptor.ts — global loading state</span><span lang="pt" hidden>// loading.interceptor.ts — estado global de loading</span>
+export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
+  const loading = inject(LoadingService);
+  loading.start();
+  return next(req).pipe(finalize(() => loading.stop()));
+};
+
+<span lang="en">// Register in app.config.ts</span><span lang="pt" hidden>// Registre em app.config.ts</span>
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor, loadingInterceptor]))
+  ]
+};</code></div>
+
+  <h2><span lang="en">11. Route Guards and Resolvers</span><span lang="pt" hidden>11. Route Guards e Resolvers</span></h2>
+
+  <p><span lang="en">Route guards control navigation access; resolvers pre-fetch data before a route activates. Both use functional form in Angular 15+. A common mistake is fetching data in <code>ngOnInit()</code> and showing a loading spinner — using a resolver instead means the component receives its data already populated, with no loading state to manage.</span><span lang="pt" hidden>Route guards controlam o acesso à navegação; resolvers pré-carregam dados antes que uma rota seja ativada. Ambos usam forma funcional no Angular 15+. Um erro comum é buscar dados em <code>ngOnInit()</code> e mostrar um spinner de loading — usar um resolver significa que o componente recebe seus dados já populados, sem estado de loading para gerenciar.</span></p>
+
+  <div class="code-block"><code><span lang="en">// auth.guard.ts — functional guard (Angular 15+)</span><span lang="pt" hidden>// auth.guard.ts — guard funcional (Angular 15+)</span>
+export const authGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  return auth.isAuthenticated() ? true : router.createUrlTree(['/login']);
+};
+
+<span lang="en">// role.guard.ts — with parameterized roles</span><span lang="pt" hidden>// role.guard.ts — com roles parametrizadas</span>
+export const roleGuard = (requiredRole: string): CanActivateFn => () => {
+  const auth = inject(AuthService);
+  return auth.hasRole(requiredRole) ? true : inject(Router).createUrlTree(['/forbidden']);
+};
+
+<span lang="en">// user.resolver.ts — data is ready when component activates</span><span lang="pt" hidden>// user.resolver.ts — dados prontos quando o componente ativa</span>
+export const userResolver: ResolveFn&lt;User&gt; = (route) =>
+  inject(UserService).getUser(route.paramMap.get('id')!);
+
+<span lang="en">// Route configuration</span><span lang="pt" hidden>// Configuração de rota</span>
+{
+  path: 'users/:id',
+  component: UserDetailPage,
+  canActivate: [authGuard, roleGuard('admin')],
+  resolve: { user: userResolver }         <span lang="en">// available as route.data['user']</span><span lang="pt" hidden>// disponível como route.data['user']</span>
+}</code></div>
+
+  <h2><span lang="en">12. Reactive Forms: Validation That Scales</span><span lang="pt" hidden>12. Reactive Forms: Validação que Escala</span></h2>
+
+  <p><span lang="en">Reactive Forms give you a typed, testable model of your form state. They handle complex validation scenarios — cross-field validation, async validators (email availability check), dynamic form arrays — that template-driven forms struggle with. The key: define the form structure and its validators in the component class, not in the template.</span><span lang="pt" hidden>Reactive Forms fornecem um modelo tipado e testável do estado do formulário. Eles lidam com cenários de validação complexos — validação entre campos, validadores assíncronos (verificação de disponibilidade de email), arrays de formulário dinâmicos — com os quais formulários template-driven têm dificuldade. A chave: defina a estrutura do formulário e seus validadores na classe do componente, não no template.</span></p>
+
+  <div class="code-block"><code><span lang="en">// ✓ Strongly typed form with cross-field and async validators</span><span lang="pt" hidden>// ✓ Formulário fortemente tipado com validadores entre campos e assíncronos</span>
+form = new FormGroup({
+  email:           new FormControl('', [Validators.required, Validators.email],
+                     [this.emailAvailableValidator()]),  <span lang="en">// async</span><span lang="pt" hidden>// assíncrono</span>
+  password:        new FormControl('', [Validators.required, Validators.minLength(8)]),
+  confirmPassword: new FormControl('', Validators.required),
+}, { validators: passwordMatchValidator });   <span lang="en">// cross-field</span><span lang="pt" hidden>// entre campos</span>
+
+<span lang="en">// Custom cross-field validator</span><span lang="pt" hidden>// Validador personalizado entre campos</span>
+const passwordMatchValidator: ValidatorFn = (group) => {
+  const pw = group.get('password')?.value;
+  const confirm = group.get('confirmPassword')?.value;
+  return pw === confirm ? null : { passwordMismatch: true };
+};
+
+<span lang="en">// Async validator — debounced HTTP call</span><span lang="pt" hidden>// Validador assíncrono — chamada HTTP com debounce</span>
+emailAvailableValidator(): AsyncValidatorFn {
+  return (ctrl) => timer(400).pipe(
+    switchMap(() => this.authService.checkEmail(ctrl.value)),
+    map(taken => taken ? { emailTaken: true } : null),
+    catchError(() => of(null))
+  );
+}
+
+<span lang="en">// FormArray — dynamic list of items</span><span lang="pt" hidden>// FormArray — lista dinâmica de itens</span>
+items = new FormArray&lt;FormGroup&gt;([]);
+addItem() {
+  this.items.push(new FormGroup({
+    name:     new FormControl('', Validators.required),
+    quantity: new FormControl(1, [Validators.required, Validators.min(1)])
+  }));
+}</code></div>
+
+  <h2><span lang="en">13. Common Mistakes That Compound Over Time</span><span lang="pt" hidden>13. Erros Comuns que se Agravam com o Tempo</span></h2>
 
   <ul>
     <li><span lang="en"><strong>Shared NgModules that import too much.</strong> A <code>SharedModule</code> that re-exports 30 components and all of Angular Material means every feature that imports it pays the full cost. Prefer fine-grained imports in standalone components.</span><span lang="pt" hidden><strong>NgModules compartilhados que importam demais.</strong> Um <code>SharedModule</code> que re-exporta 30 componentes e todo o Angular Material significa que cada feature que o importa paga o custo total. Prefira importações granulares em componentes standalone.</span></li>

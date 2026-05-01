@@ -315,7 +315,103 @@ expect(screen.queryByText('Alice')).not.toBeInTheDocument();</code></div>
 
   <p><span lang="en">Query priority in RTL: <code>getByRole</code> &gt; <code>getByLabelText</code> &gt; <code>getByPlaceholderText</code> &gt; <code>getByText</code>. Roles map to what screen readers announce — tests that use them double as accessibility checks.</span><span lang="pt" hidden>Prioridade de queries no RTL: <code>getByRole</code> &gt; <code>getByLabelText</code> &gt; <code>getByPlaceholderText</code> &gt; <code>getByText</code>. Roles mapeiam para o que leitores de tela anunciam — testes que os usam funcionam também como verificações de acessibilidade.</span></p>
 
-  <h2><span lang="en">10. Common Mistakes That Compound Over Time</span><span lang="pt" hidden>10. Erros Comuns que se Agravam com o Tempo</span></h2>
+  <h2><span lang="en">10. React 18 Concurrent Features</span><span lang="pt" hidden>10. Recursos Concorrentes do React 18</span></h2>
+
+  <p><span lang="en">React 18's concurrent mode doesn't change how you write components — it changes how React decides when to render them. Two hooks expose this power directly to application code: <code>useTransition</code> and <code>useDeferredValue</code>. Both solve the same problem: keeping the UI responsive during expensive updates.</span><span lang="pt" hidden>O modo concorrente do React 18 não muda como você escreve componentes — muda como o React decide quando renderizá-los. Dois hooks expõem esse poder diretamente ao código da aplicação: <code>useTransition</code> e <code>useDeferredValue</code>. Ambos resolvem o mesmo problema: manter a UI responsiva durante atualizações custosas.</span></p>
+
+  <div class="code-block"><code><span lang="en">// useTransition — mark a state update as non-urgent
+// UI stays responsive; the update is deferred until React has idle time</span><span lang="pt" hidden>// useTransition — marca uma atualização de estado como não urgente
+// UI permanece responsiva; a atualização é adiada até o React ter tempo livre</span>
+const [isPending, startTransition] = useTransition();
+
+function handleSearch(value: string) {
+  setInputValue(value);                          <span lang="en">// urgent: update input immediately</span><span lang="pt" hidden>// urgente: atualiza o input imediatamente</span>
+  startTransition(() => setSearchQuery(value));  <span lang="en">// non-urgent: filter 10,000 items</span><span lang="pt" hidden>// não urgente: filtra 10.000 itens</span>
+}
+
+return (
+  &lt;&gt;
+    &lt;input value={inputValue} onChange={e =&gt; handleSearch(e.target.value)} /&gt;
+    {isPending &amp;&amp; &lt;Spinner /&gt;}
+    &lt;ItemList query={searchQuery} /&gt;  {<span lang="en">/* renders with deferred value */</span><span lang="pt" hidden>/* renderiza com valor adiado */</span>}
+  &lt;/&gt;
+);
+
+<span lang="en">// useDeferredValue — defer the expensive part without owning the state update</span><span lang="pt" hidden>// useDeferredValue — adia a parte custosa sem possuir a atualização de estado</span>
+function SearchResults({ query }: { query: string }) {
+  const deferredQuery = useDeferredValue(query);
+  const isStale = query !== deferredQuery;
+
+  return (
+    &lt;div style={{ opacity: isStale ? 0.6 : 1 }}&gt;  {<span lang="en">/* visual stale indicator */</span><span lang="pt" hidden>/* indicador visual de stale */</span>}
+      &lt;ExpensiveList query={deferredQuery} /&gt;
+    &lt;/div&gt;
+  );
+}</code></div>
+
+  <p><span lang="en"><strong>useTransition vs useDeferredValue:</strong> Use <code>useTransition</code> when you own the state update (you control when <code>setState</code> fires). Use <code>useDeferredValue</code> when you receive a value as a prop or from an external source you don't control. Both defer the expensive downstream render; they differ in where the deferral is applied.</span><span lang="pt" hidden><strong>useTransition vs useDeferredValue:</strong> Use <code>useTransition</code> quando você possui a atualização de estado (você controla quando <code>setState</code> dispara). Use <code>useDeferredValue</code> quando você recebe um valor como prop ou de uma fonte externa que não controla. Ambos adiam a renderização downstream custosa; eles diferem em onde o adiamento é aplicado.</span></p>
+
+  <h2><span lang="en">11. TypeScript Patterns That Make Components Safer</span><span lang="pt" hidden>11. Padrões TypeScript que Tornam Componentes Mais Seguros</span></h2>
+
+  <p><span lang="en">React and TypeScript have strong synergy, but most teams only use TypeScript for basic prop typing. A few patterns go much further in making invalid states unrepresentable at compile time.</span><span lang="pt" hidden>React e TypeScript têm forte sinergia, mas a maioria dos times usa TypeScript apenas para tipagem básica de props. Alguns padrões vão muito além em tornar estados inválidos não representáveis em tempo de compilação.</span></p>
+
+  <div class="code-block"><code><span lang="en">// Discriminated unions for component variants — impossible to pass wrong combination</span><span lang="pt" hidden>// Unions discriminadas para variantes de componente — impossível passar combinação errada</span>
+type ButtonProps =
+  | { variant: 'primary'; onClick: () => void; href?: never }
+  | { variant: 'link'; href: string; onClick?: never };
+
+<span lang="en">// ✗ Type error — link variant requires href, not onClick</span><span lang="pt" hidden>// ✗ Erro de tipo — variante link requer href, não onClick</span>
+&lt;Button variant="link" onClick={handleClick} /&gt;
+
+<span lang="en">// Polymorphic component — preserves the correct HTML element's prop types</span><span lang="pt" hidden>// Componente polimórfico — preserva os tipos de props do elemento HTML correto</span>
+type AsProps&lt;T extends ElementType&gt; = { as?: T } &amp; ComponentPropsWithoutRef&lt;T&gt;;
+
+function Text&lt;T extends ElementType = 'p'&gt;({ as, ...props }: AsProps&lt;T&gt;) {
+  const Tag = as ?? 'p';
+  return &lt;Tag {...props} /&gt;;
+}
+&lt;Text as="h1" id="title"&gt;Heading&lt;/Text&gt;  <span lang="en">// id is valid; href would be a type error</span><span lang="pt" hidden>// id é válido; href seria erro de tipo</span>
+
+<span lang="en">// Generic data components — no any, full type inference through</span><span lang="pt" hidden>// Componentes de dados genéricos — sem any, inferência de tipo completa</span>
+function DataTable&lt;T&gt;({ data, columns }: {
+  data: T[];
+  columns: { key: keyof T; label: string }[];
+}) { ... }
+
+&lt;DataTable
+  data={users}                             <span lang="en">// T inferred as User</span><span lang="pt" hidden>// T inferido como User</span>
+  columns={[{ key: 'email', label: 'Email' }]}  <span lang="en">// key must be keyof User</span><span lang="pt" hidden>// key deve ser keyof User</span>
+/&gt;</code></div>
+
+  <h2><span lang="en">12. Server Components and the Next.js App Router</span><span lang="pt" hidden>12. Server Components e o App Router do Next.js</span></h2>
+
+  <p><span lang="en">React Server Components (RSC) — the foundation of Next.js 13+ App Router — fundamentally change the rendering model. Server Components run only on the server: they can access databases and secrets directly, never ship JavaScript to the client, and are ideal for data fetching. Client Components (marked <code>'use client'</code>) run in the browser and handle interactivity.</span><span lang="pt" hidden>React Server Components (RSC) — a base do App Router do Next.js 13+ — mudam fundamentalmente o modelo de renderização. Server Components rodam apenas no servidor: podem acessar bancos de dados e secrets diretamente, nunca enviam JavaScript para o cliente e são ideais para busca de dados. Client Components (marcados com <code>'use client'</code>) rodam no navegador e lidam com interatividade.</span></p>
+
+  <div class="code-block"><code><span lang="en">// Server Component — runs on server, zero JS sent to client, direct DB access</span><span lang="pt" hidden>// Server Component — roda no servidor, zero JS enviado ao cliente, acesso direto ao DB</span>
+<span lang="en">// app/users/page.tsx (no 'use client' directive = Server Component by default)</span><span lang="pt" hidden>// app/users/page.tsx (sem diretiva 'use client' = Server Component por padrão)</span>
+export default async function UsersPage() {
+  const users = await db.users.findMany();    <span lang="en">// direct DB call, no API needed</span><span lang="pt" hidden>// chamada direta ao DB, sem API necessária</span>
+  return &lt;UserList users={users} /&gt;;
+}
+
+<span lang="en">// Client Component — needed for: useState, useEffect, event handlers, browser APIs</span><span lang="pt" hidden>// Client Component — necessário para: useState, useEffect, event handlers, browser APIs</span>
+'use client';
+export function UserList({ users }: { users: User[] }) {
+  const [selected, setSelected] = useState&lt;string | null&gt;(null);
+  return (
+    &lt;ul&gt;
+      {users.map(user =&gt; (
+        &lt;li key={user.id} onClick={() =&gt; setSelected(user.id)}&gt;{user.name}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}</code></div>
+
+  <div class="callout">
+    <p><span lang="en"><strong>The decision rule:</strong> Default to Server Components. Add <code>'use client'</code> only when you need: <code>useState</code>, <code>useEffect</code>, event listeners, browser-only APIs (<code>window</code>, <code>localStorage</code>), or third-party libraries that aren't RSC-compatible. Push <code>'use client'</code> as far down the component tree as possible — a leaf interactive button doesn't require its entire parent tree to be a Client Component.</span><span lang="pt" hidden><strong>A regra de decisão:</strong> Padrão para Server Components. Adicione <code>'use client'</code> apenas quando precisar de: <code>useState</code>, <code>useEffect</code>, event listeners, APIs apenas do browser (<code>window</code>, <code>localStorage</code>), ou bibliotecas de terceiros não compatíveis com RSC. Empurre <code>'use client'</code> o mais para baixo possível na árvore de componentes — um botão interativo de folha não requer que toda a árvore pai seja um Client Component.</span></p>
+  </div>
+
+  <h2><span lang="en">13. Common Mistakes That Compound Over Time</span><span lang="pt" hidden>13. Erros Comuns que se Agravam com o Tempo</span></h2>
 
   <ul>
     <li><span lang="en"><strong>Prop drilling beyond two levels.</strong> Passing props through three or more component layers creates invisible coupling. Extract to Context or move the consuming component closer to the state.</span><span lang="pt" hidden><strong>Prop drilling além de dois níveis.</strong> Passar props por três ou mais camadas de componentes cria acoplamento invisível. Extraia para Context ou mova o componente consumidor para mais perto do estado.</span></li>

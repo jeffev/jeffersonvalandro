@@ -292,6 +292,73 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
   <p><span lang="en"><strong>Where it fails:</strong> Cold starts add latency for the first invocation after idle periods — unacceptable for latency-sensitive user-facing APIs. Function size and duration limits constrain what can run serverless. Vendor lock-in is real: a function tightly coupled to AWS event schemas is expensive to migrate. And stateless-by-design means any statefulness (sessions, in-flight workflows) must be externalized — usually to DynamoDB or Redis, adding round-trips.</span><span lang="pt" hidden><strong>Onde falha:</strong> Cold starts adicionam latência para a primeira invocação após períodos ociosos — inaceitável para APIs voltadas ao usuário sensíveis a latência. Limites de tamanho e duração de funções restringem o que pode rodar serverless. O lock-in de fornecedor é real: uma função fortemente acoplada a schemas de eventos da AWS é cara para migrar. E o design stateless-by-default significa que qualquer estado (sessões, fluxos em andamento) deve ser externalizado — geralmente para DynamoDB ou Redis, adicionando round-trips.</span></p>
 
+  <h2><span lang="en">7. CQRS: Separating Reads from Writes</span><span lang="pt" hidden>7. CQRS: Separando Leituras de Escritas</span></h2>
+
+  <p><span lang="en">Command Query Responsibility Segregation (CQRS) is not a full architecture — it's a pattern applied within one. The core idea: the model you use to write data is different from the model you use to read it. Commands (create, update, delete) go through the write side with full validation and domain logic. Queries go through a separate read model optimized purely for display — often a denormalized projection.</span><span lang="pt" hidden>Command Query Responsibility Segregation (CQRS) não é uma arquitetura completa — é um padrão aplicado dentro de uma. A ideia central: o modelo que você usa para escrever dados é diferente do modelo que usa para lê-los. Comandos (criar, atualizar, deletar) passam pelo lado de escrita com validação completa e lógica de domínio. Queries passam por um modelo de leitura separado, otimizado puramente para exibição — frequentemente uma projeção desnormalizada.</span></p>
+
+  <div class="diagram">
+    <div style="display:flex; align-items:center; justify-content:center; gap:1.5rem; flex-wrap:wrap; max-width:580px; margin:0 auto;">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:0.5rem;">
+        <div style="background:rgba(79,142,247,0.12); border:2px solid rgba(79,142,247,0.4); border-radius:8px; padding:0.6rem 1rem; font-size:0.72rem; font-weight:700; color:var(--accent);">Client</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:0.6rem;">
+        <div style="display:flex; align-items:center; gap:0.7rem;">
+          <div style="font-size:0.65rem; color:#ffd166;">Command →</div>
+          <div style="background:rgba(255,209,102,0.08); border:1px solid rgba(255,209,102,0.3); border-radius:8px; padding:0.5rem 0.9rem; text-align:center;">
+            <div style="font-size:0.72rem; font-weight:700; color:#ffd166;"><span lang="en">Write Model</span><span lang="pt" hidden>Modelo de Escrita</span></div>
+            <div style="font-size:0.6rem; color:var(--muted); margin-top:0.2rem;"><span lang="en">Domain logic · Validation</span><span lang="pt" hidden>Lógica de domínio · Validação</span></div>
+            <div style="font-size:0.6rem; color:var(--muted);">→ <span lang="en">Write DB</span><span lang="pt" hidden>DB de Escrita</span></div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.7rem;">
+          <div style="font-size:0.65rem; color:var(--accent2);">← Query</div>
+          <div style="background:rgba(6,214,160,0.08); border:1px solid rgba(6,214,160,0.3); border-radius:8px; padding:0.5rem 0.9rem; text-align:center;">
+            <div style="font-size:0.72rem; font-weight:700; color:var(--accent2);"><span lang="en">Read Model</span><span lang="pt" hidden>Modelo de Leitura</span></div>
+            <div style="font-size:0.6rem; color:var(--muted); margin-top:0.2rem;"><span lang="en">Flat projections · No domain logic</span><span lang="pt" hidden>Projeções planas · Sem lógica de domínio</span></div>
+            <div style="font-size:0.6rem; color:var(--muted);">← <span lang="en">Read DB (denormalized)</span><span lang="pt" hidden>DB de Leitura (desnormalizado)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="diagram-label"><span lang="en">Write DB stays normalized and consistent; Read DB is a pre-computed projection optimized for queries — synced asynchronously</span><span lang="pt" hidden>DB de escrita permanece normalizado e consistente; DB de leitura é uma projeção pré-computada otimizada para queries — sincronizado assincronamente</span></div>
+  </div>
+
+  <p><span lang="en"><strong>When it wins:</strong> Systems where read and write workloads have very different shapes — e.g., an order processing system where writes are complex (20-step domain flow) but reads serve dashboards with aggregated views. CQRS lets you optimize each side independently: the write model enforces invariants; the read model serves flat, fast projections. It pairs naturally with Event Sourcing, where each command produces an event that updates read projections.</span><span lang="pt" hidden><strong>Quando vence:</strong> Sistemas onde as cargas de leitura e escrita têm formas muito diferentes — por exemplo, um sistema de processamento de pedidos onde escritas são complexas (fluxo de domínio de 20 etapas), mas leituras servem dashboards com visões agregadas. CQRS permite otimizar cada lado independentemente: o modelo de escrita aplica invariantes; o modelo de leitura serve projeções planas e rápidas. Combina naturalmente com Event Sourcing, onde cada comando produz um evento que atualiza projeções de leitura.</span></p>
+
+  <p><span lang="en"><strong>Where it fails:</strong> Simple CRUD applications — the split adds significant complexity for no benefit when your reads and writes look identical. Eventual consistency between the write DB and read projections can confuse users who expect to see their write reflected immediately. Start with a single model; introduce CQRS only when you can clearly articulate the asymmetry it solves.</span><span lang="pt" hidden><strong>Onde falha:</strong> Aplicações CRUD simples — a divisão adiciona complexidade significativa sem benefício quando suas leituras e escritas são idênticas. A consistência eventual entre o DB de escrita e as projeções de leitura pode confundir usuários que esperam ver sua escrita refletida imediatamente. Comece com um único modelo; introduza CQRS apenas quando puder articular claramente a assimetria que resolve.</span></p>
+
+  <h2><span lang="en">Migrating Between Architectures: The Strangler Fig</span><span lang="pt" hidden>Migrando Entre Arquiteturas: O Strangler Fig</span></h2>
+
+  <p><span lang="en">The most common question isn't "which architecture should I choose for a greenfield project?" — it's "how do I migrate from what I have?" The Strangler Fig pattern, coined by Martin Fowler, is the standard answer. The pattern takes its name from a plant that grows alongside a tree, gradually replacing it without ever needing to cut the original down.</span><span lang="pt" hidden>A pergunta mais comum não é "qual arquitetura devo escolher para um projeto novo?" — é "como migro do que tenho?" O padrão Strangler Fig, cunhado por Martin Fowler, é a resposta padrão. O padrão leva o nome de uma planta que cresce ao lado de uma árvore, gradualmente substituindo-a sem nunca precisar derrubar a original.</span></p>
+
+  <div class="diagram">
+    <div style="display:flex; align-items:stretch; gap:0.8rem; max-width:560px; margin:0 auto; flex-wrap:wrap;">
+      <div style="flex:1; min-width:130px; display:flex; flex-direction:column; gap:0.5rem;">
+        <div style="background:rgba(247,37,133,0.08); border:1px solid rgba(247,37,133,0.25); border-radius:8px; padding:0.7rem; text-align:center;">
+          <div style="font-size:0.7rem; font-weight:700; color:#f87db0;"><span lang="en">Phase 1</span><span lang="pt" hidden>Fase 1</span></div>
+          <div style="font-size:0.62rem; color:var(--muted); margin-top:0.3rem; line-height:1.5;"><span lang="en">Add a Façade in front of the monolith. New feature routes go to the new service. Old routes pass through.</span><span lang="pt" hidden>Adicione um Façade na frente do monolito. Novas rotas de feature vão para o novo serviço. Rotas antigas passam direto.</span></div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; color:var(--accent); font-size:1rem;">→</div>
+      <div style="flex:1; min-width:130px; display:flex; flex-direction:column; gap:0.5rem;">
+        <div style="background:rgba(255,209,102,0.07); border:1px solid rgba(255,209,102,0.25); border-radius:8px; padding:0.7rem; text-align:center;">
+          <div style="font-size:0.7rem; font-weight:700; color:#ffd166;"><span lang="en">Phase 2</span><span lang="pt" hidden>Fase 2</span></div>
+          <div style="font-size:0.62rem; color:var(--muted); margin-top:0.3rem; line-height:1.5;"><span lang="en">Extract domain by domain. Each extraction moves a route from the monolith to a new service. Monolith shrinks.</span><span lang="pt" hidden>Extraia domínio por domínio. Cada extração move uma rota do monolito para um novo serviço. O monolito encolhe.</span></div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; color:var(--accent); font-size:1rem;">→</div>
+      <div style="flex:1; min-width:130px; display:flex; flex-direction:column; gap:0.5rem;">
+        <div style="background:rgba(6,214,160,0.07); border:1px solid rgba(6,214,160,0.25); border-radius:8px; padding:0.7rem; text-align:center;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--accent2);"><span lang="en">Phase 3</span><span lang="pt" hidden>Fase 3</span></div>
+          <div style="font-size:0.62rem; color:var(--muted); margin-top:0.3rem; line-height:1.5;"><span lang="en">Monolith handles only remaining legacy routes. Decommission when the last route is migrated.</span><span lang="pt" hidden>Monolito lida apenas com rotas legadas restantes. Descomissione quando a última rota for migrada.</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="diagram-label"><span lang="en">The monolith stays live and serving traffic throughout — zero "big bang" cutover, rollback is always possible</span><span lang="pt" hidden>O monolito permanece vivo e servindo tráfego durante todo o processo — zero cutover "big bang", rollback sempre é possível</span></div>
+  </div>
+
+  <p><span lang="en">The critical discipline: never extract a service before you understand the domain boundary. The most common failure in Strangler Fig migrations is extracting services before the domain is well-defined, then discovering the boundary was wrong only after the extraction is complete. Extract opportunistically — when a new feature must be built anyway, build it as a service instead of adding to the monolith.</span><span lang="pt" hidden>A disciplina crítica: nunca extraia um serviço antes de entender o limite do domínio. A falha mais comum em migrações Strangler Fig é extrair serviços antes que o domínio esteja bem definido, descobrindo que o limite estava errado apenas após a extração ser concluída. Extraia oportunisticamente — quando uma nova feature precisar ser construída de qualquer forma, construa-a como um serviço em vez de adicionar ao monolito.</span></p>
+
   <h2><span lang="en">How to Choose: A Decision Framework</span><span lang="pt" hidden>Como Escolher: Um Framework de Decisão</span></h2>
 
   <p><span lang="en">Architecture choice should be driven by three questions about your specific context — not by trends, not by what Netflix or Uber published, and not by what you already know:</span><span lang="pt" hidden>A escolha de arquitetura deve ser guiada por três perguntas sobre seu contexto específico — não por tendências, não pelo que Netflix ou Uber publicaram e não pelo que você já conhece:</span></p>
