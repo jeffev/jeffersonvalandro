@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MCP for Software Companies: Giving Your AI Assistant a Company Brain — Jefferson Valandro</title>
+  <meta name="description" content="How the Model Context Protocol enables software companies to build a company-specific MCP server that puts architecture, patterns, and business context directly into every developer's AI assistant.">
+  <meta name="author" content="Jefferson Valandro">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/articles/mcp-for-software-companies.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/articles/mcp-for-software-companies.html">
+  <meta property="og:title" content="MCP for Software Companies: Giving Your AI Assistant a Company Brain — Jefferson Valandro">
+  <meta property="og:description" content="Build a company MCP server that exposes architecture, coding patterns, and business rules to AI assistants — so every developer works with the full context of your system, not just their own service.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/cover_bg_3.png">
+  <meta name="theme-color" content="#070d1a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../css/articles.css">
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" aria-label="Switch to Portuguese">
+    <span id="langFlag" aria-hidden="true">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-plug"></i> <span lang="en">AI &amp; Developer Tooling</span><span lang="pt" hidden>IA &amp; Ferramentas para Dev</span></div>
+    <h1><span lang="en">MCP for Software Companies: Giving Your AI Assistant a Company Brain</span><span lang="pt" hidden>MCP para Empresas de Software: Dando ao Seu Assistente de IA um Cérebro Corporativo</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> May 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">16 min read</span><span lang="pt" hidden>16 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">MCP</span>
+      <span class="tag">AI</span>
+      <span class="tag">architecture</span>
+      <span class="tag">developer tools</span>
+      <span class="tag">LLM</span>
+      <span class="tag">context</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">Your developers use AI assistants every day. They ask questions, generate code, review pull requests, and explore unfamiliar services. The AI answers fluently — but it answers as if your system were a blank-slate generic codebase. It doesn't know that your team calls the payment flow "reconciliation", that services must never call the user service directly but go through the identity gateway, or that the ADR from 2023 explicitly banned a certain ORM pattern due to a production incident. Every developer either carries this context in their head or wastes time re-explaining it in each conversation.</span><span lang="pt" hidden>Seus desenvolvedores usam assistentes de IA todos os dias. Eles fazem perguntas, geram código, revisam pull requests e exploram serviços desconhecidos. A IA responde fluentemente — mas responde como se o seu sistema fosse um codebase genérico do zero. Ela não sabe que o seu time chama o fluxo de pagamento de "reconciliação", que os serviços nunca devem chamar o serviço de usuário diretamente e sim passar pelo gateway de identidade, ou que o ADR de 2023 proibiu explicitamente um certo padrão de ORM por causa de um incidente em produção. Cada desenvolvedor ou carrega esse contexto na cabeça ou perde tempo re-explicando em cada conversa.</span></p>
+
+  <p><span lang="en">The Model Context Protocol (MCP) changes this. It's a standardized way to connect AI assistants to external data sources and tools — and it gives software companies the primitive they've been missing: a way to make company-specific architecture, patterns, and business knowledge a first-class citizen in every developer interaction with AI.</span><span lang="pt" hidden>O Model Context Protocol (MCP) muda isso. É uma forma padronizada de conectar assistentes de IA a fontes de dados externas e ferramentas — e ele dá às empresas de software o primitivo que estava faltando: uma forma de tornar arquitetura, padrões e conhecimento de negócio específicos da empresa cidadãos de primeira classe em cada interação do desenvolvedor com IA.</span></p>
+
+  <h2><span lang="en">What Is MCP, Precisely</span><span lang="pt" hidden>O Que é MCP, Precisamente</span></h2>
+
+  <p><span lang="en">MCP is an open protocol created by Anthropic that defines how AI models communicate with external context providers. Think of it as USB-C for AI context: a single, standardized interface that allows any compliant AI client (Claude, Cursor, VS Code Copilot, and others) to connect to any compliant server and receive structured tools, resources, and prompts.</span><span lang="pt" hidden>MCP é um protocolo aberto criado pela Anthropic que define como modelos de IA se comunicam com provedores de contexto externos. Pense nele como USB-C para contexto de IA: uma interface única e padronizada que permite a qualquer cliente de IA compatível (Claude, Cursor, VS Code Copilot e outros) conectar-se a qualquer servidor compatível e receber ferramentas, recursos e prompts estruturados.</span></p>
+
+  <p><span lang="en">An MCP server exposes three types of primitives:</span><span lang="pt" hidden>Um servidor MCP expõe três tipos de primitivos:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Tools</strong> — callable functions the AI can invoke (e.g., "query service dependencies", "get the ADR for this pattern"). The model decides when to call them based on conversation context.</span><span lang="pt" hidden><strong>Tools</strong> — funções chamáveis que a IA pode invocar (ex: "consultar dependências de serviço", "obter o ADR para este padrão"). O modelo decide quando chamá-las com base no contexto da conversa.</span></li>
+    <li><span lang="en"><strong>Resources</strong> — structured data the AI can read: documents, schemas, diagrams, runbooks. Exposed as URI-addressable content.</span><span lang="pt" hidden><strong>Resources</strong> — dados estruturados que a IA pode ler: documentos, schemas, diagramas, runbooks. Expostos como conteúdo endereçável por URI.</span></li>
+    <li><span lang="en"><strong>Prompts</strong> — pre-built prompt templates for common workflows. The server defines them; the client surfaces them to the user.</span><span lang="pt" hidden><strong>Prompts</strong> — templates de prompt pré-construídos para fluxos comuns. O servidor os define; o cliente os apresenta ao usuário.</span></li>
+  </ul>
+
+  <p><span lang="en">The protocol runs over stdio (for local servers) or HTTP with Server-Sent Events (for remote servers), and the full spec is open-source. This means you can write your own MCP server in any language, deploy it wherever makes sense for your infrastructure, and connect it to any MCP-compatible AI client your developers already use.</span><span lang="pt" hidden>O protocolo roda sobre stdio (para servidores locais) ou HTTP com Server-Sent Events (para servidores remotos), e a spec completa é open-source. Isso significa que você pode escrever seu próprio servidor MCP em qualquer linguagem, implantá-lo onde fizer sentido para sua infraestrutura e conectá-lo a qualquer cliente de IA compatível com MCP que seus devs já usam.</span></p>
+
+  <h2><span lang="en">The Problem MCP Solves for Development Teams</span><span lang="pt" hidden>O Problema que o MCP Resolve para Times de Desenvolvimento</span></h2>
+
+  <p><span lang="en">Consider what happens today when a developer asks an AI assistant a question about your system:</span><span lang="pt" hidden>Considere o que acontece hoje quando um desenvolvedor faz uma pergunta a um assistente de IA sobre o seu sistema:</span></p>
+
+  <div class="code-block" lang="en"><code>Developer: "How should I call the notification service from my new feature?"
+
+AI: "You can make an HTTP call to the notification service endpoint.
+     Here's a generic example using fetch/axios/RestTemplate..."
+     [proceeds to suggest a direct HTTP call that violates your service mesh policy]</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>Dev: "Como devo chamar o serviço de notificação na minha nova feature?"
+
+IA: "Você pode fazer uma chamada HTTP para o endpoint do serviço de notificação.
+     Aqui está um exemplo genérico usando fetch/axios/RestTemplate..."
+     [sugere uma chamada HTTP direta que viola a política do seu service mesh]</code></div>
+
+  <p><span lang="en">The AI isn't wrong in the abstract. It just doesn't know your architecture. It doesn't know that inter-service communication in your platform goes through a service bus, that direct HTTP calls bypass your circuit breakers, that there's a shared SDK for exactly this use case already published in your internal registry, or that the notification service has a quota policy you must respect.</span><span lang="pt" hidden>A IA não está errada no abstrato. Ela simplesmente não conhece sua arquitetura. Ela não sabe que comunicação entre serviços na sua plataforma passa por um service bus, que chamadas HTTP diretas bypassam seus circuit breakers, que existe um SDK compartilhado para exatamente esse caso de uso já publicado no seu registry interno, ou que o serviço de notificação tem uma política de quota que você precisa respeitar.</span></p>
+
+  <p><span lang="en">The same problem appears across dozens of interactions every day: code review suggestions that ignore your team's specific quality gates, architecture proposals that re-litigate decisions already captured in ADRs, onboarding questions about domain concepts that have precise definitions in your internal glossary, test patterns that don't match your team's standards.</span><span lang="pt" hidden>O mesmo problema aparece em dezenas de interações por dia: sugestões de code review que ignoram suas quality gates específicas, propostas de arquitetura que re-discutem decisões já capturadas em ADRs, perguntas de onboarding sobre conceitos de domínio que têm definições precisas no seu glossário interno, padrões de teste que não batem com os padrões do seu time.</span></p>
+
+  <p><span lang="en">A company MCP server fixes this by turning your institutional knowledge into context the AI can access on demand.</span><span lang="pt" hidden>Um servidor MCP da empresa corrige isso transformando o conhecimento institucional em contexto que a IA pode acessar sob demanda.</span></p>
+
+  <h2><span lang="en">The Three Pillars of a Company MCP</span><span lang="pt" hidden>Os Três Pilares de um MCP Corporativo</span></h2>
+
+  <p><span lang="en">A well-designed company MCP server exposes three categories of knowledge that together cover the vast majority of what developers need when writing and reviewing code.</span><span lang="pt" hidden>Um servidor MCP corporativo bem projetado expõe três categorias de conhecimento que juntas cobrem a grande maioria do que os devs precisam ao escrever e revisar código.</span></p>
+
+  <h3><span lang="en">1. Architecture Data</span><span lang="pt" hidden>1. Dados de Arquitetura</span></h3>
+
+  <p><span lang="en">This is the structural knowledge of your system: what services exist, how they relate to each other, what they own, and what boundaries cannot be crossed. It includes:</span><span lang="pt" hidden>Este é o conhecimento estrutural do seu sistema: quais serviços existem, como eles se relacionam, o que cada um possui e quais fronteiras não podem ser cruzadas. Inclui:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Service topology</strong> — the registry of all services, their owners, their tech stack, and their current health. When a developer asks "which team owns the auth service?", the AI has an authoritative answer.</span><span lang="pt" hidden><strong>Topologia de serviços</strong> — o registro de todos os serviços, seus donos, stack tecnológica e saúde atual. Quando um dev pergunta "qual time é dono do serviço de auth?", a IA tem uma resposta autoritativa.</span></li>
+    <li><span lang="en"><strong>Dependency graph</strong> — queryable relationships between services. "What services would be affected if I change the contract of the payments API?" becomes answerable from context, not from guesswork.</span><span lang="pt" hidden><strong>Grafo de dependências</strong> — relacionamentos consultáveis entre serviços. "Quais serviços seriam afetados se eu mudar o contrato da API de pagamentos?" torna-se respondível a partir do contexto, não de suposições.</span></li>
+    <li><span lang="en"><strong>Architecture Decision Records (ADRs)</strong> — indexed and searchable. When a developer proposes a solution that was already evaluated and rejected, the AI surfaces the relevant ADR and explains the decision rationale, preventing the team from re-litigating settled questions.</span><span lang="pt" hidden><strong>Architecture Decision Records (ADRs)</strong> — indexados e pesquisáveis. Quando um dev propõe uma solução que já foi avaliada e rejeitada, a IA traz o ADR relevante e explica a justificativa, prevenindo que o time re-discuta questões já decididas.</span></li>
+    <li><span lang="en"><strong>Infrastructure topology</strong> — cloud regions, environment configurations, deployment boundaries, network segmentation. Questions like "can service A reach service B directly in prod?" get accurate answers.</span><span lang="pt" hidden><strong>Topologia de infraestrutura</strong> — regiões cloud, configurações de ambiente, fronteiras de deploy, segmentação de rede. Perguntas como "o serviço A consegue acessar o serviço B diretamente em prod?" recebem respostas precisas.</span></li>
+  </ul>
+
+  <h3><span lang="en">2. Development Patterns</span><span lang="pt" hidden>2. Padrões de Desenvolvimento</span></h3>
+
+  <p><span lang="en">Patterns are the "how we build things here" layer: the conventions, standards, and shared solutions your team has developed over time. Without this, AI-generated code is generic. With it, generated code looks like it was written by a senior member of your team.</span><span lang="pt" hidden>Padrões são a camada "como construímos as coisas aqui": as convenções, padrões e soluções compartilhadas que o time desenvolveu ao longo do tempo. Sem isso, código gerado por IA é genérico. Com isso, o código gerado parece ter sido escrito por um membro sênior do seu time.</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Code patterns library</strong> — canonical examples for common scenarios: how you structure a REST controller, how you write integration tests, how you handle errors, how you emit metrics. The AI references these when generating code, producing output that matches your actual codebase instead of a tutorial.</span><span lang="pt" hidden><strong>Biblioteca de padrões de código</strong> — exemplos canônicos para cenários comuns: como estruturar um controller REST, como escrever testes de integração, como tratar erros, como emitir métricas. A IA os referencia ao gerar código, produzindo output que combina com seu codebase real em vez de um tutorial.</span></li>
+    <li><span lang="en"><strong>Internal SDK and library catalog</strong> — the tools your teams have already built so nobody builds them twice. Authentication helpers, retry wrappers, shared DTOs, internal event schemas. The AI recommends these over reinventing the wheel with third-party alternatives.</span><span lang="pt" hidden><strong>Catálogo de SDKs e bibliotecas internas</strong> — as ferramentas que seus times já construíram para que ninguém as construa duas vezes. Helpers de autenticação, wrappers de retry, DTOs compartilhados, schemas de eventos internos. A IA recomenda esses em vez de reinventar a roda com alternativas de terceiros.</span></li>
+    <li><span lang="en"><strong>Quality gates and review checklist</strong> — what your PR review process actually checks: performance benchmarks, security requirements, test coverage thresholds, accessibility standards. The AI pre-applies these when reviewing code or suggesting changes.</span><span lang="pt" hidden><strong>Quality gates e checklist de revisão</strong> — o que o seu processo de revisão de PR realmente verifica: benchmarks de performance, requisitos de segurança, thresholds de cobertura de testes, padrões de acessibilidade. A IA aplica esses preventivamente ao revisar código ou sugerir mudanças.</span></li>
+    <li><span lang="en"><strong>Anti-patterns and known pitfalls</strong> — things that look correct but break in your specific environment. Patterns that cause deadlocks with your database configuration, approaches that violate your SLA contracts, common mistakes your onboarding materials explicitly warn against.</span><span lang="pt" hidden><strong>Anti-padrões e armadilhas conhecidas</strong> — coisas que parecem corretas mas quebram no seu ambiente específico. Padrões que causam deadlocks com sua configuração de banco, abordagens que violam seus contratos de SLA, erros comuns contra os quais seus materiais de onboarding explicitamente alertam.</span></li>
+  </ul>
+
+  <h3><span lang="en">3. Business Context</span><span lang="pt" hidden>3. Contexto de Negócio</span></h3>
+
+  <p><span lang="en">This is the hardest category to maintain but the one that generates the most value for senior work. It bridges the gap between technical implementation and business intent.</span><span lang="pt" hidden>Esta é a categoria mais difícil de manter, mas a que gera mais valor para trabalho sênior. Ela preenche a lacuna entre implementação técnica e intenção de negócio.</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Domain glossary</strong> — precise definitions of business terms as your company uses them. "Order" in your system means something specific that differs from the generic e-commerce meaning. "Settlement" has a precise financial definition with legal implications. When developers and AI use the same vocabulary with the same meaning, miscommunication in code drops sharply.</span><span lang="pt" hidden><strong>Glossário de domínio</strong> — definições precisas de termos de negócio conforme sua empresa os usa. "Pedido" no seu sistema significa algo específico que difere do significado genérico de e-commerce. "Liquidação" tem uma definição financeira precisa com implicações legais. Quando devs e IA usam o mesmo vocabulário com o mesmo significado, a miscomunicação no código cai drasticamente.</span></li>
+    <li><span lang="en"><strong>Bounded contexts map</strong> — the DDD view of your system: which bounded context owns which concepts, where the context boundaries are, and what the translation rules are between contexts. The AI understands why the same concept appears differently in different services and generates code that respects those boundaries.</span><span lang="pt" hidden><strong>Mapa de bounded contexts</strong> — a visão DDD do seu sistema: qual bounded context possui quais conceitos, onde estão as fronteiras de contexto e quais são as regras de tradução entre contextos. A IA entende por que o mesmo conceito aparece diferente em serviços diferentes e gera código que respeita essas fronteiras.</span></li>
+    <li><span lang="en"><strong>Business rules catalog</strong> — explicit, queryable rules that must be enforced in code: compliance requirements, rate limits with business justification, data retention policies, regional regulatory constraints. The AI surfaces these when relevant rather than generating code that silently violates them.</span><span lang="pt" hidden><strong>Catálogo de regras de negócio</strong> — regras explícitas e consultáveis que devem ser aplicadas no código: requisitos de conformidade, rate limits com justificativa de negócio, políticas de retenção de dados, restrições regulatórias regionais. A IA apresenta estas quando relevante em vez de gerar código que as viola silenciosamente.</span></li>
+    <li><span lang="en"><strong>Feature flags and rollout context</strong> — what is currently in active rollout, what is behind a flag, which flags are permanent and which are temporary. The AI won't suggest removing a flag that's controlling a staged rollout to 10% of users.</span><span lang="pt" hidden><strong>Feature flags e contexto de rollout</strong> — o que está atualmente em rollout ativo, o que está por trás de uma flag, quais flags são permanentes e quais são temporárias. A IA não vai sugerir remover uma flag que está controlando um rollout escalonado para 10% dos usuários.</span></li>
+  </ul>
+
+  <h2><span lang="en">What the Developer Experience Actually Looks Like</span><span lang="pt" hidden>Como é a Experiência do Desenvolvedor na Prática</span></h2>
+
+  <p><span lang="en">With a company MCP server connected to their AI assistant, a developer's interactions transform from generic to contextually accurate:</span><span lang="pt" hidden>Com um servidor MCP corporativo conectado ao seu assistente de IA, as interações de um dev se transformam de genéricas para contextualmente precisas:</span></p>
+
+  <div class="code-block" lang="en"><code>Developer: "I need to send an async notification when an order is confirmed."
+
+AI (with company MCP):
+→ [calls get_service_topology("notification")]
+→ [calls get_patterns("async-messaging")]
+→ [calls get_business_rules("order-confirmation")]
+
+"In your platform, async communication between services uses the internal
+ event bus. I found the OrderConfirmedEvent schema in your shared event
+ catalog — use that instead of defining a new one. The notification-sdk
+ package already wraps the connection details. Here's a usage example
+ following your standard pattern...
+
+ Note: per business rule BR-104, order confirmation notifications must
+ be sent within 30 seconds of the state change for compliance reasons.
+ Your circuit breaker configuration defaults to a 60s timeout, so make
+ sure not to use the default retry policy here."</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>Dev: "Preciso enviar uma notificação assíncrona quando um pedido for confirmado."
+
+IA (com MCP corporativo):
+→ [chama get_service_topology("notification")]
+→ [chama get_patterns("async-messaging")]
+→ [chama get_business_rules("order-confirmation")]
+
+"Na sua plataforma, comunicação assíncrona entre serviços usa o event bus
+ interno. Encontrei o schema OrderConfirmedEvent no catálogo de eventos
+ compartilhado — use esse em vez de definir um novo. O pacote notification-sdk
+ já encapsula os detalhes de conexão. Aqui está um exemplo de uso seguindo
+ seu padrão padrão...
+
+ Nota: segundo a regra de negócio BR-104, notificações de confirmação de
+ pedido devem ser enviadas em até 30 segundos após a mudança de estado por
+ razões de conformidade. Sua configuração de circuit breaker tem timeout
+ padrão de 60s, então certifique-se de não usar a política de retry padrão aqui."</code></div>
+
+  <p><span lang="en">This isn't a hypothetical. It's the direct output of an AI that has access to your service registry, your ADRs, your internal SDK catalog, and your business rules — all through tool calls defined in your company MCP server.</span><span lang="pt" hidden>Isso não é hipotético. É o output direto de uma IA que tem acesso ao seu service registry, seus ADRs, seu catálogo de SDK interno e suas regras de negócio — tudo através de chamadas de tool definidas no seu servidor MCP corporativo.</span></p>
+
+  <h2><span lang="en">Designing Your Company MCP Server</span><span lang="pt" hidden>Desenhando Seu Servidor MCP Corporativo</span></h2>
+
+  <p><span lang="en">Building an effective company MCP is less about technology and more about information architecture. The technical implementation is straightforward; the challenge is deciding what to expose and how to structure it so the AI can retrieve the right context at the right time.</span><span lang="pt" hidden>Construir um MCP corporativo eficaz tem menos a ver com tecnologia e mais com arquitetura da informação. A implementação técnica é direta; o desafio é decidir o que expor e como estruturar para que a IA possa recuperar o contexto certo na hora certa.</span></p>
+
+  <h3><span lang="en">Tool Design Principles</span><span lang="pt" hidden>Princípios de Design de Tools</span></h3>
+
+  <ul>
+    <li><span lang="en"><strong>Name tools for intent, not implementation.</strong> <code>get_service_owner(service_name)</code> is better than <code>query_cmdb(table="services", filter=...)</code>. The AI selects tools based on their name and description — make both unambiguous.</span><span lang="pt" hidden><strong>Nomeie tools por intenção, não por implementação.</strong> <code>get_service_owner(service_name)</code> é melhor que <code>query_cmdb(table="services", filter=...)</code>. A IA seleciona tools com base no nome e descrição — torne ambos inequívocos.</span></li>
+    <li><span lang="en"><strong>Return structured, prose-rich responses.</strong> Don't return raw JSON blobs. Return explanatory text that includes the data plus the context the AI needs to reason about it: "The payments service is owned by the Platform team. It runs on Java 17 / Spring Boot 3.2. Note: this service is currently in a migration from v2 to v3 of its internal API — new integrations should target v3."</span><span lang="pt" hidden><strong>Retorne respostas estruturadas e ricas em prosa.</strong> Não retorne blobs JSON crus. Retorne texto explicativo que inclua os dados mais o contexto que a IA precisa para raciocinar sobre eles: "O serviço de pagamentos é de propriedade do time de Plataforma. Roda em Java 17 / Spring Boot 3.2. Nota: este serviço está atualmente em migração da v2 para v3 de sua API interna — novas integrações devem ter como alvo a v3."</span></li>
+    <li><span lang="en"><strong>Build narrow tools, not wide ones.</strong> A single <code>get_everything(query)</code> tool is tempting but leads to inconsistent behavior. Narrow tools with precise semantics — <code>get_adr(id)</code>, <code>search_adrs(keyword)</code>, <code>list_adrs_for_service(service)</code> — give the AI reliable handles to grab when context calls for them.</span><span lang="pt" hidden><strong>Construa tools estreitas, não amplas.</strong> Uma única tool <code>get_everything(query)</code> é tentadora mas leva a comportamento inconsistente. Tools estreitas com semântica precisa — <code>get_adr(id)</code>, <code>search_adrs(keyword)</code>, <code>list_adrs_for_service(service)</code> — dão à IA handles confiáveis para pegar quando o contexto pede.</span></li>
+    <li><span lang="en"><strong>Include "when to use this" in every tool description.</strong> The model uses your description to decide when to invoke the tool. A description that explains the trigger conditions — not just what the tool does, but when it's relevant — produces dramatically better tool selection.</span><span lang="pt" hidden><strong>Inclua "quando usar isso" na descrição de cada tool.</strong> O modelo usa sua descrição para decidir quando invocar a tool. Uma descrição que explica as condições de gatilho — não apenas o que a tool faz, mas quando é relevante — produz seleção de tool dramaticamente melhor.</span></li>
+  </ul>
+
+  <h3><span lang="en">Architecture and Data Sources</span><span lang="pt" hidden>Arquitetura e Fontes de Dados</span></h3>
+
+  <p><span lang="en">A company MCP server is typically a thin API layer over your existing knowledge sources. You probably already have most of this data — it just lives in different places:</span><span lang="pt" hidden>Um servidor MCP corporativo é tipicamente uma camada de API fina sobre suas fontes de conhecimento existentes. Você provavelmente já tem a maioria desses dados — eles simplesmente vivem em lugares diferentes:</span></p>
+
+  <div class="code-block" lang="en"><code>Knowledge Source          → MCP Resource/Tool
+───────────────────────────────────────────────────
+Confluence / Notion       → ADRs, runbooks, patterns
+Service catalog (Backstage, internal CMDB) → service topology
+Git repos (README, CODEOWNERS) → ownership, tech stack
+OpenAPI / AsyncAPI specs  → API contracts, event schemas
+Internal package registry → SDK catalog
+Jira / Linear             → in-flight work context
+Architecture diagrams     → C4 model export</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>Fonte de Conhecimento     → Resource/Tool MCP
+───────────────────────────────────────────────────
+Confluence / Notion       → ADRs, runbooks, padrões
+Catálogo de serviços (Backstage, CMDB interno) → topologia de serviços
+Repos Git (README, CODEOWNERS) → ownership, stack
+Specs OpenAPI / AsyncAPI  → contratos de API, schemas de eventos
+Registry de pacotes interno → catálogo de SDK
+Jira / Linear             → contexto de trabalho em andamento
+Diagramas de arquitetura  → export do modelo C4</code></div>
+
+  <p><span lang="en">The MCP server itself doesn't need to be the source of truth — it aggregates and normalizes from the sources your teams already maintain. This is critical for adoption: the server adds value without adding maintenance burden on top of what already exists.</span><span lang="pt" hidden>O servidor MCP em si não precisa ser a fonte da verdade — ele agrega e normaliza a partir das fontes que seus times já mantêm. Isso é crítico para adoção: o servidor agrega valor sem adicionar carga de manutenção em cima do que já existe.</span></p>
+
+  <h2><span lang="en">Implementation: Getting Started Without Boiling the Ocean</span><span lang="pt" hidden>Implementação: Começar Sem Tentar Fazer Tudo de Uma Vez</span></h2>
+
+  <p><span lang="en">The mistake most teams make when approaching company-wide tooling is trying to solve everything before shipping anything. For an MCP server, start with three tools that solve real, daily pain points:</span><span lang="pt" hidden>O erro que a maioria dos times comete ao abordar tooling corporativo é tentar resolver tudo antes de entregar algo. Para um servidor MCP, comece com três tools que resolvem pontos de dor reais e diários:</span></p>
+
+  <div class="code-block" lang="en"><code># Minimal viable company MCP — three tools that matter immediately
+
+1. get_service_info(service_name: str) -> ServiceInfo
+   # Returns: owner team, tech stack, repo URL, current on-call,
+   # known incidents, and a one-paragraph description of what it does.
+   # Pain it solves: "who owns X and what does it do?" — asked 20x/day.
+
+2. search_adrs(query: str) -> List[ADRSummary]
+   # Returns: ADR title, status (Accepted/Deprecated/Superseded),
+   # one-line decision summary, link to full document.
+   # Pain it solves: prevents re-proposing already-rejected solutions.
+
+3. get_pattern(pattern_name: str) -> CodePattern
+   # Returns: canonical code example for this pattern, context for when
+   # to apply it, known pitfalls, link to internal documentation.
+   # Pain it solves: "how do we handle X here?" answered with our standard.</code></div>
+
+  <div class="code-block" lang="pt" hidden><code># MCP corporativo mínimo viável — três tools que importam imediatamente
+
+1. get_service_info(service_name: str) -> ServiceInfo
+   # Retorna: time dono, stack, URL do repo, on-call atual,
+   # incidentes conhecidos e um parágrafo descrevendo o que faz.
+   # Dor que resolve: "quem é dono de X e o que faz?" — perguntado 20x/dia.
+
+2. search_adrs(query: str) -> List[ADRSummary]
+   # Retorna: título do ADR, status (Aceito/Depreciado/Substituído),
+   # resumo de uma linha da decisão, link para o documento completo.
+   # Dor que resolve: evita re-propor soluções já rejeitadas.
+
+3. get_pattern(pattern_name: str) -> CodePattern
+   # Retorna: exemplo de código canônico para este padrão, contexto de
+   # quando aplicar, armadilhas conhecidas, link para documentação interna.
+   # Dor que resolve: "como tratamos X aqui?" respondido com nosso padrão.</code></div>
+
+  <p><span lang="en">With these three tools, you've addressed the most common category of lost context in AI-assisted development. The server can run locally via stdio initially — developers configure it in their AI client's MCP settings and immediately see the benefit. A remote HTTP server can come later when you're ready to centralize it.</span><span lang="pt" hidden>Com essas três tools, você abordou a categoria mais comum de contexto perdido no desenvolvimento assistido por IA. O servidor pode rodar localmente via stdio inicialmente — devs o configuram nas configurações MCP do seu cliente de IA e imediatamente veem o benefício. Um servidor HTTP remoto pode vir depois, quando você estiver pronto para centralizá-lo.</span></p>
+
+  <h3><span lang="en">A Minimal Server in TypeScript</span><span lang="pt" hidden>Um Servidor Mínimo em TypeScript</span></h3>
+
+  <div class="code-block"><code>import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+
+const server = new McpServer({
+  name: "company-context",
+  version: "1.0.0",
+});
+
+server.tool(
+  "get_service_info",
+  "Get owner, tech stack, and description for any internal service. " +
+  "Use when the user asks about a specific service, its ownership, dependencies, or tech stack.",
+  { service_name: z.string().describe("The internal service name") },
+  async ({ service_name }) => {
+    const info = await serviceRegistry.lookup(service_name);
+    return {
+      content: [{
+        type: "text",
+        text: formatServiceInfo(info),
+      }],
+    };
+  }
+);
+
+server.tool(
+  "search_adrs",
+  "Search Architecture Decision Records by keyword or topic. " +
+  "Use when the user proposes a solution or asks about a design decision — " +
+  "check if an ADR already exists for this before generating recommendations.",
+  { query: z.string().describe("Keywords or topic to search for in ADRs") },
+  async ({ query }) => {
+    const adrs = await adrIndex.search(query);
+    return {
+      content: [{
+        type: "text",
+        text: adrs.length === 0
+          ? "No ADRs found for this topic."
+          : adrs.map(formatADRSummary).join("\n\n"),
+      }],
+    };
+  }
+);
+
+const transport = new StdioServerTransport();
+await server.connect(transport);</code></div>
+
+  <div class="callout">
+    <p><span lang="en"><strong>Configuration in Claude Desktop / Cursor:</strong> Once deployed locally, developers add it to their MCP client config in seconds. The AI then has access to your company context across every conversation without any manual context-loading.</span><span lang="pt" hidden><strong>Configuração no Claude Desktop / Cursor:</strong> Uma vez implantado localmente, os devs o adicionam à configuração do cliente MCP em segundos. A IA então tem acesso ao contexto da empresa em todas as conversas sem nenhum carregamento manual de contexto.</span></p>
+  </div>
+
+  <h2><span lang="en">Onboarding: The Highest-ROI Use Case</span><span lang="pt" hidden>Onboarding: O Caso de Uso de Maior ROI</span></h2>
+
+  <p><span lang="en">The impact of a company MCP is felt most acutely during onboarding. A new developer joining a team today spends weeks building a mental model of the system — what exists, what calls what, what the naming conventions mean, which services are stable versus in-flux. Most of this knowledge lives in the heads of senior developers and is transferred through 1:1s, code review comments, and tribal knowledge accumulated over months.</span><span lang="pt" hidden>O impacto de um MCP corporativo é sentido mais agudamente durante o onboarding. Um novo desenvolvedor que ingressa em um time hoje passa semanas construindo um modelo mental do sistema — o que existe, o que chama o quê, o que as convenções de nomenclatura significam, quais serviços são estáveis versus em transformação. A maior parte desse conhecimento vive nas cabeças dos desenvolvedores sêniors e é transferida através de 1:1s, comentários de code review e conhecimento tribal acumulado ao longo de meses.</span></p>
+
+  <p><span lang="en">With a company MCP, the new developer can ask the AI "what does the billing service do and how does it relate to the subscription service?" and get an authoritative answer backed by your actual service catalog. They can ask "what's the right way to handle database transactions in this codebase?" and receive your team's specific pattern, not a generic best practice. They can ask "why do we use X instead of Y here?" and surface the ADR that explains the decision, including the alternatives that were considered and rejected.</span><span lang="pt" hidden>Com um MCP corporativo, o novo dev pode perguntar à IA "o que o serviço de billing faz e como ele se relaciona com o serviço de assinaturas?" e obter uma resposta autoritativa respaldada pelo seu catálogo de serviços real. Pode perguntar "qual é a forma correta de tratar transações de banco de dados neste codebase?" e receber o padrão específico do seu time, não uma boa prática genérica. Pode perguntar "por que usamos X em vez de Y aqui?" e trazer o ADR que explica a decisão, incluindo as alternativas que foram consideradas e rejeitadas.</span></p>
+
+  <p><span lang="en">This doesn't eliminate the need for human mentorship — it eliminates the mechanical lookup work that consumes it. Senior developers get to spend their 1:1s on judgment and growth conversations instead of explaining for the third time why the team doesn't use Hibernate's second-level cache.</span><span lang="pt" hidden>Isso não elimina a necessidade de mentoria humana — elimina o trabalho mecânico de busca que a consome. Desenvolvedores sêniors podem passar seus 1:1s em conversas de julgamento e crescimento em vez de explicar pela terceira vez por que o time não usa o second-level cache do Hibernate.</span></p>
+
+  <h2><span lang="en">Governance and Maintenance</span><span lang="pt" hidden>Governança e Manutenção</span></h2>
+
+  <p><span lang="en">The most common objection to company knowledge systems is maintenance burden: the data goes stale, no one keeps it up to date, and eventually the system becomes a source of misinformation rather than a source of truth. An MCP server has the same vulnerability. Three practices mitigate it:</span><span lang="pt" hidden>A objeção mais comum a sistemas de conhecimento corporativo é a carga de manutenção: os dados ficam desatualizados, ninguém os mantém atualizados e eventualmente o sistema se torna uma fonte de desinformação em vez de fonte de verdade. Um servidor MCP tem a mesma vulnerabilidade. Três práticas atenuam isso:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Link to authoritative sources, don't duplicate them.</strong> The MCP server should index and surface Confluence pages, ADR files in Git, and Backstage entries — not maintain its own copy. When the source is updated, the MCP automatically serves the updated version.</span><span lang="pt" hidden><strong>Link para fontes autoritativas, não as duplique.</strong> O servidor MCP deve indexar e apresentar páginas do Confluence, arquivos de ADR no Git e entradas do Backstage — não manter sua própria cópia. Quando a fonte é atualizada, o MCP automaticamente serve a versão atualizada.</span></li>
+    <li><span lang="en"><strong>Make staleness visible.</strong> Every response should include a "last updated" timestamp. When a developer sees "this pattern was last verified 18 months ago", they know to verify before relying on it. Fresh data gets used; stale data gets questioned.</span><span lang="pt" hidden><strong>Torne a desatualização visível.</strong> Cada resposta deve incluir um timestamp de "última atualização". Quando um dev vê "este padrão foi verificado pela última vez há 18 meses", sabe que deve verificar antes de confiar nele. Dados frescos são usados; dados obsoletos são questionados.</span></li>
+    <li><span lang="en"><strong>Own the maintenance in the teams that own the knowledge.</strong> Architecture decisions belong to the architecture guild — they maintain ADRs. Patterns belong to the teams that established them. The MCP server's job is aggregation, not ownership. When you assign maintenance to the right owners, it happens as part of the natural workflow of updating the actual source documents.</span><span lang="pt" hidden><strong>Atribua a manutenção aos times que possuem o conhecimento.</strong> Decisões de arquitetura pertencem à guilda de arquitetura — eles mantêm os ADRs. Padrões pertencem aos times que os estabeleceram. O trabalho do servidor MCP é agregação, não propriedade. Quando você atribui a manutenção aos donos certos, isso acontece como parte do fluxo natural de atualização dos documentos fonte reais.</span></li>
+  </ul>
+
+  <h2><span lang="en">Security Considerations</span><span lang="pt" hidden>Considerações de Segurança</span></h2>
+
+  <p><span lang="en">A company MCP server exposes institutional knowledge through an API. Before deploying, consider what that means for your threat model:</span><span lang="pt" hidden>Um servidor MCP corporativo expõe conhecimento institucional através de uma API. Antes de implantar, considere o que isso significa para seu modelo de ameaça:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Authenticate every connection.</strong> Remote MCP servers should require authentication. Developers should authenticate with their existing SSO credentials — the same ones that gate access to Confluence or your internal service catalog.</span><span lang="pt" hidden><strong>Autentique cada conexão.</strong> Servidores MCP remotos devem exigir autenticação. Desenvolvedores devem autenticar com suas credenciais SSO existentes — as mesmas que controlam acesso ao Confluence ou ao catálogo de serviços interno.</span></li>
+    <li><span lang="en"><strong>Respect existing access controls.</strong> If a developer doesn't have access to a particular service's runbook directly, they shouldn't have access to it through the MCP either. Propagate existing ACLs rather than creating a new, less-controlled access path.</span><span lang="pt" hidden><strong>Respeite controles de acesso existentes.</strong> Se um dev não tem acesso direto ao runbook de um serviço específico, não deveria ter acesso através do MCP também. Propague os ACLs existentes em vez de criar um novo caminho de acesso menos controlado.</span></li>
+    <li><span lang="en"><strong>Audit tool calls.</strong> Log which tools are called, by whom, and with what parameters. This is standard observability practice, but it's especially important for a system that surfaces potentially sensitive architecture information.</span><span lang="pt" hidden><strong>Audite chamadas de tools.</strong> Registre quais tools são chamadas, por quem e com quais parâmetros. Esta é uma prática padrão de observabilidade, mas é especialmente importante para um sistema que apresenta informações de arquitetura potencialmente sensíveis.</span></li>
+    <li><span lang="en"><strong>Be deliberate about what you expose.</strong> Security architecture details, incident postmortem specifics, and compensation or performance data don't belong in a developer-facing MCP. Scope the server to what supports development work, not everything the company knows.</span><span lang="pt" hidden><strong>Seja deliberado sobre o que você expõe.</strong> Detalhes de arquitetura de segurança, especificidades de postmortems de incidentes e dados de remuneração ou performance não pertencem a um MCP voltado para desenvolvedores. Delimite o servidor ao que suporta o trabalho de desenvolvimento, não tudo que a empresa sabe.</span></li>
+  </ul>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>The compounding effect:</strong> A company MCP doesn't just help today's AI interactions. It forces your team to actually write down and structure the institutional knowledge that currently exists only in senior developers' heads. The act of building the MCP surface — defining tools, writing descriptions, organizing ADRs — surfaces gaps in your own documentation that were costing you time independently of AI. The MCP is both the product and the forcing function for better knowledge management.</span><span lang="pt" hidden><strong>O efeito composto:</strong> Um MCP corporativo não apenas ajuda as interações de IA de hoje. Ele força seu time a realmente escrever e estruturar o conhecimento institucional que atualmente existe apenas nas cabeças dos devs sêniors. O ato de construir a superfície do MCP — definir tools, escrever descrições, organizar ADRs — expõe lacunas na sua própria documentação que estavam custando tempo independentemente de IA. O MCP é tanto o produto quanto o mecanismo forçador para melhor gestão do conhecimento.</span></p>
+  </div>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+  <ul>
+    <li><span lang="en">MCP is an open standard protocol for connecting AI assistants to external context. It works with Claude, Cursor, and other MCP-compatible clients — your investment in the server is reusable across tools.</span><span lang="pt" hidden>MCP é um protocolo padrão aberto para conectar assistentes de IA a contexto externo. Funciona com Claude, Cursor e outros clientes compatíveis — seu investimento no servidor é reutilizável entre ferramentas.</span></li>
+    <li><span lang="en">A company MCP server should expose three categories: architecture data (service topology, ADRs, dependency graph), development patterns (canonical examples, internal SDKs, quality gates), and business context (domain glossary, bounded contexts, business rules).</span><span lang="pt" hidden>Um servidor MCP corporativo deve expor três categorias: dados de arquitetura (topologia de serviços, ADRs, grafo de dependências), padrões de desenvolvimento (exemplos canônicos, SDKs internos, quality gates) e contexto de negócio (glossário de domínio, bounded contexts, regras de negócio).</span></li>
+    <li><span lang="en">Start with three tools that solve real daily pain: service info lookup, ADR search, and pattern retrieval. Prove value before scaling.</span><span lang="pt" hidden>Comece com três tools que resolvem dor diária real: lookup de info de serviço, busca de ADR e recuperação de padrão. Comprove valor antes de escalar.</span></li>
+    <li><span lang="en">The server should aggregate from your existing sources (Confluence, Backstage, Git), not duplicate them. Maintenance stays with the teams that own the knowledge.</span><span lang="pt" hidden>O servidor deve agregar de suas fontes existentes (Confluence, Backstage, Git), não duplicá-las. A manutenção fica com os times que possuem o conhecimento.</span></li>
+    <li><span lang="en">Onboarding is the highest-ROI use case: new developers get authoritative answers about your system on day one, freeing senior developers from repetitive knowledge transfer.</span><span lang="pt" hidden>Onboarding é o caso de uso de maior ROI: novos devs obtêm respostas autoritativas sobre seu sistema no primeiro dia, liberando devs sêniors de transferência repetitiva de conhecimento.</span></li>
+    <li><span lang="en">Building the MCP forces your team to document institutional knowledge that was previously implicit. The process improves your organization's knowledge management independent of the AI benefit.</span><span lang="pt" hidden>Construir o MCP força seu time a documentar conhecimento institucional que antes era implícito. O processo melhora a gestão do conhecimento da sua organização independentemente do benefício de IA.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+<footer><p>&copy; 2025 Jefferson Valandro. Built with care.</p></footer>
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>
