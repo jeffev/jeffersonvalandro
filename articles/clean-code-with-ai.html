@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clean Code with AI: How to Keep Your Codebase Readable When AI Writes Half of It — Jefferson Valandro</title>
+  <meta name="description" content="How to use AI assistants to write cleaner code — better naming, smaller functions, consistent patterns — and the discipline to avoid AI's most common clean code mistakes.">
+  <meta name="author" content="Jefferson Valandro">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/articles/clean-code-with-ai.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/articles/clean-code-with-ai.html">
+  <meta property="og:title" content="Clean Code with AI: How to Keep Your Codebase Readable When AI Writes Half of It — Jefferson Valandro">
+  <meta property="og:description" content="How to use AI assistants to write cleaner code — better naming, smaller functions, consistent patterns — and the discipline to avoid AI's most common clean code mistakes.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/cover_bg_5.png">
+  <meta name="theme-color" content="#070d1a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../css/articles.css">
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" aria-label="Switch to Portuguese">
+    <span id="langFlag" aria-hidden="true">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-broom"></i> <span lang="en">AI &amp; Code Quality</span><span lang="pt" hidden>IA &amp; Qualidade de Código</span></div>
+    <h1><span lang="en">Clean Code with AI: How to Keep Your Codebase Readable When AI Writes Half of It</span><span lang="pt" hidden>Clean Code com IA: Como Manter Seu Código Legível Quando a IA Escreve Metade Dele</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> June 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">14 min read</span><span lang="pt" hidden>14 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">Clean Code</span>
+      <span class="tag">AI</span>
+      <span class="tag">code quality</span>
+      <span class="tag">refactoring</span>
+      <span class="tag">best practices</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">AI coding assistants ship code fast. Dangerously fast, sometimes. A developer prompts Claude or Copilot, gets 80 lines of working code in seconds, pastes it in, runs the tests — green — and moves on. The function works. It also has four responsibilities, three layers of nesting, two magic numbers, and a name that describes implementation rather than intent. The codebase just absorbed another piece of technical debt dressed up as productivity.</span><span lang="pt" hidden>Assistentes de IA entregam código rápido. Perigosamente rápido, às vezes. Um desenvolvedor prompta o Claude ou o Copilot, recebe 80 linhas de código funcionando em segundos, cola, roda os testes — verde — e segue em frente. A função funciona. Ela também tem quatro responsabilidades, três níveis de aninhamento, dois números mágicos e um nome que descreve implementação em vez de intenção. O codebase acabou de absorver mais uma peça de dívida técnica disfarçada de produtividade.</span></p>
+
+  <p><span lang="en">The problem isn't AI. The problem is that AI optimizes for what you measure, and most prompts measure "does it work?" not "is it clean?". With the right approach — better prompts, deliberate review, and a clear mental model of what clean actually means — AI becomes one of the best tools for writing readable, maintainable code. This article is about that approach.</span><span lang="pt" hidden>O problema não é a IA. O problema é que a IA otimiza para o que você mede, e a maioria dos prompts mede "funciona?" em vez de "está limpo?". Com a abordagem certa — prompts melhores, revisão deliberada e um modelo mental claro do que "limpo" realmente significa — a IA se torna uma das melhores ferramentas para escrever código legível e manutenível. Este artigo é sobre essa abordagem.</span></p>
+
+  <h2><span lang="en">What "Clean" Actually Means in 2025</span><span lang="pt" hidden>O que "Limpo" Realmente Significa em 2025</span></h2>
+
+  <p><span lang="en">The principles haven't changed since Uncle Bob wrote them down, but the context has. Clean code is:</span><span lang="pt" hidden>Os princípios não mudaram desde que o Uncle Bob os escreveu, mas o contexto sim. Código limpo é:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Readable by a stranger in six months.</strong> That stranger might be you, or it might be an AI assistant helping you maintain this code. Both need to understand it without running it.</span><span lang="pt" hidden><strong>Legível por um estranho em seis meses.</strong> Esse estranho pode ser você, ou pode ser um assistente de IA ajudando a manter esse código. Ambos precisam entender sem precisar executar.</span></li>
+    <li><span lang="en"><strong>Small things that do one thing.</strong> Functions that fit on a screen. Classes with a single axis of change. Modules with a clear boundary.</span><span lang="pt" hidden><strong>Coisas pequenas que fazem uma coisa.</strong> Funções que cabem numa tela. Classes com um único eixo de mudança. Módulos com uma fronteira clara.</span></li>
+    <li><span lang="en"><strong>Named for intent, not implementation.</strong> <code>calculateMonthlyInterest()</code> is clean. <code>doCalc()</code> is not. The name should make the comment unnecessary.</span><span lang="pt" hidden><strong>Nomeado pela intenção, não pela implementação.</strong> <code>calcularJurosMensais()</code> é limpo. <code>fazerCalc()</code> não é. O nome deve tornar o comentário desnecessário.</span></li>
+    <li><span lang="en"><strong>Consistent with the surrounding codebase.</strong> The best code style is the one the team already uses. Inconsistency is cognitive load.</span><span lang="pt" hidden><strong>Consistente com o codebase ao redor.</strong> O melhor estilo de código é o que o time já usa. Inconsistência é carga cognitiva.</span></li>
+    <li><span lang="en"><strong>Free of surprise.</strong> No hidden side effects, no global state mutation, no function that silently swallows errors.</span><span lang="pt" hidden><strong>Livre de surpresas.</strong> Sem efeitos colaterais ocultos, sem mutação de estado global, sem função que engole erros silenciosamente.</span></li>
+  </ul>
+
+  <p><span lang="en">AI can help with all of these — or actively undermine all of them. The outcome depends entirely on how you use it.</span><span lang="pt" hidden>A IA pode ajudar com todos esses pontos — ou ativamente prejudicar todos eles. O resultado depende inteiramente de como você a usa.</span></p>
+
+  <h2><span lang="en">Where AI Genuinely Helps Clean Code</span><span lang="pt" hidden>Onde a IA Genuinamente Ajuda o Clean Code</span></h2>
+
+  <h3><span lang="en">Naming: The Hardest Thing in Programming</span><span lang="pt" hidden>Nomenclatura: A Coisa Mais Difícil na Programação</span></h3>
+
+  <p><span lang="en">Naming is where most developers give up fastest under time pressure. AI is remarkably good at generating alternatives. When you have a function called <code>process()</code> and you know it's wrong but you can't think of better, a prompt like "suggest five intent-revealing names for a function that validates a user's billing address against our fraud rules" gives you real options in seconds.</span><span lang="pt" hidden>Nomenclatura é onde a maioria dos desenvolvedores desiste mais rápido sob pressão de tempo. A IA é notavelmente boa em gerar alternativas. Quando você tem uma função chamada <code>processar()</code> e sabe que está errado mas não consegue pensar em algo melhor, um prompt como "sugira cinco nomes que revelem a intenção de uma função que valida o endereço de cobrança de um usuário contra nossas regras de fraude" te dá opções reais em segundos.</span></p>
+
+  <div class="code-block" lang="en"><code>// Before: function that does the work but has a bad name
+function process(user, address) { ... }
+
+// Prompt: "Suggest intent-revealing names for a function that
+// validates a billing address against fraud rules and returns
+// a ValidationResult with a reason if invalid"
+
+// AI suggestions:
+// validateBillingAddressForFraudRisk(user, address)
+// checkAddressAgainstFraudRules(user, address)
+// assessBillingAddressFraudRisk(user, address)
+// verifyAddressCompliesWithFraudPolicy(user, address)
+
+// Winner: clear, specific, no ambiguity
+function validateBillingAddressForFraudRisk(user, address) { ... }</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Antes: função que faz o trabalho mas tem nome ruim
+function processar(usuario, endereco) { ... }
+
+// Prompt: "Sugira nomes que revelem a intenção de uma função que
+// valida endereço de cobrança contra regras de fraude e retorna
+// um ValidationResult com motivo se inválido"
+
+// Sugestões da IA:
+// validarEnderecoCobrancaParaRiscoFraude(usuario, endereco)
+// verificarEnderecoContraRegrasFraude(usuario, endereco)
+// avaliarRiscoFraudeEnderecoCobranca(usuario, endereco)
+
+// Vencedor: claro, específico, sem ambiguidade
+function validarEnderecoCobrancaParaRiscoFraude(usuario, endereco) { ... }</code></div>
+
+  <h3><span lang="en">Breaking Up Long Functions</span><span lang="pt" hidden>Quebrando Funções Longas</span></h3>
+
+  <p><span lang="en">AI excels at extracting sub-functions from bloated methods. Give it a 60-line function and ask it to identify natural extraction points, and it will produce a decomposed version that reads like prose. This is one of the highest-leverage uses of AI for clean code:</span><span lang="pt" hidden>A IA se destaca em extrair subfunções de métodos inchados. Dê a ela uma função de 60 linhas e peça que identifique pontos naturais de extração, e ela produzirá uma versão decomposta que se lê como prosa. Esse é um dos usos de maior alavancagem da IA para clean code:</span></p>
+
+  <div class="code-block" lang="en"><code>// Prompt: "Refactor this function following the Single Responsibility
+// Principle. Each extracted function should do exactly one thing
+// and have a name that makes its body redundant to read."
+
+// The AI will turn a 60-line monster like:
+function processOrder(order) {
+  // validate...
+  // calculate totals...
+  // apply discounts...
+  // check inventory...
+  // create payment intent...
+  // send confirmation email...
+}
+
+// Into something like:
+function processOrder(order) {
+  const validatedOrder = validateOrderFields(order);
+  const pricedOrder    = applyDiscountsToOrder(validatedOrder);
+  reserveInventoryFor(pricedOrder);
+  const payment        = initiatePaymentFor(pricedOrder);
+  sendOrderConfirmationEmail(pricedOrder, payment);
+  return payment;
+}</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Prompt: "Refatore esta função seguindo o Princípio da Responsabilidade Única.
+// Cada função extraída deve fazer exatamente uma coisa
+// e ter um nome que torne redundante ler seu corpo."
+
+// A IA vai transformar um monstro de 60 linhas como:
+function processarPedido(pedido) {
+  // validar...
+  // calcular totais...
+  // aplicar descontos...
+  // verificar estoque...
+  // criar intenção de pagamento...
+  // enviar email de confirmação...
+}
+
+// Em algo como:
+function processarPedido(pedido) {
+  const pedidoValidado = validarCamposDoPedido(pedido);
+  const pedidoComPreco = aplicarDescontosAoPedido(pedidoValidado);
+  reservarEstoqueParaPedido(pedidoComPreco);
+  const pagamento      = iniciarPagamentoParaPedido(pedidoComPreco);
+  enviarEmailConfirmacaoPedido(pedidoComPreco, pagamento);
+  return pagamento;
+}</code></div>
+
+  <h3><span lang="en">Eliminating Comments by Improving the Code</span><span lang="pt" hidden>Eliminando Comentários Melhorando o Código</span></h3>
+
+  <p><span lang="en">The best comment is no comment — code that explains itself. When you have a block of logic followed by a comment explaining what it does, that's a sign the code should be extracted into a named function. AI can make this transformation for you:</span><span lang="pt" hidden>O melhor comentário é nenhum comentário — código que se explica sozinho. Quando você tem um bloco de lógica seguido de um comentário explicando o que faz, é sinal de que o código deve ser extraído em uma função nomeada. A IA pode fazer essa transformação por você:</span></p>
+
+  <div class="code-block" lang="en"><code>// Prompt: "Replace every comment in this function with a
+// named extraction that makes the comment unnecessary"
+
+// Before:
+function checkout(cart, user) {
+  // Check if cart has items eligible for free shipping
+  const totalWeight = cart.items.reduce((sum, i) => sum + i.weight, 0);
+  const freeShipping = totalWeight < 5 && cart.subtotal > 100;
+
+  // Calculate loyalty discount
+  const loyaltyDiscount = user.yearsAsCustomer >= 3 ? 0.05 : 0;
+
+  // ...
+}
+
+// After (no comments needed):
+function checkout(cart, user) {
+  const freeShipping   = qualifiesForFreeShipping(cart);
+  const loyaltyDiscount = getLoyaltyDiscount(user);
+  // ...
+}</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Prompt: "Substitua cada comentário nesta função por
+// uma extração nomeada que torne o comentário desnecessário"
+
+// Antes:
+function checkout(carrinho, usuario) {
+  // Verifica se o carrinho tem itens elegíveis para frete grátis
+  const pesoTotal = carrinho.itens.reduce((soma, i) => soma + i.peso, 0);
+  const freteGratis = pesoTotal < 5 && carrinho.subtotal > 100;
+
+  // Calcula desconto de fidelidade
+  const descontoFidelidade = usuario.anosComoCliente >= 3 ? 0.05 : 0;
+
+  // ...
+}
+
+// Depois (sem comentários necessários):
+function checkout(carrinho, usuario) {
+  const freteGratis        = qualificaParaFreteGratis(carrinho);
+  const descontoFidelidade = obterDescontoFidelidade(usuario);
+  // ...
+}</code></div>
+
+  <h3><span lang="en">Writing Tests That Document Intent</span><span lang="pt" hidden>Escrevendo Testes que Documentam a Intenção</span></h3>
+
+  <p><span lang="en">Tests are living documentation. AI can generate test suites that read like a specification — with descriptive names, arranged data, and assertions that explain business rules. Ask for tests following the Given/When/Then structure with descriptive names, and you get tests that anyone on the team can read as requirements:</span><span lang="pt" hidden>Testes são documentação viva. A IA pode gerar suites de teste que se leem como uma especificação — com nomes descritivos, dados organizados e asserções que explicam regras de negócio. Peça testes seguindo a estrutura Given/When/Then com nomes descritivos, e você obtém testes que qualquer pessoa do time pode ler como requisitos:</span></p>
+
+  <div class="code-block" lang="en"><code>// Prompt: "Write unit tests for validateBillingAddressForFraudRisk.
+// Use descriptive test names that read as requirements.
+// Follow Given/When/Then structure."
+
+it('should reject address when country differs from card issuer country', () => {
+  const user    = aUserWithCardIssuedIn('BR');
+  const address = aBillingAddressIn('US');
+
+  const result = validateBillingAddressForFraudRisk(user, address);
+
+  expect(result.isValid).toBe(false);
+  expect(result.reason).toBe('ADDRESS_COUNTRY_MISMATCH');
+});
+
+it('should accept address when country matches and user has no fraud history', () => {
+  const user    = aUserWithCardIssuedIn('BR').withNoFraudHistory();
+  const address = aBillingAddressIn('BR');
+
+  const result = validateBillingAddressForFraudRisk(user, address);
+
+  expect(result.isValid).toBe(true);
+});</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Prompt: "Escreva testes unitários para validarEnderecoCobrancaParaRiscoFraude.
+// Use nomes descritivos que se leem como requisitos.
+// Siga a estrutura Given/When/Then."
+
+it('deve rejeitar endereço quando país difere do país emissor do cartão', () => {
+  const usuario   = umUsuarioComCartaoEmitidoEm('BR');
+  const endereco  = umEnderecoDeCobrancaEm('US');
+
+  const resultado = validarEnderecoCobrancaParaRiscoFraude(usuario, endereco);
+
+  expect(resultado.valido).toBe(false);
+  expect(resultado.motivo).toBe('DIVERGENCIA_PAIS_ENDERECO');
+});
+
+it('deve aceitar endereço quando país corresponde e usuário não tem histórico de fraude', () => {
+  const usuario   = umUsuarioComCartaoEmitidoEm('BR').semHistoricoFraude();
+  const endereco  = umEnderecoDeCobrancaEm('BR');
+
+  const resultado = validarEnderecoCobrancaParaRiscoFraude(usuario, endereco);
+
+  expect(resultado.valido).toBe(true);
+});</code></div>
+
+  <h2><span lang="en">AI's Most Common Clean Code Violations</span><span lang="pt" hidden>As Violações de Clean Code Mais Comuns da IA</span></h2>
+
+  <p><span lang="en">Knowing what to watch for is half the battle. These are the patterns that appear most frequently in AI-generated code and that you must actively guard against.</span><span lang="pt" hidden>Saber o que observar é metade da batalha. Estes são os padrões que aparecem com mais frequência em código gerado por IA e contra os quais você deve se proteger ativamente.</span></p>
+
+  <h3><span lang="en">1. The God Function</span><span lang="pt" hidden>1. A Função Deus</span></h3>
+
+  <p><span lang="en">AI will happily generate a single function that does everything if you describe everything in one prompt. "Write a function that validates the user, applies discount rules, processes the payment, updates inventory, and sends the confirmation email" produces exactly that: one giant function. The AI fulfilled your request. You created a maintenance nightmare.</span><span lang="pt" hidden>A IA vai felizmente gerar uma única função que faz tudo se você descrever tudo em um prompt. "Escreva uma função que valida o usuário, aplica regras de desconto, processa o pagamento, atualiza o estoque e envia o email de confirmação" produz exatamente isso: uma função gigante. A IA atendeu seu pedido. Você criou um pesadelo de manutenção.</span></p>
+
+  <p><span lang="en"><strong>Fix:</strong> Decompose your prompt before you send it. One function = one prompt. Describe one responsibility at a time. If the real function needs to orchestrate multiple things, write the orchestrator separately after you have the pieces.</span><span lang="pt" hidden><strong>Correção:</strong> Decomponha seu prompt antes de enviá-lo. Uma função = um prompt. Descreva uma responsabilidade de cada vez. Se a função real precisa orquestrar múltiplas coisas, escreva o orquestrador separadamente depois que tiver as peças.</span></p>
+
+  <h3><span lang="en">2. Defensive Overload</span><span lang="pt" hidden>2. Sobrecarga Defensiva</span></h3>
+
+  <p><span lang="en">AI tends to add defensive checks for every conceivable edge case, even inside functions that are only ever called with validated data. The result is functions cluttered with <code>if (x == null)</code> guards that can never be true in practice and <code>try/catch</code> blocks that swallow specific exceptions and rethrow generic ones.</span><span lang="pt" hidden>A IA tende a adicionar verificações defensivas para cada edge case concebível, mesmo dentro de funções que só são chamadas com dados validados. O resultado são funções poluídas com guards <code>if (x == null)</code> que nunca podem ser verdadeiros na prática e blocos <code>try/catch</code> que capturam exceções específicas e relançam genéricas.</span></p>
+
+  <div class="code-block" lang="en"><code>// AI-generated: defensive overload at internal boundary
+function applyLoyaltyDiscount(price, user) {
+  if (price === null || price === undefined) throw new Error('price required');
+  if (user === null || user === undefined) throw new Error('user required');
+  if (typeof price !== 'number') throw new Error('price must be a number');
+  // ... actual logic buried under guards
+
+  // Clean: trust the calling contract, validate at system boundary
+function applyLoyaltyDiscount(price, user) {
+  return user.yearsAsCustomer >= 3 ? price * 0.95 : price;
+}</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Gerado pela IA: sobrecarga defensiva em fronteira interna
+function aplicarDescontoFidelidade(preco, usuario) {
+  if (preco === null || preco === undefined) throw new Error('preco obrigatorio');
+  if (usuario === null || usuario === undefined) throw new Error('usuario obrigatorio');
+  if (typeof preco !== 'number') throw new Error('preco deve ser numero');
+  // ... lógica real enterrada sob guards
+
+  // Limpo: confie no contrato da chamada, valide na fronteira do sistema
+function aplicarDescontoFidelidade(preco, usuario) {
+  return usuario.anosComoCliente >= 3 ? preco * 0.95 : preco;
+}</code></div>
+
+  <p><span lang="en"><strong>Fix:</strong> Tell the AI explicitly: "Validate only at the system boundary. Trust that internal parameters have already been validated by the caller. Write the function assuming valid input."</span><span lang="pt" hidden><strong>Correção:</strong> Diga à IA explicitamente: "Valide apenas na fronteira do sistema. Confie que parâmetros internos já foram validados pelo chamador. Escreva a função assumindo entrada válida."</span></p>
+
+  <h3><span lang="en">3. Inconsistent Style</span><span lang="pt" hidden>3. Estilo Inconsistente</span></h3>
+
+  <p><span lang="en">AI doesn't know your team's conventions unless you tell it. Left to its own devices, it might camelCase variables in a repo that uses snake_case, use double quotes where your linter enforces single, or structure classes in a way that differs from every other class in the codebase. Style inconsistency is invisible when tests pass but creates constant friction in code review.</span><span lang="pt" hidden>A IA não conhece as convenções do seu time a não ser que você informe. Por conta própria, pode usar camelCase em um repo que usa snake_case, aspas duplas onde seu linter exige simples, ou estruturar classes de um jeito que difere de todas as outras classes no codebase. Inconsistência de estilo é invisível quando os testes passam, mas cria atrito constante no code review.</span></p>
+
+  <p><span lang="en"><strong>Fix:</strong> Include a snippet of existing code in your prompt. "Here's an example of how we structure service classes in this repo. Follow the same patterns." AI models excellent match existing style when given a reference.</span><span lang="pt" hidden><strong>Correção:</strong> Inclua um trecho de código existente no seu prompt. "Aqui está um exemplo de como estruturamos classes de serviço neste repo. Siga os mesmos padrões." Modelos de IA correspondem excelentemente ao estilo existente quando dado uma referência.</span></p>
+
+  <h3><span lang="en">4. Magic Numbers and Strings</span><span lang="pt" hidden>4. Números e Strings Mágicos</span></h3>
+
+  <p><span lang="en">AI will embed literal values directly when they appear in examples you provide or when it infers the business rule from context. <code>if (user.yearsAsCustomer >= 3)</code> is a magic number. So is <code>price * 0.95</code>. Both should be named constants that live in one place.</span><span lang="pt" hidden>A IA vai embutir valores literais diretamente quando aparecem em exemplos que você fornece ou quando infere a regra de negócio do contexto. <code>if (usuario.anosComoCliente >= 3)</code> é um número mágico. Assim como <code>preco * 0.95</code>. Ambos devem ser constantes nomeadas que vivem em um único lugar.</span></p>
+
+  <div class="code-block" lang="en"><code>// AI output (magic numbers):
+if (user.yearsAsCustomer >= 3) return price * 0.95;
+
+// What you actually want:
+const LOYALTY_THRESHOLD_YEARS = 3;
+const LOYALTY_DISCOUNT_RATE   = 0.05;
+
+if (user.yearsAsCustomer >= LOYALTY_THRESHOLD_YEARS) {
+  return price * (1 - LOYALTY_DISCOUNT_RATE);
+}</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Saída da IA (números mágicos):
+if (usuario.anosComoCliente >= 3) return preco * 0.95;
+
+// O que você realmente quer:
+const ANOS_LIMITE_FIDELIDADE   = 3;
+const TAXA_DESCONTO_FIDELIDADE = 0.05;
+
+if (usuario.anosComoCliente >= ANOS_LIMITE_FIDELIDADE) {
+  return preco * (1 - TAXA_DESCONTO_FIDELIDADE);
+}</code></div>
+
+  <p><span lang="en"><strong>Fix:</strong> Add a sentence to every prompt that involves business rules: "Extract all literal values — thresholds, rates, limits — as named constants at the top of the function or module."</span><span lang="pt" hidden><strong>Correção:</strong> Adicione uma frase a todo prompt que envolva regras de negócio: "Extraia todos os valores literais — limites, taxas, thresholds — como constantes nomeadas no topo da função ou módulo."</span></p>
+
+  <h3><span lang="en">5. Premature Abstraction</span><span lang="pt" hidden>5. Abstração Prematura</span></h3>
+
+  <p><span lang="en">This is the subtlest AI anti-pattern. AI has seen millions of codebases and knows that "good code is generic". So it introduces strategy patterns, factory hierarchies, and configuration-driven behavior when you just wanted a simple function. Generic code is not inherently clean. Three similar lines are better than a wrong abstraction.</span><span lang="pt" hidden>Este é o anti-padrão de IA mais sutil. A IA viu milhões de codebases e sabe que "bom código é genérico". Então ela introduz padrões strategy, hierarquias de factory e comportamento orientado por configuração quando você apenas queria uma função simples. Código genérico não é inerentemente limpo. Três linhas similares são melhores que uma abstração errada.</span></p>
+
+  <p><span lang="en"><strong>Fix:</strong> Be explicit: "Write the simplest code that solves this specific case. Do not generalize. Do not introduce design patterns unless I ask for them." Defer abstraction until you have at least three concrete use cases to generalize from.</span><span lang="pt" hidden><strong>Correção:</strong> Seja explícito: "Escreva o código mais simples que resolve este caso específico. Não generalize. Não introduza design patterns a menos que eu peça." Adie a abstração até ter pelo menos três casos de uso concretos para generalizar.</span></p>
+
+  <h2><span lang="en">The Clean Code Prompt Template</span><span lang="pt" hidden>O Template de Prompt para Clean Code</span></h2>
+
+  <p><span lang="en">After enough iterations, a pattern emerges for prompts that consistently produce clean output. This template isn't a magic formula — it's a checklist of constraints that prevent the most common violations:</span><span lang="pt" hidden>Após iterações suficientes, um padrão emerge para prompts que consistentemente produzem output limpo. Este template não é uma fórmula mágica — é um checklist de restrições que previne as violações mais comuns:</span></p>
+
+  <div class="code-block" lang="en"><code>Write a [function/class/module] that [single responsibility, stated as
+an action that reveals intent].
+
+Constraints:
+- One responsibility. If it does more than one thing, split it.
+- Name reveals what it does, not how.
+- No magic numbers or strings — extract as named constants.
+- No defensive null checks on internal parameters; assume valid input.
+- No comments explaining what the code does; only comments explaining WHY
+  (a non-obvious business rule, a known constraint).
+- No design patterns unless the current use case clearly requires them.
+- Match the style of this existing example: [paste a relevant snippet]
+
+Context:
+- This function lives in [module/layer]
+- It will be called by [caller] after [what was already validated]
+- Edge cases handled upstream: [list what callers guarantee]</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>Escreva uma [função/classe/módulo] que [responsabilidade única, expressa
+como uma ação que revela a intenção].
+
+Restrições:
+- Uma responsabilidade. Se faz mais de uma coisa, divida.
+- O nome revela o que faz, não como.
+- Sem números ou strings mágicos — extraia como constantes nomeadas.
+- Sem verificações defensivas de null em parâmetros internos; assuma entrada válida.
+- Sem comentários explicando o que o código faz; apenas comentários explicando POR QUÊ
+  (uma regra de negócio não óbvia, uma restrição conhecida).
+- Sem design patterns a menos que o caso de uso atual claramente os requeira.
+- Combine o estilo deste exemplo existente: [cole um trecho relevante]
+
+Contexto:
+- Esta função fica em [módulo/camada]
+- Será chamada por [chamador] após [o que já foi validado]
+- Edge cases tratados upstream: [liste o que os chamadores garantem]</code></div>
+
+  <h2><span lang="en">The Review Protocol: Every AI Snippet Before It Lands</span><span lang="pt" hidden>O Protocolo de Revisão: Todo Snippet de IA Antes de Entrar</span></h2>
+
+  <p><span lang="en">Even with a clean prompt, AI output requires a deliberate review pass. Not a "looks good, ship it" pass — a specific checklist that takes 90 seconds per function and catches the common violations:</span><span lang="pt" hidden>Mesmo com um prompt limpo, o output da IA requer uma revisão deliberada. Não um "parece bom, sobe" — um checklist específico que leva 90 segundos por função e captura as violações comuns:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Read the function name out loud.</strong> Does it describe what happens? Would someone who never saw this codebase understand it? If you hesitate, the name is wrong.</span><span lang="pt" hidden><strong>Leia o nome da função em voz alta.</strong> Ele descreve o que acontece? Alguém que nunca viu esse codebase entenderia? Se você hesitar, o nome está errado.</span></li>
+    <li><span lang="en"><strong>Count the responsibilities.</strong> If the function does more than one thing — validates AND transforms AND persists — extract. The test: can you describe the function in one sentence without using "and"?</span><span lang="pt" hidden><strong>Conte as responsabilidades.</strong> Se a função faz mais de uma coisa — valida E transforma E persiste — extraia. O teste: você consegue descrever a função em uma frase sem usar "e"?</span></li>
+    <li><span lang="en"><strong>Scan for literal values.</strong> Any number or string that isn't 0, 1, true, false, "", or an empty collection is probably a magic value that needs a name.</span><span lang="pt" hidden><strong>Escaneie valores literais.</strong> Qualquer número ou string que não seja 0, 1, true, false, "" ou uma coleção vazia é provavelmente um valor mágico que precisa de um nome.</span></li>
+    <li><span lang="en"><strong>Check consistency with the file.</strong> Naming conventions, spacing, import order, class structure — does this look like it was written by the same person who wrote the rest of the file?</span><span lang="pt" hidden><strong>Verifique consistência com o arquivo.</strong> Convenções de nomenclatura, espaçamento, ordem de imports, estrutura de classe — isso parece ter sido escrito pela mesma pessoa que escreveu o resto do arquivo?</span></li>
+    <li><span lang="en"><strong>Remove any comment that says "what".</strong> If a comment explains what a line does, either the code should be renamed, or the comment deleted. Keep only comments that explain why a non-obvious decision was made.</span><span lang="pt" hidden><strong>Remova qualquer comentário que diga "o quê".</strong> Se um comentário explica o que uma linha faz, ou o código deve ser renomeado, ou o comentário excluído. Mantenha apenas comentários que explicam por que uma decisão não óbvia foi tomada.</span></li>
+    <li><span lang="en"><strong>Test the abstraction level.</strong> Is the function operating at a consistent level of abstraction throughout? Mixing high-level steps ("validate billing address") with low-level details ("iterate over cart items") in the same function is a sign of mixed concerns.</span><span lang="pt" hidden><strong>Teste o nível de abstração.</strong> A função opera em um nível consistente de abstração? Misturar passos de alto nível ("validar endereço de cobrança") com detalhes de baixo nível ("iterar sobre itens do carrinho") na mesma função é sinal de responsabilidades misturadas.</span></li>
+  </ul>
+
+  <h2><span lang="en">Using AI to Review AI Output</span><span lang="pt" hidden>Usando IA para Revisar Output da IA</span></h2>
+
+  <p><span lang="en">One of the most effective workflows is using a second AI prompt to audit the output of the first. After generating code, immediately follow up:</span><span lang="pt" hidden>Um dos fluxos de trabalho mais eficazes é usar um segundo prompt de IA para auditar o output do primeiro. Após gerar código, faça o follow-up imediatamente:</span></p>
+
+  <div class="code-block" lang="en"><code>"Review this code for Clean Code violations. Specifically check:
+1. Does every function name reveal intent without needing to read the body?
+2. Does any function have more than one responsibility?
+3. Are there any magic numbers or strings that should be named constants?
+4. Are there defensive null checks that trust violations — checking parameters
+   that the caller already guaranteed are valid?
+5. Are there comments explaining WHAT instead of WHY?
+6. Is there any premature abstraction for a single use case?
+
+For each violation found, explain why it's a problem and suggest the fix."</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>"Revise este código para violações de Clean Code. Verifique especificamente:
+1. Todo nome de função revela intenção sem precisar ler o corpo?
+2. Alguma função tem mais de uma responsabilidade?
+3. Existem números ou strings mágicos que deveriam ser constantes nomeadas?
+4. Existem verificações defensivas de null que violam a confiança — verificando
+   parâmetros que o chamador já garantiu serem válidos?
+5. Existem comentários explicando O QUÊ em vez de POR QUÊ?
+6. Existe abstração prematura para um único caso de uso?
+
+Para cada violação encontrada, explique por que é um problema e sugira a correção."</code></div>
+
+  <p><span lang="en">This self-review loop catches 70–80% of clean code issues before they ever touch a human reviewer. The remaining 20% are the architectural and contextual issues that only a developer who knows the codebase can catch — and that's exactly the right division of labor.</span><span lang="pt" hidden>Esse loop de auto-revisão captura 70–80% dos problemas de clean code antes de tocarem em um revisor humano. Os 20% restantes são os problemas arquiteturais e contextuais que apenas um desenvolvedor que conhece o codebase pode capturar — e essa é exatamente a divisão certa de trabalho.</span></p>
+
+  <h2><span lang="en">When AI Makes Code Worse: The Warning Signs</span><span lang="pt" hidden>Quando a IA Piora o Código: Os Sinais de Alerta</span></h2>
+
+  <p><span lang="en">There are contexts where you should not trust AI for clean code regardless of the prompt. These are the warning signs:</span><span lang="pt" hidden>Existem contextos onde você não deve confiar na IA para clean code independente do prompt. Estes são os sinais de alerta:</span></p>
+
+  <ul>
+    <li><span lang="en"><strong>Domain-heavy code.</strong> If the logic is deeply entangled with business rules specific to your domain, AI will generalize or misinterpret them. The code may work in the happy path but miss edge cases that only your domain experts know about. AI is useful for the structural shell; domain logic needs your brain.</span><span lang="pt" hidden><strong>Código com muito domínio.</strong> Se a lógica está profundamente entrelaçada com regras de negócio específicas do seu domínio, a IA vai generalizar ou mal interpretar. O código pode funcionar no happy path mas errar edge cases que apenas seus especialistas de domínio conhecem. IA é útil para a estrutura; lógica de domínio precisa do seu cérebro.</span></li>
+    <li><span lang="en"><strong>Code that requires deep context about existing architecture.</strong> AI doesn't know about your specific layers, your team's contracts between modules, or your historical decisions unless you paste all of that context in. Without it, the generated code will be technically clean but architecturally wrong for your system.</span><span lang="pt" hidden><strong>Código que requer contexto profundo da arquitetura existente.</strong> A IA não sabe sobre suas camadas específicas, os contratos do seu time entre módulos ou suas decisões históricas a menos que você cole todo esse contexto. Sem isso, o código gerado será tecnicamente limpo mas arquiteturalmente errado para o seu sistema.</span></li>
+    <li><span lang="en"><strong>Security-critical code.</strong> Authentication, authorization, cryptography, token validation — this code requires precision that general-purpose AI isn't reliable enough to provide. Use AI to understand concepts; write the actual security implementation yourself with careful review.</span><span lang="pt" hidden><strong>Código crítico de segurança.</strong> Autenticação, autorização, criptografia, validação de tokens — esse código requer precisão que a IA de propósito geral não é confiável o suficiente para fornecer. Use IA para entender conceitos; escreva a implementação real de segurança você mesmo com revisão cuidadosa.</span></li>
+  </ul>
+
+  <div class="callout">
+    <p><span lang="en"><strong>The rule:</strong> AI accelerates the mechanical parts of clean code — naming, extraction, test generation, style consistency. It requires your judgment for the parts that need domain knowledge, architectural awareness, and security precision. Know which is which before you prompt.</span><span lang="pt" hidden><strong>A regra:</strong> A IA acelera as partes mecânicas do clean code — nomenclatura, extração, geração de testes, consistência de estilo. Ela requer seu julgamento para as partes que precisam de conhecimento de domínio, consciência arquitetural e precisão de segurança. Saiba quais são quais antes de fazer o prompt.</span></li></p>
+  </div>
+
+  <h2><span lang="en">The Discipline AI Cannot Replace</span><span lang="pt" hidden>A Disciplina que a IA Não Pode Substituir</span></h2>
+
+  <p><span lang="en">Clean code ultimately depends on decisions that only a developer who understands the full context can make: when to abstract versus when to inline, when the third occurrence of similar logic justifies a shared utility versus when it's a coincidence, when a function name is wrong because the business concept it represents has changed, when an entire module needs restructuring because the initial design assumption no longer holds.</span><span lang="pt" hidden>Código limpo depende, em última análise, de decisões que apenas um desenvolvedor que entende o contexto completo pode tomar: quando abstrair versus quando inlinear, quando a terceira ocorrência de lógica similar justifica um utilitário compartilhado versus quando é coincidência, quando um nome de função está errado porque o conceito de negócio que representa mudou, quando um módulo inteiro precisa de reestruturação porque o pressuposto de design inicial não se sustenta mais.</span></p>
+
+  <p><span lang="en">These are judgment calls. They require understanding the code's history, the team's trajectory, the business rules that are stable versus in flux, and the human cost of different kinds of future changes. No prompt captures all of that. AI is a tool in the service of your judgment — not a replacement for it.</span><span lang="pt" hidden>Essas são decisões de julgamento. Elas requerem entender a história do código, a trajetória do time, as regras de negócio que são estáveis versus em fluxo e o custo humano de diferentes tipos de mudanças futuras. Nenhum prompt captura tudo isso. A IA é uma ferramenta a serviço do seu julgamento — não um substituto para ele.</span></p>
+
+  <p><span lang="en">The best outcome is a developer who uses AI to remove the mechanical friction from clean code — the time spent thinking of good names, the tedious work of extracting sub-functions, the boilerplate of writing descriptive tests — and uses the time saved for the high-judgment work that actually determines whether a codebase is a joy or a burden to maintain.</span><span lang="pt" hidden>O melhor resultado é um desenvolvedor que usa IA para remover o atrito mecânico do clean code — o tempo gasto pensando em bons nomes, o trabalho tedioso de extrair subfunções, o boilerplate de escrever testes descritivos — e usa o tempo economizado para o trabalho de alto julgamento que realmente determina se um codebase é uma alegria ou um fardo de manter.</span></p>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>The compounding effect:</strong> Teams that adopt clean-code-first AI workflows don't just write better code — they also review AI output faster. Clean code has a consistent shape. Reviewers quickly learn what "right" looks like in your codebase, which makes AI violations easy to spot. The discipline reinforces itself: better prompts produce cleaner output, cleaner output builds better intuition, better intuition produces better prompts.</span><span lang="pt" hidden><strong>O efeito composto:</strong> Times que adotam fluxos de IA com clean code em primeiro lugar não apenas escrevem código melhor — eles também revisam output de IA mais rápido. Código limpo tem uma forma consistente. Revisores rapidamente aprendem como "certo" parece no seu codebase, o que torna violações de IA fáceis de detectar. A disciplina se reforça: prompts melhores produzem output mais limpo, output mais limpo constrói melhor intuição, melhor intuição produz prompts melhores.</span></p>
+  </div>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+  <ul>
+    <li><span lang="en">AI optimizes for what you measure. If you measure "does it work?", you get working but messy code. If you measure "is it clean?", you get clean and working code. The prompt is the specification.</span><span lang="pt" hidden>A IA otimiza para o que você mede. Se você mede "funciona?", você obtém código que funciona mas bagunçado. Se você mede "está limpo?", você obtém código limpo e funcionando. O prompt é a especificação.</span></li>
+    <li><span lang="en">AI's highest-leverage clean code contributions: naming alternatives, extracting sub-functions, replacing comment-plus-code with named functions, and generating descriptive tests.</span><span lang="pt" hidden>As contribuições de maior alavancagem da IA para clean code: alternativas de nomenclatura, extração de subfunções, substituição de comentário+código por funções nomeadas e geração de testes descritivos.</span></li>
+    <li><span lang="en">AI's most common clean code violations: god functions, defensive overload, style inconsistency, magic numbers, and premature abstraction. Know these before you review.</span><span lang="pt" hidden>As violações de clean code mais comuns da IA: funções deus, sobrecarga defensiva, inconsistência de estilo, números mágicos e abstração prematura. Conheça esses antes de revisar.</span></li>
+    <li><span lang="en">Use the clean code prompt template: state a single responsibility, list constraints explicitly, and provide an existing code sample for style reference.</span><span lang="pt" hidden>Use o template de prompt para clean code: declare uma única responsabilidade, liste restrições explicitamente e forneça uma amostra de código existente como referência de estilo.</span></li>
+    <li><span lang="en">Use a second AI prompt to audit the first. A 90-second self-review loop before human review catches most mechanical violations.</span><span lang="pt" hidden>Use um segundo prompt de IA para auditar o primeiro. Um loop de auto-revisão de 90 segundos antes da revisão humana captura a maioria das violações mecânicas.</span></li>
+    <li><span lang="en">Judgment calls — when to abstract, when to inline, when to restructure — belong to you. AI handles the mechanical; you handle the strategic. The discipline is knowing which is which.</span><span lang="pt" hidden>Decisões de julgamento — quando abstrair, quando inlinear, quando reestruturar — são suas. A IA trata do mecânico; você trata do estratégico. A disciplina é saber qual é qual.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+<footer><p>&copy; 2025 Jefferson Valandro. Built with care.</p></footer>
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "🇧🇷" : "🇺🇸";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>

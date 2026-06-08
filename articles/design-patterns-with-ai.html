@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design Patterns with AI: How to Detect, Apply, and Avoid Overusing Them — Jefferson Valandro</title>
+  <meta name="description" content="How to use AI to identify pattern opportunities in existing code, generate pattern-correct implementations for Creational, Structural, and Behavioral patterns, and avoid the trap of over-engineering.">
+  <meta name="author" content="Jefferson Valandro">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/articles/design-patterns-with-ai.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/articles/design-patterns-with-ai.html">
+  <meta property="og:title" content="Design Patterns with AI: How to Detect, Apply, and Avoid Overusing Them — Jefferson Valandro">
+  <meta property="og:description" content="How to use AI to identify pattern opportunities in existing code, generate pattern-correct implementations, and avoid the trap of over-engineering.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/cover_bg_7.png">
+  <meta name="theme-color" content="#070d1a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../css/articles.css">
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" aria-label="Switch to Portuguese">
+    <span id="langFlag" aria-hidden="true">&#x1F1E7;&#x1F1F7;</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-puzzle-piece"></i> <span lang="en">AI &amp; Software Design</span><span lang="pt" hidden>IA &amp; Design de Software</span></div>
+    <h1><span lang="en">Design Patterns with AI: How to Detect, Apply, and Avoid Overusing Them</span><span lang="pt" hidden>Design Patterns com IA: Como Detectar, Aplicar e Evitar o Uso Excessivo</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> June 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">16 min read</span><span lang="pt" hidden>16 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">Design Patterns</span>
+      <span class="tag">AI</span>
+      <span class="tag">GoF</span>
+      <span class="tag">refactoring</span>
+      <span class="tag">architecture</span>
+      <span class="tag">code quality</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">Design patterns are proven solutions to recurring design problems. The Gang of Four catalogued 23 of them in 1994. Developers have been misapplying them ever since — using Singleton where a plain function would do, adding Factory hierarchies to code that creates exactly one type of object, and wrapping everything in an Observer when a direct method call would be simpler and faster.</span><span lang="pt" hidden>Design patterns são soluções comprovadas para problemas recorrentes de design. O Gang of Four catalogou 23 deles em 1994. Desde então, desenvolvedores têm os aplicado incorretamente — usando Singleton onde uma função simples bastaria, adicionando hierarquias de Factory a código que cria exatamente um tipo de objeto, e envolvendo tudo em um Observer quando uma chamada de método direta seria mais simples e rápida.</span></p>
+
+  <p><span lang="en">AI changes the equation on both sides. It can scan existing code and identify where a pattern would genuinely reduce complexity. It can generate pattern-correct implementations in seconds. It can also hallucinate pattern opportunities that don't exist and produce over-engineered abstractions no one asked for. The skill is learning to use AI for the first two while guarding against the third. This article covers exactly that.</span><span lang="pt" hidden>A IA muda a equação dos dois lados. Ela pode escanear código existente e identificar onde um pattern realmente reduziria a complexidade. Pode gerar implementações corretas de patterns em segundos. Também pode alucinar oportunidades de patterns que não existem e produzir abstrações over-engineered que ninguém pediu. A habilidade está em usar IA para os dois primeiros enquanto se guarda contra o terceiro. Este artigo cobre exatamente isso.</span></p>
+
+  <h2><span lang="en">How to Detect Pattern Opportunities in Existing Code</span><span lang="pt" hidden>Como Detectar Oportunidades de Pattern no Código Existente</span></h2>
+
+  <p><span lang="en">The best use of AI for design patterns is not generating them from scratch — it's recognizing when existing code is already trying to be a pattern, just poorly. These are the smells that point to specific patterns:</span><span lang="pt" hidden>O melhor uso de IA para design patterns não é gerá-los do zero — é reconhecer quando o código existente já está tentando ser um pattern, só que de forma ruim. Esses são os sinais que apontam para patterns específicos:</span></p>
+
+  <div class="code-block" lang="en"><code>// The pattern-detection audit prompt:
+"Analyze this code for design pattern opportunities. For each one found:
+1. Name the code smell that signals the pattern
+2. Name the pattern that resolves it
+3. Explain the concrete benefit (what becomes easier to change or test)
+4. Show the before and after
+
+Focus only on patterns that reduce real complexity in this specific code.
+Do not suggest patterns just because they are applicable in theory."</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// O prompt de auditoria de detecção de patterns:
+"Analise este código buscando oportunidades de design pattern. Para cada uma encontrada:
+1. Nomeie o code smell que sinaliza o pattern
+2. Nomeie o pattern que o resolve
+3. Explique o benefício concreto (o que fica mais fácil de mudar ou testar)
+4. Mostre o antes e o depois
+
+Foque apenas em patterns que reduzem complexidade real neste código específico.
+Não sugira patterns só porque são aplicáveis na teoria."</code></div>
+
+  <p><span lang="en">The constraint "focus only on patterns that reduce real complexity" is critical. Without it, AI will suggest patterns for every identifiable structure, producing a refactoring proposal that's more complex than the original code.</span><span lang="pt" hidden>A restrição "foque apenas em patterns que reduzem complexidade real" é crítica. Sem ela, a IA vai sugerir patterns para toda estrutura identificável, produzindo uma proposta de refatoração mais complexa que o código original.</span></p>
+
+  <h2><span lang="en">Creational Patterns</span><span lang="pt" hidden>Patterns Criacionais</span></h2>
+
+  <h3><span lang="en">Factory Method: When Object Creation Is the Variation Point</span><span lang="pt" hidden>Factory Method: Quando a Criação de Objetos É o Ponto de Variação</span></h3>
+
+  <p><span lang="en">The smell that signals a Factory Method opportunity: a class that contains a <code>switch</code> or <code>if/else</code> to decide which concrete type to instantiate, mixed with the logic that uses the instantiated object. Creation and use are tangled. Every new type requires modifying the class.</span><span lang="pt" hidden>O smell que sinaliza uma oportunidade de Factory Method: uma classe que contém um <code>switch</code> ou <code>if/else</code> para decidir qual tipo concreto instanciar, misturado com a lógica que usa o objeto instanciado. Criação e uso estão entrelaçados. Cada novo tipo exige modificar a classe.</span></p>
+
+  <div class="code-block" lang="en"><code>// Smell: creation logic mixed with business logic
+class ReportGenerator {
+  generate(type, data) {
+    let formatter;
+    if (type === 'pdf') {
+      formatter = new PdfFormatter({ margins: 20, fonts: 'serif' });
+    } else if (type === 'excel') {
+      formatter = new ExcelFormatter({ sheetName: 'Report', freeze: true });
+    } else if (type === 'csv') {
+      formatter = new CsvFormatter({ delimiter: ',', headers: true });
+    }
+    // ... 50 more lines using formatter
+  }
+}
+
+// Prompt: "Extract the object creation into a Factory Method.
+// The factory should be the only thing that changes when a new format is added."
+
+// Result:
+class ReportFormatterFactory {
+  static create(type) {
+    const factories = {
+      pdf:   () => new PdfFormatter({ margins: 20, fonts: 'serif' }),
+      excel: () => new ExcelFormatter({ sheetName: 'Report', freeze: true }),
+      csv:   () => new CsvFormatter({ delimiter: ',', headers: true }),
+    };
+    const factory = factories[type];
+    if (!factory) throw new UnsupportedReportFormatError(type);
+    return factory();
+  }
+}
+
+class ReportGenerator {
+  generate(type, data) {
+    const formatter = ReportFormatterFactory.create(type);
+    // ... business logic, unchanged regardless of format
+  }
+}</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Smell: lógica de criação misturada com lógica de negócio
+class GeradorRelatorio {
+  gerar(tipo, dados) {
+    let formatador;
+    if (tipo === 'pdf') {
+      formatador = new FormatadorPdf({ margens: 20, fontes: 'serif' });
+    } else if (tipo === 'excel') {
+      formatador = new FormatadorExcel({ nomePlanilha: 'Relatório', congelar: true });
+    } else if (tipo === 'csv') {
+      formatador = new FormatadorCsv({ delimitador: ',', cabecalhos: true });
+    }
+    // ... mais 50 linhas usando formatador
+  }
+}
+
+// Prompt: "Extraia a criação de objetos em um Factory Method.
+// A factory deve ser a única coisa que muda quando um novo formato é adicionado."
+
+// Resultado:
+class FabricaFormatadorRelatorio {
+  static criar(tipo) {
+    const fabricas = {
+      pdf:   () => new FormatadorPdf({ margens: 20, fontes: 'serif' }),
+      excel: () => new FormatadorExcel({ nomePlanilha: 'Relatório', congelar: true }),
+      csv:   () => new FormatadorCsv({ delimitador: ',', cabecalhos: true }),
+    };
+    const fabrica = fabricas[tipo];
+    if (!fabrica) throw new FormatoRelatorioNaoSuportadoError(tipo);
+    return fabrica();
+  }
+}
+
+class GeradorRelatorio {
+  gerar(tipo, dados) {
+    const formatador = FabricaFormatadorRelatorio.criar(tipo);
+    // ... lógica de negócio, inalterada independente do formato
+  }
+}</code></div>
+
+  <h3><span lang="en">Builder: When Construction Has Many Optional Steps</span><span lang="pt" hidden>Builder: Quando a Construção Tem Muitas Etapas Opcionais</span></h3>
+
+  <p><span lang="en">The smell: a constructor or factory function with five or more parameters, many of them optional, producing different configurations depending on which combination is passed. Callers must know the correct order. Null/undefined markers appear everywhere. Adding a new configuration option changes every call site.</span><span lang="pt" hidden>O smell: um construtor ou função factory com cinco ou mais parâmetros, muitos opcionais, produzindo configurações diferentes dependendo de qual combinação é passada. Chamadores precisam conhecer a ordem correta. Marcadores null/undefined aparecem em todo lugar. Adicionar uma nova opção de configuração muda todos os call sites.</span></p>
+
+  <div class="code-block" lang="en"><code>// Smell: telescoping constructor with optional parameters
+const email = new Email(
+  'user@example.com',
+  'Welcome',
+  'Hello!',
+  null,          // cc — not used
+  null,          // bcc — not used
+  true,          // isHtml
+  'noreply@co.com',
+  null,          // attachments — not used
+  'high'         // priority
+);
+
+// Prompt: "Refactor this constructor using the Builder pattern.
+// Each optional field should be a chainable setter method.
+// The build() method should validate required fields before returning the object."
+
+// Result:
+const email = new EmailBuilder()
+  .to('user@example.com')
+  .subject('Welcome')
+  .body('Hello!')
+  .from('noreply@co.com')
+  .htmlEnabled()
+  .priority('high')
+  .build(); // validates: to, subject, body are required</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Smell: construtor telescópico com parâmetros opcionais
+const email = new Email(
+  'usuario@exemplo.com',
+  'Bem-vindo',
+  'Olá!',
+  null,          // cc — não usado
+  null,          // bcc — não usado
+  true,          // isHtml
+  'noreply@co.com',
+  null,          // anexos — não usado
+  'alta'         // prioridade
+);
+
+// Prompt: "Refatore este construtor usando o padrão Builder.
+// Cada campo opcional deve ser um método setter encadeável.
+// O método build() deve validar campos obrigatórios antes de retornar o objeto."
+
+// Resultado:
+const email = new EmailBuilder()
+  .para('usuario@exemplo.com')
+  .assunto('Bem-vindo')
+  .corpo('Olá!')
+  .de('noreply@co.com')
+  .htmlAtivado()
+  .prioridade('alta')
+  .build(); // valida: para, assunto, corpo são obrigatórios</code></div>
+
+  <h3><span lang="en">Singleton: The Most Misused Pattern</span><span lang="pt" hidden>Singleton: O Pattern Mais Mal Utilizado</span></h3>
+
+  <p><span lang="en">Singleton is the pattern AI most frequently suggests when it shouldn't. The real use cases are narrow: a single shared configuration object, a connection pool, a registry. The wrong use cases are vast: services that don't need shared state, utilities that could simply be modules, anything that makes testing harder because the instance can't be replaced.</span><span lang="pt" hidden>Singleton é o pattern que a IA mais frequentemente sugere quando não deveria. Os casos de uso reais são estreitos: um único objeto de configuração compartilhado, um pool de conexões, um registro. Os casos de uso errados são vastos: serviços que não precisam de estado compartilhado, utilitários que poderiam simplesmente ser módulos, qualquer coisa que dificulte os testes porque a instância não pode ser substituída.</span></p>
+
+  <div class="code-block" lang="en"><code>// The Singleton prompt that avoids misuse:
+"Implement this as a Singleton ONLY IF it genuinely requires:
+1. Exactly one instance across the entire application lifetime
+2. Shared mutable state that multiple callers must see consistently
+3. A resource that is expensive to create and must be reused
+
+If none of these apply, implement it as a regular class and explain why
+Singleton is not appropriate here."
+
+// AI with this constraint will often respond:
+// "This class has no shared mutable state and no expensive initialization.
+// A Singleton would make it untestable without adding global state.
+// Implement it as a regular class and inject it where needed."</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// O prompt de Singleton que evita o uso indevido:
+"Implemente isto como Singleton APENAS SE genuinamente exigir:
+1. Exatamente uma instância durante todo o ciclo de vida da aplicação
+2. Estado mutável compartilhado que múltiplos chamadores devem ver consistentemente
+3. Um recurso caro de criar que deve ser reutilizado
+
+Se nenhum destes se aplicar, implemente como uma classe regular e explique
+por que Singleton não é apropriado aqui."
+
+// IA com esta restrição frequentemente responderá:
+// "Esta classe não tem estado mutável compartilhado nem inicialização cara.
+// Um Singleton a tornaria não testável sem adicionar estado global.
+// Implemente como uma classe regular e injete onde necessário."</code></div>
+
+  <h2><span lang="en">Structural Patterns</span><span lang="pt" hidden>Patterns Estruturais</span></h2>
+
+  <h3><span lang="en">Adapter: Bridging Incompatible Interfaces</span><span lang="pt" hidden>Adapter: Conectando Interfaces Incompatíveis</span></h3>
+
+  <p><span lang="en">The smell: your code depends on a third-party or legacy API that doesn't match the interface your system expects. Conversion logic is scattered across multiple call sites. Switching providers requires modifying business logic.</span><span lang="pt" hidden>O smell: seu código depende de uma API de terceiros ou legada que não corresponde à interface que seu sistema espera. Lógica de conversão está espalhada por múltiplos call sites. Trocar provedores exige modificar lógica de negócio.</span></p>
+
+  <div class="code-block" lang="en"><code>// Smell: third-party SDK leaking into business logic
+class OrderService {
+  async notifyShipment(order) {
+    // StripeShipping SDK doesn't match our interface
+    await stripeShipping.createShipmentNotification({
+      customer_id: order.userId,        // different naming
+      shipment_ref: order.trackingCode, // different naming
+      destination: {
+        street: order.address.street,
+        postal_code: order.address.zip, // different naming
+      },
+      metadata: { internal_id: order.id },
+    });
+  }
+}
+
+// Prompt: "Create an Adapter that wraps the StripeShipping SDK and exposes
+// the interface our system already uses. The business logic should never
+// see SDK-specific naming or structure."
+
+interface ShipmentNotifier {
+  notify(order: Order): Promise<void>;
+}
+
+class StripeShippingAdapter implements ShipmentNotifier {
+  async notify(order) {
+    await stripeShipping.createShipmentNotification({
+      customer_id:  order.userId,
+      shipment_ref: order.trackingCode,
+      destination: {
+        street:      order.address.street,
+        postal_code: order.address.zip,
+      },
+      metadata: { internal_id: order.id },
+    });
+  }
+}
+
+// Business logic now speaks our language, never the SDK's
+class OrderService {
+  constructor(private shipmentNotifier: ShipmentNotifier) {}
+
+  async notifyShipment(order) {
+    await this.shipmentNotifier.notify(order);
+  }
+}</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Smell: SDK de terceiros vazando para a lógica de negócio
+class PedidoService {
+  async notificarEnvio(pedido) {
+    // SDK StripeShipping não bate com nossa interface
+    await stripeShipping.createShipmentNotification({
+      customer_id: pedido.usuarioId,       // nomenclatura diferente
+      shipment_ref: pedido.codigoRastreio, // nomenclatura diferente
+      destination: {
+        street: pedido.endereco.rua,
+        postal_code: pedido.endereco.cep,  // nomenclatura diferente
+      },
+      metadata: { internal_id: pedido.id },
+    });
+  }
+}
+
+// Prompt: "Crie um Adapter que envolva o SDK StripeShipping e exponha
+// a interface que nosso sistema já usa. A lógica de negócio nunca deve
+// ver nomenclatura ou estrutura específica do SDK."
+
+interface NotificadorEnvio {
+  notificar(pedido: Pedido): Promise<void>;
+}
+
+class StripeShippingAdapter implements NotificadorEnvio {
+  async notificar(pedido) {
+    await stripeShipping.createShipmentNotification({
+      customer_id:  pedido.usuarioId,
+      shipment_ref: pedido.codigoRastreio,
+      destination: {
+        street:      pedido.endereco.rua,
+        postal_code: pedido.endereco.cep,
+      },
+      metadata: { internal_id: pedido.id },
+    });
+  }
+}
+
+// Lógica de negócio fala nossa língua, nunca a do SDK
+class PedidoService {
+  constructor(private notificadorEnvio: NotificadorEnvio) {}
+
+  async notificarEnvio(pedido) {
+    await this.notificadorEnvio.notificar(pedido);
+  }
+}</code></div>
+
+  <h3><span lang="en">Decorator: Adding Behavior Without Subclassing</span><span lang="pt" hidden>Decorator: Adicionando Comportamento Sem Subclasses</span></h3>
+
+  <p><span lang="en">The smell: cross-cutting behavior — logging, caching, retry, metrics — copy-pasted into multiple classes. Adding tracing to ten services means modifying ten classes. Decorator extracts that behavior into a wrapper that shares the same interface as the wrapped object.</span><span lang="pt" hidden>O smell: comportamento transversal — logging, cache, retry, métricas — copiado e colado em múltiplas classes. Adicionar rastreamento em dez serviços significa modificar dez classes. Decorator extrai esse comportamento em um wrapper que compartilha a mesma interface que o objeto encapsulado.</span></p>
+
+  <div class="code-block" lang="en"><code>// Smell: caching logic duplicated across multiple repositories
+class ProductRepository {
+  async findById(id) {
+    const cached = await redis.get(`product:${id}`);
+    if (cached) return JSON.parse(cached);
+    const product = await db.products.findOne({ id });
+    await redis.set(`product:${id}`, JSON.stringify(product), 'EX', 300);
+    return product;
+  }
+}
+// Same pattern repeated in UserRepository, OrderRepository, CategoryRepository...
+
+// Prompt: "Extract the caching logic into a Decorator that wraps any repository
+// implementing the same interface. The decorator should be generic — it should
+// work with any repository without knowing its internals."
+
+class CachingRepositoryDecorator {
+  constructor(inner, cache, keyPrefix, ttlSeconds) {
+    this.inner      = inner;
+    this.cache      = cache;
+    this.keyPrefix  = keyPrefix;
+    this.ttlSeconds = ttlSeconds;
+  }
+
+  async findById(id) {
+    const key    = `${this.keyPrefix}:${id}`;
+    const cached = await this.cache.get(key);
+    if (cached) return JSON.parse(cached);
+
+    const result = await this.inner.findById(id);
+    await this.cache.set(key, JSON.stringify(result), 'EX', this.ttlSeconds);
+    return result;
+  }
+}
+
+// Usage: zero changes to ProductRepository
+const productRepo = new CachingRepositoryDecorator(
+  new ProductRepository(db),
+  redis,
+  'product',
+  300
+);</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Smell: lógica de cache duplicada em múltiplos repositórios
+class RepositorioProduto {
+  async buscarPorId(id) {
+    const cached = await redis.get(`produto:${id}`);
+    if (cached) return JSON.parse(cached);
+    const produto = await db.produtos.findOne({ id });
+    await redis.set(`produto:${id}`, JSON.stringify(produto), 'EX', 300);
+    return produto;
+  }
+}
+// Mesmo padrão repetido em RepositorioUsuario, RepositorioPedido, RepositorioCategoria...
+
+// Prompt: "Extraia a lógica de cache em um Decorator que envolva qualquer repositório
+// que implemente a mesma interface. O decorator deve ser genérico — deve funcionar
+// com qualquer repositório sem conhecer seus internos."
+
+class DecoratorRepositorioCacheable {
+  constructor(interno, cache, prefixoChave, segundosTtl) {
+    this.interno      = interno;
+    this.cache        = cache;
+    this.prefixoChave = prefixoChave;
+    this.segundosTtl  = segundosTtl;
+  }
+
+  async buscarPorId(id) {
+    const chave  = `${this.prefixoChave}:${id}`;
+    const cached = await this.cache.get(chave);
+    if (cached) return JSON.parse(cached);
+
+    const resultado = await this.interno.buscarPorId(id);
+    await this.cache.set(chave, JSON.stringify(resultado), 'EX', this.segundosTtl);
+    return resultado;
+  }
+}
+
+// Uso: zero mudanças em RepositorioProduto
+const repoProduto = new DecoratorRepositorioCacheable(
+  new RepositorioProduto(db),
+  redis,
+  'produto',
+  300
+);</code></div>
+
+  <h3><span lang="en">Facade: Simplifying a Complex Subsystem</span><span lang="pt" hidden>Facade: Simplificando um Subsistema Complexo</span></h3>
+
+  <p><span lang="en">The smell: a common operation requires orchestrating four or five different subsystems in the right order. Every caller that needs this operation duplicates the orchestration. When the subsystem changes, all callers break.</span><span lang="pt" hidden>O smell: uma operação comum exige orquestrar quatro ou cinco subsistemas diferentes na ordem certa. Todo chamador que precisa dessa operação duplica a orquestração. Quando o subsistema muda, todos os chamadores quebram.</span></p>
+
+  <div class="code-block" lang="en"><code>// Smell: subsystem orchestration repeated at every call site
+async function handleUserRegistration(data) {
+  const user    = await authService.createUser(data.email, data.password);
+  const profile = await profileService.createProfile(user.id, data.name);
+  await emailService.sendWelcomeEmail(user.email);
+  await analyticsService.trackEvent('user_registered', { userId: user.id });
+  await billingService.createFreeTrial(user.id, 14);
+  return { user, profile };
+}
+// Duplicated in admin panel, mobile API, CLI tool, test setup...
+
+// Prompt: "Create a Facade that encapsulates the user registration workflow.
+// The Facade should expose one method that hides all subsystem coordination.
+// Callers should not need to know which subsystems are involved."
+
+class UserRegistrationFacade {
+  constructor(auth, profile, email, analytics, billing) { ... }
+
+  async register(data) {
+    const user    = await this.auth.createUser(data.email, data.password);
+    const profile = await this.profile.createProfile(user.id, data.name);
+    await Promise.all([
+      this.email.sendWelcomeEmail(user.email),
+      this.analytics.trackEvent('user_registered', { userId: user.id }),
+      this.billing.createFreeTrial(user.id, FREE_TRIAL_DAYS),
+    ]);
+    return { user, profile };
+  }
+}
+
+// All call sites become one line:
+return await registrationFacade.register(data);</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Smell: orquestração de subsistema repetida em todo call site
+async function tratarCadastroUsuario(dados) {
+  const usuario = await authService.criarUsuario(dados.email, dados.senha);
+  const perfil  = await perfilService.criarPerfil(usuario.id, dados.nome);
+  await emailService.enviarEmailBoasVindas(usuario.email);
+  await analyticsService.rastrearEvento('usuario_cadastrado', { usuarioId: usuario.id });
+  await billingService.criarPeriodoTeste(usuario.id, 14);
+  return { usuario, perfil };
+}
+// Duplicado no painel admin, API mobile, ferramenta CLI, setup de testes...
+
+// Prompt: "Crie uma Facade que encapsule o workflow de cadastro de usuário.
+// A Facade deve expor um método que esconde toda a coordenação de subsistemas.
+// Chamadores não devem precisar saber quais subsistemas estão envolvidos."
+
+class FacadeCadastroUsuario {
+  constructor(auth, perfil, email, analytics, billing) { ... }
+
+  async cadastrar(dados) {
+    const usuario = await this.auth.criarUsuario(dados.email, dados.senha);
+    const perfil  = await this.perfil.criarPerfil(usuario.id, dados.nome);
+    await Promise.all([
+      this.email.enviarEmailBoasVindas(usuario.email),
+      this.analytics.rastrearEvento('usuario_cadastrado', { usuarioId: usuario.id }),
+      this.billing.criarPeriodoTeste(usuario.id, DIAS_PERIODO_TESTE),
+    ]);
+    return { usuario, perfil };
+  }
+}
+
+// Todos os call sites viram uma linha:
+return await facadeCadastro.cadastrar(dados);</code></div>
+
+  <h2><span lang="en">Behavioral Patterns</span><span lang="pt" hidden>Patterns Comportamentais</span></h2>
+
+  <h3><span lang="en">Strategy: Swappable Algorithms</span><span lang="pt" hidden>Strategy: Algoritmos Intercambiáveis</span></h3>
+
+  <p><span lang="en">Strategy and Factory Method are often confused. Factory decides what to <em>create</em>. Strategy decides how to <em>behave</em>. The smell: a class that changes its algorithm based on a mode or type flag passed at runtime — the algorithm is buried in a conditional, and adding a new algorithm means modifying the class.</span><span lang="pt" hidden>Strategy e Factory Method são frequentemente confundidos. Factory decide o que <em>criar</em>. Strategy decide como <em>se comportar</em>. O smell: uma classe que muda seu algoritmo com base em um flag de modo ou tipo passado em tempo de execução — o algoritmo está enterrado em um condicional, e adicionar um novo algoritmo significa modificar a classe.</span></p>
+
+  <div class="code-block" lang="en"><code>// Smell: algorithm selection tangled with algorithm execution
+class PricingEngine {
+  calculate(order, pricingMode) {
+    if (pricingMode === 'standard') {
+      return order.items.reduce((sum, i) => sum + i.price * i.qty, 0);
+    } else if (pricingMode === 'wholesale') {
+      const subtotal = order.items.reduce((sum, i) => sum + i.price * i.qty, 0);
+      return subtotal * 0.8; // 20% discount
+    } else if (pricingMode === 'subscription') {
+      return order.items.reduce((sum, i) => sum + i.subscriberPrice * i.qty, 0);
+    }
+  }
+}
+
+// Prompt: "Refactor using the Strategy pattern. Each pricing algorithm should
+// be a separate class. PricingEngine should execute the injected strategy
+// without knowing which one it is."
+
+interface PricingStrategy {
+  calculate(order: Order): number;
+}
+
+class StandardPricing implements PricingStrategy {
+  calculate(order) {
+    return order.items.reduce((sum, i) => sum + i.price * i.qty, 0);
+  }
+}
+
+class WholesalePricing implements PricingStrategy {
+  private static DISCOUNT = 0.20;
+  calculate(order) {
+    const subtotal = order.items.reduce((sum, i) => sum + i.price * i.qty, 0);
+    return subtotal * (1 - WholesalePricing.DISCOUNT);
+  }
+}
+
+class SubscriptionPricing implements PricingStrategy {
+  calculate(order) {
+    return order.items.reduce((sum, i) => sum + i.subscriberPrice * i.qty, 0);
+  }
+}
+
+class PricingEngine {
+  constructor(private strategy: PricingStrategy) {}
+  calculate(order) { return this.strategy.calculate(order); }
+}</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Smell: seleção de algoritmo entrelaçada com execução do algoritmo
+class MotorPrecificacao {
+  calcular(pedido, modoPrecificacao) {
+    if (modoPrecificacao === 'padrao') {
+      return pedido.itens.reduce((soma, i) => soma + i.preco * i.qtd, 0);
+    } else if (modoPrecificacao === 'atacado') {
+      const subtotal = pedido.itens.reduce((soma, i) => soma + i.preco * i.qtd, 0);
+      return subtotal * 0.8; // 20% de desconto
+    } else if (modoPrecificacao === 'assinatura') {
+      return pedido.itens.reduce((soma, i) => soma + i.precoAssinante * i.qtd, 0);
+    }
+  }
+}
+
+// Prompt: "Refatore usando o padrão Strategy. Cada algoritmo de precificação
+// deve ser uma classe separada. MotorPrecificacao deve executar a estratégia
+// injetada sem saber qual é."
+
+interface EstrategiaPrecificacao {
+  calcular(pedido: Pedido): number;
+}
+
+class PrecificacaoPadrao implements EstrategiaPrecificacao {
+  calcular(pedido) {
+    return pedido.itens.reduce((soma, i) => soma + i.preco * i.qtd, 0);
+  }
+}
+
+class PrecificacaoAtacado implements EstrategiaPrecificacao {
+  private static DESCONTO = 0.20;
+  calcular(pedido) {
+    const subtotal = pedido.itens.reduce((soma, i) => soma + i.preco * i.qtd, 0);
+    return subtotal * (1 - PrecificacaoAtacado.DESCONTO);
+  }
+}
+
+class PrecificacaoAssinatura implements EstrategiaPrecificacao {
+  calcular(pedido) {
+    return pedido.itens.reduce((soma, i) => soma + i.precoAssinante * i.qtd, 0);
+  }
+}
+
+class MotorPrecificacao {
+  constructor(private estrategia: EstrategiaPrecificacao) {}
+  calcular(pedido) { return this.estrategia.calcular(pedido); }
+}</code></div>
+
+  <h3><span lang="en">Observer: Decoupling Event Producers from Consumers</span><span lang="pt" hidden>Observer: Desacoplando Produtores de Eventos dos Consumidores</span></h3>
+
+  <p><span lang="en">The smell: a class directly calls several other classes whenever something happens. The producer knows about all its consumers. Adding a new reaction to an event means modifying the producer. The producer and consumer lifecycles are coupled.</span><span lang="pt" hidden>O smell: uma classe chama diretamente várias outras classes sempre que algo acontece. O produtor conhece todos os seus consumidores. Adicionar uma nova reação a um evento significa modificar o produtor. Os ciclos de vida do produtor e do consumidor estão acoplados.</span></p>
+
+  <div class="code-block" lang="en"><code>// Smell: producer knows all its consumers
+class Order {
+  async complete() {
+    this.status = 'completed';
+    await this.save();
+    // Producer is tangled with all consumers:
+    await emailService.sendConfirmation(this);
+    await inventoryService.deductStock(this);
+    await loyaltyService.addPoints(this);
+    await analyticsService.trackConversion(this);
+    // Adding a new reaction = modifying Order
+  }
+}
+
+// Prompt: "Refactor using the Observer pattern. Order should emit an event
+// when completed. Each reaction should be a separate observer that subscribes
+// to that event. Order should have zero knowledge of what happens next."
+
+class Order extends EventEmitter {
+  async complete() {
+    this.status = 'completed';
+    await this.save();
+    this.emit('completed', this); // Order's job ends here
+  }
+}
+
+// Each observer registered independently — Order never changes
+order.on('completed', async (order) => emailService.sendConfirmation(order));
+order.on('completed', async (order) => inventoryService.deductStock(order));
+order.on('completed', async (order) => loyaltyService.addPoints(order));
+order.on('completed', async (order) => analyticsService.trackConversion(order));
+
+// Adding a new reaction: register a new observer. Order is never touched.</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Smell: produtor conhece todos os seus consumidores
+class Pedido {
+  async concluir() {
+    this.status = 'concluido';
+    await this.salvar();
+    // Produtor entrelaçado com todos os consumidores:
+    await emailService.enviarConfirmacao(this);
+    await estoqueService.deduzirEstoque(this);
+    await fidelidadeService.adicionarPontos(this);
+    await analyticsService.rastrearConversao(this);
+    // Adicionar nova reação = modificar Pedido
+  }
+}
+
+// Prompt: "Refatore usando o padrão Observer. Pedido deve emitir um evento
+// quando concluído. Cada reação deve ser um observer separado que se inscreve
+// nesse evento. Pedido deve ter zero conhecimento do que acontece em seguida."
+
+class Pedido extends EventEmitter {
+  async concluir() {
+    this.status = 'concluido';
+    await this.salvar();
+    this.emit('concluido', this); // Trabalho do Pedido termina aqui
+  }
+}
+
+// Cada observer registrado independentemente — Pedido nunca muda
+pedido.on('concluido', async (p) => emailService.enviarConfirmacao(p));
+pedido.on('concluido', async (p) => estoqueService.deduzirEstoque(p));
+pedido.on('concluido', async (p) => fidelidadeService.adicionarPontos(p));
+pedido.on('concluido', async (p) => analyticsService.rastrearConversao(p));
+
+// Adicionar nova reação: registrar novo observer. Pedido nunca é tocado.</code></div>
+
+  <h3><span lang="en">Chain of Responsibility: Sequential Processing with Early Exit</span><span lang="pt" hidden>Chain of Responsibility: Processamento Sequencial com Saída Antecipada</span></h3>
+
+  <p><span lang="en">The smell: a validation or processing pipeline implemented as nested conditionals or a long sequence of imperative checks. Adding, removing, or reordering steps requires modifying the pipeline function. Steps cannot be tested in isolation.</span><span lang="pt" hidden>O smell: um pipeline de validação ou processamento implementado como condicionais aninhados ou uma longa sequência de verificações imperativas. Adicionar, remover ou reordenar etapas exige modificar a função do pipeline. Etapas não podem ser testadas de forma isolada.</span></p>
+
+  <div class="code-block" lang="en"><code>// Smell: validation pipeline as a flat sequence of conditionals
+async function validateOrder(order) {
+  if (!order.items || order.items.length === 0) {
+    return { valid: false, reason: 'EMPTY_CART' };
+  }
+  if (order.total < 0) {
+    return { valid: false, reason: 'NEGATIVE_TOTAL' };
+  }
+  const stockOk = await inventoryService.checkStock(order.items);
+  if (!stockOk) {
+    return { valid: false, reason: 'INSUFFICIENT_STOCK' };
+  }
+  const fraudOk = await fraudService.assess(order);
+  if (!fraudOk) {
+    return { valid: false, reason: 'FRAUD_RISK' };
+  }
+  return { valid: true };
+}
+
+// Prompt: "Refactor using Chain of Responsibility. Each validation step
+// should be a handler class that either passes to the next handler or
+// short-circuits with a failure result. Steps should be composable
+// and independently testable."
+
+class OrderValidator {
+  private handlers: ValidationHandler[];
+
+  constructor(...handlers) { this.handlers = handlers; }
+
+  async validate(order) {
+    for (const handler of this.handlers) {
+      const result = await handler.handle(order);
+      if (!result.passed) return { valid: false, reason: result.reason };
+    }
+    return { valid: true };
+  }
+}
+
+// Each handler is independently testable
+class CartNotEmptyHandler implements ValidationHandler {
+  async handle(order) {
+    return order.items?.length > 0
+      ? { passed: true }
+      : { passed: false, reason: 'EMPTY_CART' };
+  }
+}
+
+class StockAvailabilityHandler implements ValidationHandler {
+  constructor(private inventory: InventoryService) {}
+  async handle(order) {
+    const ok = await this.inventory.checkStock(order.items);
+    return ok ? { passed: true } : { passed: false, reason: 'INSUFFICIENT_STOCK' };
+  }
+}
+
+// Composing the pipeline — order of handlers is explicit and flexible
+const validator = new OrderValidator(
+  new CartNotEmptyHandler(),
+  new PositiveTotalHandler(),
+  new StockAvailabilityHandler(inventoryService),
+  new FraudRiskHandler(fraudService),
+);</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Smell: pipeline de validação como sequência plana de condicionais
+async function validarPedido(pedido) {
+  if (!pedido.itens || pedido.itens.length === 0) {
+    return { valido: false, motivo: 'CARRINHO_VAZIO' };
+  }
+  if (pedido.total < 0) {
+    return { valido: false, motivo: 'TOTAL_NEGATIVO' };
+  }
+  const estoqueOk = await estoqueService.verificarEstoque(pedido.itens);
+  if (!estoqueOk) {
+    return { valido: false, motivo: 'ESTOQUE_INSUFICIENTE' };
+  }
+  const fraudeOk = await fraudeService.avaliar(pedido);
+  if (!fraudeOk) {
+    return { valido: false, motivo: 'RISCO_FRAUDE' };
+  }
+  return { valido: true };
+}
+
+// Prompt: "Refatore usando Chain of Responsibility. Cada etapa de validação
+// deve ser uma classe handler que ou passa para o próximo handler ou
+// curto-circuita com um resultado de falha. Etapas devem ser combináveis
+// e testáveis de forma independente."
+
+class ValidadorPedido {
+  private handlers: HandlerValidacao[];
+
+  constructor(...handlers) { this.handlers = handlers; }
+
+  async validar(pedido) {
+    for (const handler of this.handlers) {
+      const resultado = await handler.tratar(pedido);
+      if (!resultado.passou) return { valido: false, motivo: resultado.motivo };
+    }
+    return { valido: true };
+  }
+}
+
+// Cada handler é testável de forma independente
+class HandlerCarrinhoNaoVazio implements HandlerValidacao {
+  async tratar(pedido) {
+    return pedido.itens?.length > 0
+      ? { passou: true }
+      : { passou: false, motivo: 'CARRINHO_VAZIO' };
+  }
+}
+
+class HandlerDisponibilidadeEstoque implements HandlerValidacao {
+  constructor(private estoque: EstoqueService) {}
+  async tratar(pedido) {
+    const ok = await this.estoque.verificarEstoque(pedido.itens);
+    return ok ? { passou: true } : { passou: false, motivo: 'ESTOQUE_INSUFICIENTE' };
+  }
+}
+
+// Compondo o pipeline — ordem dos handlers é explícita e flexível
+const validador = new ValidadorPedido(
+  new HandlerCarrinhoNaoVazio(),
+  new HandlerTotalPositivo(),
+  new HandlerDisponibilidadeEstoque(estoqueService),
+  new HandlerRiscoFraude(fraudeService),
+);</code></div>
+
+  <h2><span lang="en">The Pattern Selection Prompt</span><span lang="pt" hidden>O Prompt de Seleção de Pattern</span></h2>
+
+  <p><span lang="en">When you're unsure which pattern fits a problem, use AI for structured analysis rather than asking it to pick one. The structured approach prevents the AI from defaulting to a popular pattern that doesn't fit:</span><span lang="pt" hidden>Quando não tem certeza de qual pattern se encaixa em um problema, use a IA para análise estruturada em vez de pedir que escolha um. A abordagem estruturada impede que a IA recorra a um pattern popular que não se encaixa:</span></p>
+
+  <div class="code-block" lang="en"><code>"I have this design problem: [describe the problem]
+
+Analyze it against these pattern categories:
+- Is the variation point in object creation? (→ Creational: Factory, Builder, Prototype)
+- Is the variation point in how objects are composed? (→ Structural: Adapter, Decorator, Facade, Composite)
+- Is the variation point in how objects communicate? (→ Behavioral: Strategy, Observer, Command, Chain)
+
+For each candidate pattern:
+1. Describe how it would apply to this specific problem
+2. What becomes easier to change with this pattern
+3. What overhead it introduces (indirection, files, cognitive load)
+4. Which pattern fits best and why — considering the actual complexity of this code,
+   not theoretical future extensibility"</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>"Tenho este problema de design: [descreva o problema]
+
+Analise-o contra estas categorias de pattern:
+- O ponto de variação está na criação de objetos? (→ Criacional: Factory, Builder, Prototype)
+- O ponto de variação está em como os objetos são compostos? (→ Estrutural: Adapter, Decorator, Facade, Composite)
+- O ponto de variação está em como os objetos se comunicam? (→ Comportamental: Strategy, Observer, Command, Chain)
+
+Para cada pattern candidato:
+1. Descreva como ele se aplicaria a este problema específico
+2. O que fica mais fácil de mudar com este pattern
+3. Que overhead ele introduz (indireção, arquivos, carga cognitiva)
+4. Qual pattern se encaixa melhor e por quê — considerando a complexidade real
+   deste código, não extensibilidade futura teórica"</code></div>
+
+  <h2><span lang="en">Where AI Gets Patterns Wrong</span><span lang="pt" hidden>Onde a IA Erra nos Patterns</span></h2>
+
+  <p><span lang="en">AI pattern mistakes cluster into three categories:</span><span lang="pt" hidden>Os erros de pattern da IA se agrupam em três categorias:</span></p>
+
+  <p><span lang="en"><strong>Pattern where none is needed.</strong> Three lines of similar code that could stay inline become a Factory with a registry and an interface. The abstraction exists for its own sake. Watch for this when the AI generates more scaffolding than business logic in response to a simple request.</span><span lang="pt" hidden><strong>Pattern onde nenhum é necessário.</strong> Três linhas de código similar que poderiam ficar inline viram uma Factory com um registry e uma interface. A abstração existe por conta própria. Fique atento quando a IA gerar mais scaffolding que lógica de negócio em resposta a um pedido simples.</span></p>
+
+  <p><span lang="en"><strong>Wrong pattern for the problem.</strong> AI sometimes applies Decorator when Facade is needed, or Strategy when the variation is in creation not behavior. Use the pattern selection prompt above to force explicit analysis before committing to an implementation.</span><span lang="pt" hidden><strong>Pattern errado para o problema.</strong> A IA às vezes aplica Decorator quando Facade é necessário, ou Strategy quando a variação está na criação e não no comportamento. Use o prompt de seleção de pattern acima para forçar análise explícita antes de se comprometer com uma implementação.</span></p>
+
+  <p><span lang="en"><strong>Pattern applied at the wrong level of abstraction.</strong> Observer is powerful at the service boundary; it's overkill between two methods in the same class. Facade makes sense over a complex external system; it's unnecessary over two internal methods. AI tends to apply patterns at whatever granularity the code is presented at, not at the granularity where they add most value.</span><span lang="pt" hidden><strong>Pattern aplicado no nível errado de abstração.</strong> Observer é poderoso na fronteira de serviço; é exagero entre dois métodos na mesma classe. Facade faz sentido sobre um sistema externo complexo; é desnecessário sobre dois métodos internos. A IA tende a aplicar patterns na granularidade em que o código é apresentado, não na granularidade onde agregam mais valor.</span></p>
+
+  <div class="callout">
+    <p><span lang="en"><strong>The pattern test:</strong> Before accepting any AI-generated pattern, ask: "What concrete change would this make harder to make?" If the answer is "nothing I can think of today", the pattern is adding indirection without adding flexibility. A pattern that makes future changes easier but makes the current code harder to read is only worth it if those future changes are actually likely.</span><span lang="pt" hidden><strong>O teste do pattern:</strong> Antes de aceitar qualquer pattern gerado por IA, pergunte: "Que mudança concreta este pattern tornaria mais difícil de fazer?" Se a resposta for "nada que eu consiga pensar hoje", o pattern está adicionando indireção sem adicionar flexibilidade. Um pattern que facilita mudanças futuras mas torna o código atual mais difícil de ler só vale a pena se essas mudanças futuras forem realmente prováveis.</span></p>
+  </div>
+
+  <h2><span lang="en">Generating Pattern-Complete Implementations</span><span lang="pt" hidden>Gerando Implementações Completas de Pattern</span></h2>
+
+  <p><span lang="en">When you've decided a pattern is genuinely warranted, this prompt generates a complete, production-ready implementation — not a tutorial skeleton:</span><span lang="pt" hidden>Quando você decidiu que um pattern é genuinamente necessário, este prompt gera uma implementação completa e pronta para produção — não um esqueleto de tutorial:</span></p>
+
+  <div class="code-block" lang="en"><code>"Implement the [pattern name] pattern for this specific problem: [describe]
+
+Requirements for the implementation:
+- All classes must have intent-revealing names based on the domain, not pattern names
+  (e.g., 'StripeShippingAdapter' not 'Adapter', 'WholesalePricingStrategy' not 'Strategy')
+- Define all interfaces alongside the implementation
+- Include constructor injection for all dependencies
+- No magic numbers — extract as named constants
+- Include one example of how to compose and use it
+- Identify what SOLID principles this pattern naturally enforces
+- Flag any trade-off: what becomes harder with this pattern compared to the inline version"</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>"Implemente o padrão [nome do pattern] para este problema específico: [descreva]
+
+Requisitos para a implementação:
+- Todas as classes devem ter nomes que revelem intenção baseados no domínio, não em nomes de pattern
+  (ex: 'StripeShippingAdapter' não 'Adapter', 'EstrategiaPrecificacaoAtacado' não 'Estratégia')
+- Defina todas as interfaces junto com a implementação
+- Inclua injeção por construtor para todas as dependências
+- Sem números mágicos — extraia como constantes nomeadas
+- Inclua um exemplo de como compor e usar
+- Identifique quais princípios SOLID este pattern naturalmente reforça
+- Sinalize qualquer trade-off: o que fica mais difícil com este pattern em comparação com a versão inline"</code></div>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>The compounding effect:</strong> Design patterns and SOLID principles are not separate disciplines — they reinforce each other. Strategy enforces OCP. Decorator enforces SRP (each behavior in its own wrapper) and OCP (adding behavior without modifying existing code). Adapter enforces DIP (business logic depends on an interface, not a concrete SDK). When you use AI to apply patterns, prompt it to name which principles the pattern enforces — it deepens both the implementation and your understanding of why the pattern works.</span><span lang="pt" hidden><strong>O efeito composto:</strong> Design patterns e princípios SOLID não são disciplinas separadas — eles se reforçam mutuamente. Strategy reforça OCP. Decorator reforça SRP (cada comportamento em seu próprio wrapper) e OCP (adicionar comportamento sem modificar código existente). Adapter reforça DIP (lógica de negócio depende de uma interface, não de um SDK concreto). Quando você usa IA para aplicar patterns, promte-a a nomear quais princípios o pattern reforça — isso aprofunda tanto a implementação quanto seu entendimento de por que o pattern funciona.</span></p>
+  </div>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+  <ul>
+    <li><span lang="en">Use the pattern-detection audit prompt to identify where existing code is already trying to be a pattern. The smell tells you which pattern; the code tells you whether it's complex enough to justify the abstraction.</span><span lang="pt" hidden>Use o prompt de auditoria de detecção de patterns para identificar onde o código existente já está tentando ser um pattern. O smell indica qual pattern; o código indica se é complexo o suficiente para justificar a abstração.</span></li>
+    <li><span lang="en">Creational patterns: Factory when creation logic is the variation point; Builder when construction has many optional parameters; Singleton only when shared mutable state or an expensive resource genuinely requires it.</span><span lang="pt" hidden>Patterns criacionais: Factory quando a lógica de criação é o ponto de variação; Builder quando a construção tem muitos parâmetros opcionais; Singleton apenas quando estado mutável compartilhado ou um recurso caro genuinamente o exige.</span></li>
+    <li><span lang="en">Structural patterns: Adapter when a third-party interface doesn't match yours; Decorator when cross-cutting behavior is copy-pasted across multiple classes; Facade when subsystem orchestration is duplicated at every call site.</span><span lang="pt" hidden>Patterns estruturais: Adapter quando uma interface de terceiros não combina com a sua; Decorator quando comportamento transversal é copiado e colado em múltiplas classes; Facade quando orquestração de subsistema está duplicada em todo call site.</span></li>
+    <li><span lang="en">Behavioral patterns: Strategy when an algorithm varies at runtime; Observer when a producer directly calls its consumers; Chain of Responsibility when a validation pipeline is a flat sequence of conditionals that can't be tested in isolation.</span><span lang="pt" hidden>Patterns comportamentais: Strategy quando um algoritmo varia em tempo de execução; Observer quando um produtor chama diretamente seus consumidores; Chain of Responsibility quando um pipeline de validação é uma sequência plana de condicionais que não pode ser testado de forma isolada.</span></li>
+    <li><span lang="en">Use the pattern selection prompt (categorize by creation / composition / communication) to force structured analysis before committing to an implementation. This prevents the most common mistake: applying a popular pattern to a problem it doesn't fit.</span><span lang="pt" hidden>Use o prompt de seleção de pattern (categorize por criação / composição / comunicação) para forçar análise estruturada antes de se comprometer com uma implementação. Isso previne o erro mais comum: aplicar um pattern popular a um problema que não se encaixa.</span></li>
+    <li><span lang="en">The pattern test: if you can't name what concrete future change the pattern makes easier, don't add it. Indirection without flexibility is complexity without benefit.</span><span lang="pt" hidden>O teste do pattern: se você não consegue nomear qual mudança futura concreta o pattern facilita, não o adicione. Indireção sem flexibilidade é complexidade sem benefício.</span></li>
+    <li><span lang="en">Design patterns and SOLID are aligned: Strategy → OCP, Decorator → SRP + OCP, Adapter → DIP. Prompting AI to name which principles a pattern enforces deepens both implementation and understanding.</span><span lang="pt" hidden>Design patterns e SOLID estão alinhados: Strategy → OCP, Decorator → SRP + OCP, Adapter → DIP. Promtar a IA a nomear quais princípios um pattern reforça aprofunda tanto a implementação quanto o entendimento.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+<footer><p>&copy; 2025 Jefferson Valandro. Built with care.</p></footer>
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").innerHTML = lang === "en" ? "&#x1F1E7;&#x1F1F7;" : "&#x1F1FA;&#x1F1F8;";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>

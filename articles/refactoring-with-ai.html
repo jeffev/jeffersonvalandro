@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Refactoring with AI: Safe, Systematic Code Improvement Without Breaking What Works — Jefferson Valandro</title>
+  <meta name="description" content="How to use AI to identify code smells, apply classic refactoring techniques safely, and build a workflow that improves existing code without introducing regressions.">
+  <meta name="author" content="Jefferson Valandro">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/articles/refactoring-with-ai.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/articles/refactoring-with-ai.html">
+  <meta property="og:title" content="Refactoring with AI: Safe, Systematic Code Improvement Without Breaking What Works — Jefferson Valandro">
+  <meta property="og:description" content="How to use AI to identify code smells, apply classic refactoring techniques safely, and build a workflow that improves existing code without introducing regressions.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/cover_bg_1.jpg">
+  <meta name="theme-color" content="#070d1a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../css/articles.css">
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" aria-label="Switch to Portuguese">
+    <span id="langFlag" aria-hidden="true">&#x1F1E7;&#x1F1F7;</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-tools"></i> <span lang="en">AI &amp; Code Quality</span><span lang="pt" hidden>IA &amp; Qualidade de Código</span></div>
+    <h1><span lang="en">Refactoring with AI: Safe, Systematic Code Improvement Without Breaking What Works</span><span lang="pt" hidden>Refactoring com IA: Melhoria de Código Segura e Sistemática Sem Quebrar o que Funciona</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> June 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">15 min read</span><span lang="pt" hidden>15 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">Refactoring</span>
+      <span class="tag">AI</span>
+      <span class="tag">code quality</span>
+      <span class="tag">clean code</span>
+      <span class="tag">technical debt</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">Refactoring is one of the most undervalued engineering disciplines. The definition is precise: changing the internal structure of code without changing its external behavior. Not rewriting. Not adding features. Not fixing bugs. Restructuring — making the next change cheaper without breaking what works today.</span><span lang="pt" hidden>Refactoring é uma das disciplinas de engenharia mais subestimadas. A definição é precisa: mudar a estrutura interna do código sem mudar seu comportamento externo. Não reescrever. Não adicionar features. Não corrigir bugs. Reestruturar — tornando a próxima mudança mais barata sem quebrar o que funciona hoje.</span></p>
+
+  <p><span lang="en">AI changes refactoring in two important ways. First, it can scan existing code and identify smells faster and more consistently than manual review. Second, it can apply well-known refactoring techniques — Extract Method, Introduce Parameter Object, Replace Conditional with Polymorphism — in seconds, producing the refactored version alongside an explanation of why the change improves the code. The risk is also real: AI can introduce subtle behavior changes while claiming to preserve behavior. The discipline is knowing how to use it safely.</span><span lang="pt" hidden>A IA muda o refactoring de duas formas importantes. Primeiro, ela pode escanear código existente e identificar smells mais rápido e de forma mais consistente que revisão manual. Segundo, ela pode aplicar técnicas de refactoring conhecidas — Extract Method, Introduce Parameter Object, Replace Conditional with Polymorphism — em segundos, produzindo a versão refatorada junto com uma explicação de por que a mudança melhora o código. O risco também é real: a IA pode introduzir mudanças sutis de comportamento alegando preservar o comportamento. A disciplina é saber como usá-la com segurança.</span></p>
+
+  <h2><span lang="en">The Safe Refactoring Workflow</span><span lang="pt" hidden>O Workflow de Refactoring Seguro</span></h2>
+
+  <p><span lang="en">Refactoring without tests is not refactoring — it's gambling. Before asking AI to refactor anything, establish the safety net:</span><span lang="pt" hidden>Refactoring sem testes não é refactoring — é jogo de azar. Antes de pedir à IA para refatorar qualquer coisa, estabeleça a rede de segurança:</span></p>
+
+  <ol>
+    <li><span lang="en"><strong>Lock the behavior with tests first.</strong> If the code has no tests, write characterization tests before touching anything. Ask AI: "Write tests that characterize the current behavior of this function — including edge cases and expected outputs. Do not suggest improvements yet." These tests are your regression guard.</span><span lang="pt" hidden><strong>Bloqueie o comportamento com testes primeiro.</strong> Se o código não tem testes, escreva testes de caracterização antes de tocar em qualquer coisa. Peça à IA: "Escreva testes que caracterizem o comportamento atual desta função — incluindo edge cases e outputs esperados. Não sugira melhorias ainda." Esses testes são sua guarda contra regressões.</span></li>
+    <li><span lang="en"><strong>One refactoring at a time.</strong> Each AI prompt should apply one named technique. Not "improve this code" — "apply Extract Method to this function". Mixing multiple refactorings in one step makes it impossible to know which change introduced a problem.</span><span lang="pt" hidden><strong>Um refactoring por vez.</strong> Cada prompt de IA deve aplicar uma técnica nomeada. Não "melhore este código" — "aplique Extract Method nesta função". Misturar múltiplos refactorings em um passo torna impossível saber qual mudança introduziu um problema.</span></li>
+    <li><span lang="en"><strong>Run tests after each step.</strong> Green tests confirm behavior is preserved. Red tests — before any other change — mean the refactoring introduced a regression. Revert immediately; don't continue on a broken foundation.</span><span lang="pt" hidden><strong>Rode os testes após cada passo.</strong> Testes verdes confirmam que o comportamento foi preservado. Testes vermelhos — antes de qualquer outra mudança — significam que o refactoring introduziu uma regressão. Reverta imediatamente; não continue sobre uma base quebrada.</span></li>
+    <li><span lang="en"><strong>Verify the refactoring claim.</strong> After AI produces the refactored code, ask: "Identify any place where this refactored version might behave differently from the original — including error handling, edge cases with null or empty values, and exception propagation." This forces a second pass before you accept the output.</span><span lang="pt" hidden><strong>Verifique a afirmação do refactoring.</strong> Após a IA produzir o código refatorado, pergunte: "Identifique qualquer lugar onde esta versão refatorada pode se comportar diferente da original — incluindo tratamento de erros, edge cases com valores null ou vazios e propagação de exceções." Isso força uma segunda passagem antes de aceitar o output.</span></li>
+  </ol>
+
+  <h2><span lang="en">Step 0: The Code Smell Audit</span><span lang="pt" hidden>Passo 0: A Auditoria de Code Smells</span></h2>
+
+  <p><span lang="en">Before applying any technique, use AI to produce a prioritized smell inventory. This tells you where to spend refactoring effort and in what order:</span><span lang="pt" hidden>Antes de aplicar qualquer técnica, use a IA para produzir um inventário priorizado de smells. Isso indica onde gastar esforço de refactoring e em qual ordem:</span></p>
+
+  <div class="code-block" lang="en"><code>"Audit this code for refactoring opportunities. For each smell found:
+1. Name the smell (Long Method, Feature Envy, Data Clump, etc.)
+2. Point to the specific lines or sections affected
+3. Name the refactoring technique that resolves it
+4. Estimate the impact on readability and changeability (low/medium/high)
+
+Sort results by impact, highest first. Do not generate the refactored code yet —
+I want to review the plan before applying changes."</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>"Audite este código em busca de oportunidades de refactoring. Para cada smell encontrado:
+1. Nomeie o smell (Long Method, Feature Envy, Data Clump, etc.)
+2. Aponte as linhas ou seções específicas afetadas
+3. Nomeie a técnica de refactoring que o resolve
+4. Estime o impacto na legibilidade e na capacidade de mudança (baixo/médio/alto)
+
+Ordene os resultados por impacto, do mais alto para o mais baixo. Não gere o código
+refatorado ainda — quero revisar o plano antes de aplicar as mudanças."</code></div>
+
+  <p><span lang="en">The phrase "do not generate the refactored code yet" is deliberate. AI that generates refactored code immediately skips the analysis step that lets you decide whether each refactoring is worth its cost. You want to own the prioritization, not inherit it.</span><span lang="pt" hidden>A frase "não gere o código refatorado ainda" é deliberada. A IA que gera código refatorado imediatamente pula a etapa de análise que permite decidir se cada refactoring vale seu custo. Você quer ser dono da priorização, não herdá-la.</span></p>
+
+  <h2><span lang="en">Extract Method: The Highest-Frequency Refactoring</span><span lang="pt" hidden>Extract Method: O Refactoring de Maior Frequência</span></h2>
+
+  <p><span lang="en">Extract Method is applied more often than any other technique. The trigger: a block of code inside a function that could be described with a name different from the function's name. That block is doing a secondary job and belongs in its own function.</span><span lang="pt" hidden>Extract Method é aplicado com mais frequência que qualquer outra técnica. O gatilho: um bloco de código dentro de uma função que poderia ser descrito com um nome diferente do nome da função. Esse bloco está fazendo um trabalho secundário e pertence à sua própria função.</span></p>
+
+  <div class="code-block" lang="en"><code>// Before: a long function with several embedded jobs
+function generateMonthlyReport(userId, month, year) {
+  // Fetch user
+  const user = db.users.findOne({ id: userId });
+  if (!user) throw new UserNotFoundError(userId);
+
+  // Build date range
+  const startDate = new Date(year, month - 1, 1);
+  const endDate   = new Date(year, month, 0, 23, 59, 59);
+
+  // Fetch transactions
+  const transactions = db.transactions.find({
+    userId,
+    date: { $gte: startDate, $lte: endDate },
+  });
+
+  // Calculate summary
+  const totalIn  = transactions.filter(t => t.type === 'credit').reduce((s, t) => s + t.amount, 0);
+  const totalOut = transactions.filter(t => t.type === 'debit').reduce((s, t) => s + t.amount, 0);
+  const balance  = totalIn - totalOut;
+
+  // Format output
+  return {
+    user: { id: user.id, name: user.name },
+    period: { month, year },
+    summary: { totalIn, totalOut, balance },
+    transactions: transactions.map(t => ({ id: t.id, date: t.date, amount: t.amount, type: t.type })),
+  };
+}</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Antes: uma função longa com vários trabalhos embutidos
+function gerarRelatorioMensal(usuarioId, mes, ano) {
+  // Buscar usuário
+  const usuario = db.usuarios.findOne({ id: usuarioId });
+  if (!usuario) throw new UsuarioNaoEncontradoError(usuarioId);
+
+  // Construir intervalo de datas
+  const dataInicio = new Date(ano, mes - 1, 1);
+  const dataFim    = new Date(ano, mes, 0, 23, 59, 59);
+
+  // Buscar transações
+  const transacoes = db.transacoes.find({
+    usuarioId,
+    data: { $gte: dataInicio, $lte: dataFim },
+  });
+
+  // Calcular resumo
+  const totalEntradas = transacoes.filter(t => t.tipo === 'credito').reduce((s, t) => s + t.valor, 0);
+  const totalSaidas   = transacoes.filter(t => t.tipo === 'debito').reduce((s, t) => s + t.valor, 0);
+  const saldo         = totalEntradas - totalSaidas;
+
+  // Formatar saída
+  return {
+    usuario: { id: usuario.id, nome: usuario.nome },
+    periodo: { mes, ano },
+    resumo: { totalEntradas, totalSaidas, saldo },
+    transacoes: transacoes.map(t => ({ id: t.id, data: t.data, valor: t.valor, tipo: t.tipo })),
+  };
+}</code></div>
+
+  <div class="code-block" lang="en"><code>// Prompt: "Apply Extract Method to this function. Each comment block is a hint
+// for an extraction. Name each extracted function by its intent, not by what
+// the comment says. Preserve behavior exactly."
+
+// After:
+function generateMonthlyReport(userId, month, year) {
+  const user         = fetchUserOrThrow(userId);
+  const period       = buildMonthDateRange(month, year);
+  const transactions = fetchUserTransactionsInPeriod(userId, period);
+  const summary      = calculateTransactionSummary(transactions);
+  return formatReportOutput(user, { month, year }, summary, transactions);
+}
+
+function fetchUserOrThrow(userId) {
+  const user = db.users.findOne({ id: userId });
+  if (!user) throw new UserNotFoundError(userId);
+  return user;
+}
+
+function buildMonthDateRange(month, year) {
+  return {
+    startDate: new Date(year, month - 1, 1),
+    endDate:   new Date(year, month, 0, 23, 59, 59),
+  };
+}
+
+function fetchUserTransactionsInPeriod(userId, { startDate, endDate }) {
+  return db.transactions.find({ userId, date: { $gte: startDate, $lte: endDate } });
+}
+
+function calculateTransactionSummary(transactions) {
+  const totalIn  = transactions.filter(t => t.type === 'credit').reduce((s, t) => s + t.amount, 0);
+  const totalOut = transactions.filter(t => t.type === 'debit').reduce((s, t) => s + t.amount, 0);
+  return { totalIn, totalOut, balance: totalIn - totalOut };
+}
+
+function formatReportOutput(user, period, summary, transactions) {
+  return {
+    user: { id: user.id, name: user.name },
+    period,
+    summary,
+    transactions: transactions.map(t => ({ id: t.id, date: t.date, amount: t.amount, type: t.type })),
+  };
+}</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Prompt: "Aplique Extract Method nesta função. Cada bloco de comentário é uma
+// dica para uma extração. Nomeie cada função extraída pela sua intenção, não
+// pelo que o comentário diz. Preserve o comportamento exatamente."
+
+// Depois:
+function gerarRelatorioMensal(usuarioId, mes, ano) {
+  const usuario  = buscarUsuarioOuLancarErro(usuarioId);
+  const periodo  = construirIntervaloDatasDoMes(mes, ano);
+  const transacoes = buscarTransacoesUsuarioNoPeriodo(usuarioId, periodo);
+  const resumo   = calcularResumoTransacoes(transacoes);
+  return formatarSaidaRelatorio(usuario, { mes, ano }, resumo, transacoes);
+}
+
+function buscarUsuarioOuLancarErro(usuarioId) {
+  const usuario = db.usuarios.findOne({ id: usuarioId });
+  if (!usuario) throw new UsuarioNaoEncontradoError(usuarioId);
+  return usuario;
+}
+
+function construirIntervaloDatasDoMes(mes, ano) {
+  return {
+    dataInicio: new Date(ano, mes - 1, 1),
+    dataFim:    new Date(ano, mes, 0, 23, 59, 59),
+  };
+}
+
+function buscarTransacoesUsuarioNoPeriodo(usuarioId, { dataInicio, dataFim }) {
+  return db.transacoes.find({ usuarioId, data: { $gte: dataInicio, $lte: dataFim } });
+}
+
+function calcularResumoTransacoes(transacoes) {
+  const totalEntradas = transacoes.filter(t => t.tipo === 'credito').reduce((s, t) => s + t.valor, 0);
+  const totalSaidas   = transacoes.filter(t => t.tipo === 'debito').reduce((s, t) => s + t.valor, 0);
+  return { totalEntradas, totalSaidas, saldo: totalEntradas - totalSaidas };
+}
+
+function formatarSaidaRelatorio(usuario, periodo, resumo, transacoes) {
+  return {
+    usuario: { id: usuario.id, nome: usuario.nome },
+    periodo,
+    resumo,
+    transacoes: transacoes.map(t => ({ id: t.id, data: t.data, valor: t.valor, tipo: t.tipo })),
+  };
+}</code></div>
+
+  <h2><span lang="en">Introduce Parameter Object: Eliminating Data Clumps</span><span lang="pt" hidden>Introduce Parameter Object: Eliminando Data Clumps</span></h2>
+
+  <p><span lang="en">Data Clump is the smell of parameters that always travel together. When you see the same three or four parameters in multiple function signatures, they belong in a named object. AI identifies clumps and generates the object and all the callers in one step:</span><span lang="pt" hidden>Data Clump é o smell de parâmetros que sempre viajam juntos. Quando você vê os mesmos três ou quatro parâmetros em múltiplas assinaturas de função, eles pertencem a um objeto nomeado. A IA identifica os clumps e gera o objeto e todos os chamadores em um passo:</span></p>
+
+  <div class="code-block" lang="en"><code>// Smell: the same parameter group appears in every function
+function searchFlights(origin, destination, departureDate, returnDate) { ... }
+function estimateFlightCost(origin, destination, departureDate, returnDate) { ... }
+function bookFlight(origin, destination, departureDate, returnDate, passengerId) { ... }
+function findAlternativeFlights(origin, destination, departureDate, returnDate) { ... }
+
+// Prompt: "Apply Introduce Parameter Object. Identify the data clump,
+// create a named value object for it, and update all function signatures.
+// The object should validate its own invariants in the constructor."
+
+class FlightRoute {
+  constructor({ origin, destination, departureDate, returnDate }) {
+    if (!origin || !destination) throw new Error('Origin and destination are required');
+    if (returnDate && returnDate < departureDate) throw new Error('Return must be after departure');
+    this.origin        = origin;
+    this.destination   = destination;
+    this.departureDate = departureDate;
+    this.returnDate    = returnDate;
+  }
+
+  get isRoundTrip() { return !!this.returnDate; }
+}
+
+// Updated signatures — callers become readable
+function searchFlights(route: FlightRoute) { ... }
+function estimateFlightCost(route: FlightRoute) { ... }
+function bookFlight(route: FlightRoute, passengerId: string) { ... }
+function findAlternativeFlights(route: FlightRoute) { ... }</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Smell: o mesmo grupo de parâmetros aparece em toda função
+function buscarVoos(origem, destino, dataPartida, dataRetorno) { ... }
+function estimarCustoVoo(origem, destino, dataPartida, dataRetorno) { ... }
+function reservarVoo(origem, destino, dataPartida, dataRetorno, passageiroId) { ... }
+function encontrarVoosAlternativos(origem, destino, dataPartida, dataRetorno) { ... }
+
+// Prompt: "Aplique Introduce Parameter Object. Identifique o data clump,
+// crie um objeto de valor nomeado para ele e atualize todas as assinaturas
+// de função. O objeto deve validar seus próprios invariantes no construtor."
+
+class RotaVoo {
+  constructor({ origem, destino, dataPartida, dataRetorno }) {
+    if (!origem || !destino) throw new Error('Origem e destino são obrigatórios');
+    if (dataRetorno && dataRetorno < dataPartida) throw new Error('Retorno deve ser após a partida');
+    this.origem      = origem;
+    this.destino     = destino;
+    this.dataPartida = dataPartida;
+    this.dataRetorno = dataRetorno;
+  }
+
+  get ehIdaEVolta() { return !!this.dataRetorno; }
+}
+
+// Assinaturas atualizadas — chamadores ficam legíveis
+function buscarVoos(rota: RotaVoo) { ... }
+function estimarCustoVoo(rota: RotaVoo) { ... }
+function reservarVoo(rota: RotaVoo, passageiroId: string) { ... }
+function encontrarVoosAlternativos(rota: RotaVoo) { ... }</code></div>
+
+  <h2><span lang="en">Replace Conditional with Polymorphism</span><span lang="pt" hidden>Replace Conditional with Polymorphism</span></h2>
+
+  <p><span lang="en">When the same <code>switch</code> or type-checking conditional appears in multiple methods of the same class, it's a sign that the type should drive behavior through inheritance or composition instead of branching. This refactoring is the bridge between a code smell and a design pattern (Strategy or State):</span><span lang="pt" hidden>Quando o mesmo <code>switch</code> ou condicional de verificação de tipo aparece em múltiplos métodos da mesma classe, é sinal de que o tipo deve conduzir o comportamento por herança ou composição em vez de ramificação. Este refactoring é a ponte entre um code smell e um design pattern (Strategy ou State):</span></p>
+
+  <div class="code-block" lang="en"><code>// Smell: repeated type dispatch across multiple methods
+class Shipping {
+  calculateCost(order) {
+    switch (order.shippingType) {
+      case 'standard': return order.weight * 2.5;
+      case 'express':  return order.weight * 5.0 + 10;
+      case 'overnight': return order.weight * 8.0 + 25;
+    }
+  }
+
+  estimateDeliveryDays(order) {
+    switch (order.shippingType) {
+      case 'standard':  return 7;
+      case 'express':   return 3;
+      case 'overnight': return 1;
+    }
+  }
+
+  getCarrierCode(order) {
+    switch (order.shippingType) {
+      case 'standard':  return 'STD-01';
+      case 'express':   return 'EXP-02';
+      case 'overnight': return 'OVN-03';
+    }
+  }
+}
+
+// Prompt: "Replace the repeated type conditionals with polymorphism.
+// Each shipping type should be a class that encapsulates its own rules.
+// The Shipping class should delegate to the appropriate type."
+
+class StandardShipping {
+  calculateCost(order)       { return order.weight * 2.5; }
+  estimateDeliveryDays()     { return 7; }
+  get carrierCode()          { return 'STD-01'; }
+}
+
+class ExpressShipping {
+  calculateCost(order)       { return order.weight * 5.0 + 10; }
+  estimateDeliveryDays()     { return 3; }
+  get carrierCode()          { return 'EXP-02'; }
+}
+
+class OvernightShipping {
+  calculateCost(order)       { return order.weight * 8.0 + 25; }
+  estimateDeliveryDays()     { return 1; }
+  get carrierCode()          { return 'OVN-03'; }
+}
+
+class Shipping {
+  private static types = {
+    standard:  new StandardShipping(),
+    express:   new ExpressShipping(),
+    overnight: new OvernightShipping(),
+  };
+
+  static for(type) {
+    const shipping = Shipping.types[type];
+    if (!shipping) throw new UnsupportedShippingTypeError(type);
+    return shipping;
+  }
+}
+
+// Usage:
+const shipping = Shipping.for(order.shippingType);
+const cost     = shipping.calculateCost(order);
+const days     = shipping.estimateDeliveryDays();</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Smell: despacho de tipo repetido em múltiplos métodos
+class Envio {
+  calcularCusto(pedido) {
+    switch (pedido.tipoEnvio) {
+      case 'padrao':    return pedido.peso * 2.5;
+      case 'expresso':  return pedido.peso * 5.0 + 10;
+      case 'noturno':   return pedido.peso * 8.0 + 25;
+    }
+  }
+
+  estimarDiasEntrega(pedido) {
+    switch (pedido.tipoEnvio) {
+      case 'padrao':   return 7;
+      case 'expresso': return 3;
+      case 'noturno':  return 1;
+    }
+  }
+
+  obterCodigoTransportadora(pedido) {
+    switch (pedido.tipoEnvio) {
+      case 'padrao':   return 'PAD-01';
+      case 'expresso': return 'EXP-02';
+      case 'noturno':  return 'NOT-03';
+    }
+  }
+}
+
+// Prompt: "Substitua os condicionais de tipo repetidos por polimorfismo.
+// Cada tipo de envio deve ser uma classe que encapsula suas próprias regras.
+// A classe Envio deve delegar ao tipo apropriado."
+
+class EnvioPadrao {
+  calcularCusto(pedido)      { return pedido.peso * 2.5; }
+  estimarDiasEntrega()       { return 7; }
+  get codigoTransportadora() { return 'PAD-01'; }
+}
+
+class EnvioExpresso {
+  calcularCusto(pedido)      { return pedido.peso * 5.0 + 10; }
+  estimarDiasEntrega()       { return 3; }
+  get codigoTransportadora() { return 'EXP-02'; }
+}
+
+class EnvioNoturno {
+  calcularCusto(pedido)      { return pedido.peso * 8.0 + 25; }
+  estimarDiasEntrega()       { return 1; }
+  get codigoTransportadora() { return 'NOT-03'; }
+}
+
+class Envio {
+  private static tipos = {
+    padrao:   new EnvioPadrao(),
+    expresso: new EnvioExpresso(),
+    noturno:  new EnvioNoturno(),
+  };
+
+  static para(tipo) {
+    const envio = Envio.tipos[tipo];
+    if (!envio) throw new TipoEnvioNaoSuportadoError(tipo);
+    return envio;
+  }
+}
+
+// Uso:
+const envio = Envio.para(pedido.tipoEnvio);
+const custo = envio.calcularCusto(pedido);
+const dias  = envio.estimarDiasEntrega();</code></div>
+
+  <h2><span lang="en">Extract Class: When a Class Does Too Much</span><span lang="pt" hidden>Extract Class: Quando uma Classe Faz Demais</span></h2>
+
+  <p><span lang="en">Extract Method addresses long functions. Extract Class addresses the next level: a class whose fields and methods naturally cluster into two or more cohesive groups. The tell: if you can describe parts of a class independently, those parts belong in separate classes.</span><span lang="pt" hidden>Extract Method trata funções longas. Extract Class trata o próximo nível: uma classe cujos campos e métodos se agrupam naturalmente em dois ou mais grupos coesos. O sinal: se você consegue descrever partes de uma classe de forma independente, essas partes pertencem a classes separadas.</span></p>
+
+  <div class="code-block" lang="en"><code>// Smell: User class manages both identity and address concerns
+class User {
+  // Identity fields
+  id: string;
+  email: string;
+  passwordHash: string;
+  lastLoginAt: Date;
+
+  // Address fields
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+
+  // Identity methods
+  verifyPassword(plain) { ... }
+  updateEmail(newEmail) { ... }
+
+  // Address methods
+  formatFullAddress() { return `${this.street}, ${this.city} - ${this.state}`; }
+  isInternational()   { return this.country !== 'BR'; }
+  toShippingLabel()   { ... }
+}
+
+// Prompt: "Apply Extract Class. Identify the two cohesive clusters of fields
+// and methods. Extract one into a new class. The original class should hold
+// a reference to the extracted class."
+
+class Address {
+  constructor({ street, city, state, postalCode, country }) {
+    this.street     = street;
+    this.city       = city;
+    this.state      = state;
+    this.postalCode = postalCode;
+    this.country    = country;
+  }
+
+  formatFull()       { return `${this.street}, ${this.city} - ${this.state}`; }
+  isInternational()  { return this.country !== 'BR'; }
+  toShippingLabel()  { ... }
+}
+
+class User {
+  id: string;
+  email: string;
+  passwordHash: string;
+  lastLoginAt: Date;
+  address: Address;       // composed, not inherited
+
+  verifyPassword(plain)  { ... }
+  updateEmail(newEmail)  { ... }
+}</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Smell: classe User gerencia tanto identidade quanto endereço
+class Usuario {
+  // Campos de identidade
+  id: string;
+  email: string;
+  hashSenha: string;
+  ultimoLoginEm: Date;
+
+  // Campos de endereço
+  rua: string;
+  cidade: string;
+  estado: string;
+  cep: string;
+  pais: string;
+
+  // Métodos de identidade
+  verificarSenha(texto)     { ... }
+  atualizarEmail(novoEmail) { ... }
+
+  // Métodos de endereço
+  formatarEnderecoCompleto() { return `${this.rua}, ${this.cidade} - ${this.estado}`; }
+  ehInternacional()          { return this.pais !== 'BR'; }
+  paraEtiquetaEnvio()        { ... }
+}
+
+// Prompt: "Aplique Extract Class. Identifique os dois clusters coesos de campos
+// e métodos. Extraia um para uma nova classe. A classe original deve manter
+// uma referência à classe extraída."
+
+class Endereco {
+  constructor({ rua, cidade, estado, cep, pais }) {
+    this.rua    = rua;
+    this.cidade = cidade;
+    this.estado = estado;
+    this.cep    = cep;
+    this.pais   = pais;
+  }
+
+  formatarCompleto()    { return `${this.rua}, ${this.cidade} - ${this.estado}`; }
+  ehInternacional()     { return this.pais !== 'BR'; }
+  paraEtiquetaEnvio()   { ... }
+}
+
+class Usuario {
+  id: string;
+  email: string;
+  hashSenha: string;
+  ultimoLoginEm: Date;
+  endereco: Endereco;       // composto, não herdado
+
+  verificarSenha(texto)     { ... }
+  atualizarEmail(novoEmail) { ... }
+}</code></div>
+
+  <h2><span lang="en">Inline Method and Variable: Removing Unnecessary Indirection</span><span lang="pt" hidden>Inline Method and Variable: Removendo Indireção Desnecessária</span></h2>
+
+  <p><span lang="en">Refactoring is not only about adding structure — sometimes the right move is removing it. Inline Method and Inline Variable collapse unnecessary indirection that adds cognitive load without adding clarity:</span><span lang="pt" hidden>Refactoring não é apenas sobre adicionar estrutura — às vezes o movimento certo é removê-la. Inline Method e Inline Variable colapsam indireção desnecessária que adiciona carga cognitiva sem adicionar clareza:</span></p>
+
+  <div class="code-block" lang="en"><code>// Smell: a single-use variable that adds no clarity
+function isEligibleForDiscount(user) {
+  const yearsAsCustomer = user.createdAt
+    ? (Date.now() - user.createdAt.getTime()) / (1000 * 60 * 60 * 24 * 365)
+    : 0;
+  const hasLongHistory = yearsAsCustomer >= 3;
+  return hasLongHistory;
+}
+
+// Prompt: "Apply Inline Variable where the intermediate variable adds no clarity.
+// Keep variables only when they give a name to a non-obvious computation."
+
+function isEligibleForDiscount(user) {
+  const yearsAsCustomer = user.createdAt
+    ? (Date.now() - user.createdAt.getTime()) / MS_PER_YEAR
+    : 0;
+  return yearsAsCustomer >= LOYALTY_THRESHOLD_YEARS;
+}
+
+// Smell: a method whose body is as clear as its name
+class Order {
+  getTotalItems() { return this.items.length; }
+  // ...used only once and the body is obvious at the call site
+  if (order.getTotalItems() === 0) ...
+
+// After inline:
+  if (order.items.length === 0) ...</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Smell: variável de uso único que não adiciona clareza
+function eElegivelParaDesconto(usuario) {
+  const anosComoCliente = usuario.criadoEm
+    ? (Date.now() - usuario.criadoEm.getTime()) / (1000 * 60 * 60 * 24 * 365)
+    : 0;
+  const temHistoricoLongo = anosComoCliente >= 3;
+  return temHistoricoLongo;
+}
+
+// Prompt: "Aplique Inline Variable onde a variável intermediária não adiciona
+// clareza. Mantenha variáveis apenas quando elas dão nome a um cálculo não óbvio."
+
+function eElegivelParaDesconto(usuario) {
+  const anosComoCliente = usuario.criadoEm
+    ? (Date.now() - usuario.criadoEm.getTime()) / MS_POR_ANO
+    : 0;
+  return anosComoCliente >= ANOS_LIMITE_FIDELIDADE;
+}
+
+// Smell: método cujo corpo é tão claro quanto o nome
+class Pedido {
+  getTotalItens() { return this.itens.length; }
+  // ...usado apenas uma vez e o corpo é óbvio no call site
+  if (pedido.getTotalItens() === 0) ...
+
+// Após inline:
+  if (pedido.itens.length === 0) ...</code></div>
+
+  <h2><span lang="en">Move Method: Fixing Feature Envy</span><span lang="pt" hidden>Move Method: Corrigindo Feature Envy</span></h2>
+
+  <p><span lang="en">Feature Envy is the smell of a method that uses more data from another class than from its own. The method is in the wrong class. Moving it is often the simplest refactoring with the highest readability payoff:</span><span lang="pt" hidden>Feature Envy é o smell de um método que usa mais dados de outra classe do que da sua própria. O método está na classe errada. Movê-lo é frequentemente o refactoring mais simples com o maior retorno de legibilidade:</span></p>
+
+  <div class="code-block" lang="en"><code>// Smell: OrderService.calculateShipping touches only Order fields
+class OrderService {
+  calculateShipping(order) {
+    // This method only knows about Order. It belongs in Order.
+    const baseRate  = order.weight * 2.5;
+    const fragile   = order.isFragile ? baseRate * 0.20 : 0;
+    const insurance = order.totalValue > 500 ? order.totalValue * 0.01 : 0;
+    return baseRate + fragile + insurance;
+  }
+}
+
+// Prompt: "Apply Move Method. Identify which class this method belongs to
+// based on the data it accesses. Move it there. Update the caller."
+
+class Order {
+  // ...existing fields...
+  calculateShipping() {
+    const baseRate  = this.weight * 2.5;
+    const fragile   = this.isFragile ? baseRate * 0.20 : 0;
+    const insurance = this.totalValue > 500 ? this.totalValue * 0.01 : 0;
+    return baseRate + fragile + insurance;
+  }
+}
+
+// OrderService no longer needs the method:
+class OrderService {
+  processOrder(order) {
+    const shippingCost = order.calculateShipping(); // natural
+    // ...
+  }
+}</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Smell: PedidoService.calcularFrete acessa apenas campos de Pedido
+class PedidoService {
+  calcularFrete(pedido) {
+    // Este método só conhece Pedido. Ele pertence a Pedido.
+    const taxaBase  = pedido.peso * 2.5;
+    const fragil    = pedido.eFragil ? taxaBase * 0.20 : 0;
+    const seguro    = pedido.valorTotal > 500 ? pedido.valorTotal * 0.01 : 0;
+    return taxaBase + fragil + seguro;
+  }
+}
+
+// Prompt: "Aplique Move Method. Identifique a qual classe este método pertence
+// com base nos dados que acessa. Mova-o para lá. Atualize o chamador."
+
+class Pedido {
+  // ...campos existentes...
+  calcularFrete() {
+    const taxaBase = this.peso * 2.5;
+    const fragil   = this.eFragil ? taxaBase * 0.20 : 0;
+    const seguro   = this.valorTotal > 500 ? this.valorTotal * 0.01 : 0;
+    return taxaBase + fragil + seguro;
+  }
+}
+
+// PedidoService não precisa mais do método:
+class PedidoService {
+  processarPedido(pedido) {
+    const custoFrete = pedido.calcularFrete(); // natural
+    // ...
+  }
+}</code></div>
+
+  <h2><span lang="en">The Characterization Test Prompt</span><span lang="pt" hidden>O Prompt de Teste de Caracterização</span></h2>
+
+  <p><span lang="en">When refactoring code that has no tests, the first step is always generating characterization tests — tests that document current behavior, not intended behavior. These lock what the code does before you change how it does it:</span><span lang="pt" hidden>Quando refatorando código sem testes, o primeiro passo é sempre gerar testes de caracterização — testes que documentam o comportamento atual, não o comportamento pretendido. Eles travam o que o código faz antes de mudar como ele faz:</span></p>
+
+  <div class="code-block" lang="en"><code>"Write characterization tests for this function. The goal is NOT to test
+that the behavior is correct — it is to document and lock the current behavior
+so that any refactoring that changes the output is caught immediately.
+
+For each test:
+- Use a descriptive name that states WHAT the function returns for WHICH input
+- Cover: typical inputs, boundary values, empty/null inputs, error conditions
+- Do NOT improve or fix the behavior — test it as-is, even if it seems wrong
+
+After writing the tests, list any behaviors that seem suspicious or incorrect
+so I can decide whether to fix them separately before refactoring."</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>"Escreva testes de caracterização para esta função. O objetivo NÃO é testar
+que o comportamento é correto — é documentar e travar o comportamento atual
+para que qualquer refactoring que mude o output seja capturado imediatamente.
+
+Para cada teste:
+- Use um nome descritivo que diga O QUE a função retorna para QUAL entrada
+- Cubra: entradas típicas, valores de fronteira, entradas vazias/null, condições de erro
+- NÃO melhore nem corrija o comportamento — teste como está, mesmo que pareça errado
+
+Após escrever os testes, liste qualquer comportamento que pareça suspeito ou
+incorreto para que eu possa decidir se devo corrigi-lo separadamente antes do refactoring."</code></div>
+
+  <h2><span lang="en">The Behavior-Preservation Check</span><span lang="pt" hidden>A Verificação de Preservação de Comportamento</span></h2>
+
+  <p><span lang="en">After AI generates a refactored version, always run this prompt before accepting:</span><span lang="pt" hidden>Após a IA gerar uma versão refatorada, sempre execute este prompt antes de aceitar:</span></p>
+
+  <div class="code-block" lang="en"><code>"Compare the original and refactored versions carefully. List every case
+where they might behave differently:
+
+1. Return values: are all return paths equivalent?
+2. Exceptions: does the refactored version throw in any case the original doesn't,
+   or swallow any exception the original propagates?
+3. Side effects: any difference in what gets written, logged, or emitted?
+4. Null/undefined handling: does either version handle missing values differently?
+5. Short-circuit evaluation: does any extracted function change when evaluation stops?
+6. Mutation: does any extraction change whether an object is mutated in place?
+
+For each difference found, state whether it is an intentional improvement
+or an unintentional behavior change."</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>"Compare as versões original e refatorada cuidadosamente. Liste cada caso
+onde podem se comportar diferente:
+
+1. Valores de retorno: todos os caminhos de retorno são equivalentes?
+2. Exceções: a versão refatorada lança em algum caso que a original não lança,
+   ou engole alguma exceção que a original propaga?
+3. Efeitos colaterais: alguma diferença no que é escrito, logado ou emitido?
+4. Tratamento de null/undefined: alguma versão trata valores ausentes diferente?
+5. Avaliação em curto-circuito: alguma função extraída muda quando a avaliação para?
+6. Mutação: alguma extração muda se um objeto é mutado no local?
+
+Para cada diferença encontrada, diga se é uma melhoria intencional
+ou uma mudança de comportamento não intencional."</code></div>
+
+  <h2><span lang="en">Where AI Refactoring Goes Wrong</span><span lang="pt" hidden>Onde o Refactoring com IA Dá Errado</span></h2>
+
+  <p><span lang="en"><strong>Silent behavior changes.</strong> The most dangerous AI refactoring mistake is changing behavior while claiming to preserve it. Common culprits: reordering operations that have side effects, changing error propagation in extracted functions, losing a null guard that was buried in a conditional. The behavior-preservation check prompt catches most of these, but it requires tests to confirm.</span><span lang="pt" hidden><strong>Mudanças de comportamento silenciosas.</strong> O erro de refactoring mais perigoso da IA é mudar comportamento alegando preservá-lo. Culpados comuns: reordenar operações com efeitos colaterais, mudar propagação de erros em funções extraídas, perder um guard de null que estava enterrado em um condicional. O prompt de verificação de preservação de comportamento captura a maioria, mas exige testes para confirmar.</span></p>
+
+  <p><span lang="en"><strong>Over-extraction.</strong> AI tends to extract aggressively. A three-line block becomes a named function. A two-step calculation becomes two separate functions. The result is code where following the logic requires jumping between ten short functions instead of reading thirty sequential lines. Extract when the extracted unit has a name that adds information. Don't extract just because a block is separable.</span><span lang="pt" hidden><strong>Extração excessiva.</strong> A IA tende a extrair agressivamente. Um bloco de três linhas vira uma função nomeada. Um cálculo de duas etapas vira duas funções separadas. O resultado é código onde seguir a lógica exige saltar entre dez funções curtas em vez de ler trinta linhas sequenciais. Extraia quando a unidade extraída tem um nome que adiciona informação. Não extraia só porque um bloco é separável.</span></p>
+
+  <p><span lang="en"><strong>Mixing refactoring with bug fixes.</strong> AI will occasionally notice what looks like a bug and fix it silently while refactoring. This is dangerous: the "bug" might be intentional behavior, and the fix changes semantics while you're focused on structure. Always ask: "Did you fix anything that wasn't a structural change? If so, list it explicitly."</span><span lang="pt" hidden><strong>Misturar refactoring com correção de bugs.</strong> A IA ocasionalmente nota o que parece um bug e o corrige silenciosamente durante o refactoring. Isso é perigoso: o "bug" pode ser comportamento intencional, e a correção muda a semântica enquanto você está focado na estrutura. Sempre pergunte: "Você corrigiu algo que não era uma mudança estrutural? Se sim, liste explicitamente."</span></p>
+
+  <div class="callout">
+    <p><span lang="en"><strong>The refactoring contract:</strong> Tell AI explicitly: "This is a structural refactoring only. Do not fix bugs, improve algorithms, add error handling, or change behavior — even if you see an opportunity. Structural changes only. Flag anything that looks like a bug separately." This constraint is the difference between a refactoring session and a combined refactoring + feature change that's impossible to review safely.</span><span lang="pt" hidden><strong>O contrato de refactoring:</strong> Diga à IA explicitamente: "Este é um refactoring apenas estrutural. Não corrija bugs, não melhore algoritmos, não adicione tratamento de erros e não mude comportamento — mesmo que veja uma oportunidade. Apenas mudanças estruturais. Sinalize separadamente qualquer coisa que pareça um bug." Esta restrição é a diferença entre uma sessão de refactoring e uma mudança combinada de refactoring + feature que é impossível de revisar com segurança.</span></p>
+  </div>
+
+  <h2><span lang="en">Refactoring Legacy Code: A Practical Sequence</span><span lang="pt" hidden>Refactoring de Código Legado: Uma Sequência Prática</span></h2>
+
+  <p><span lang="en">Legacy code is often the most valuable candidate for refactoring and the riskiest place to apply it. This sequence minimizes risk when AI-assisted refactoring hits a 500-line class with no tests and unclear ownership:</span><span lang="pt" hidden>Código legado é frequentemente o candidato mais valioso para refactoring e o lugar mais arriscado para aplicá-lo. Esta sequência minimiza o risco quando o refactoring com IA encontra uma classe de 500 linhas sem testes e propriedade pouco clara:</span></p>
+
+  <ol>
+    <li><span lang="en"><strong>Understand before touching.</strong> Prompt: "Explain what this code does, section by section. List every input, output, side effect, and external dependency. Do not suggest changes yet."</span><span lang="pt" hidden><strong>Entenda antes de tocar.</strong> Prompt: "Explique o que este código faz, seção por seção. Liste cada entrada, saída, efeito colateral e dependência externa. Não sugira mudanças ainda."</span></li>
+    <li><span lang="en"><strong>Write characterization tests.</strong> Cover the behavior you understand. Accept that you won't cover what you don't understand yet — that coverage comes after step 3.</span><span lang="pt" hidden><strong>Escreva testes de caracterização.</strong> Cubra o comportamento que você entende. Aceite que não cobrirá o que ainda não entende — essa cobertura vem após o passo 3.</span></li>
+    <li><span lang="en"><strong>Apply Rename first.</strong> Better names cost nothing and make everything else clearer. Ask AI to rename every unclear variable, method, and class before doing any structural change.</span><span lang="pt" hidden><strong>Aplique Rename primeiro.</strong> Nomes melhores não custam nada e tornam tudo mais claro. Peça à IA para renomear cada variável, método e classe pouco claros antes de fazer qualquer mudança estrutural.</span></li>
+    <li><span lang="en"><strong>Apply Extract Method for comment-demarcated blocks.</strong> Any comment that says "do X" is a hint for an extraction named X. This makes the structure explicit without changing behavior.</span><span lang="pt" hidden><strong>Aplique Extract Method para blocos demarcados por comentários.</strong> Qualquer comentário que diz "fazer X" é uma dica para uma extração chamada X. Isso torna a estrutura explícita sem mudar o comportamento.</span></li>
+    <li><span lang="en"><strong>Apply Extract Class when clusters emerge.</strong> After extraction, field-and-method clusters become visible. Move related things together.</span><span lang="pt" hidden><strong>Aplique Extract Class quando clusters emergirem.</strong> Após a extração, clusters de campos e métodos ficam visíveis. Mova coisas relacionadas juntas.</span></li>
+    <li><span lang="en"><strong>Replace conditionals with polymorphism last.</strong> This is the deepest structural change. Apply it only after the code is well-named and well-extracted, so the conditional structure is easy to see and reason about.</span><span lang="pt" hidden><strong>Substitua condicionais por polimorfismo por último.</strong> Esta é a mudança estrutural mais profunda. Aplique apenas após o código estar bem nomeado e bem extraído, para que a estrutura condicional seja fácil de ver e raciocinar.</span></li>
+  </ol>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>The compounding effect:</strong> Refactoring creates a virtuous cycle with AI. Better-structured code produces better AI suggestions — the AI reasons about a focused, named function far more accurately than about a 200-line entangled block. Better AI suggestions produce better refactoring proposals. The investment in structure compounds: each refactoring session leaves the codebase in better shape for the next one, and each session costs less because the code is easier to reason about.</span><span lang="pt" hidden><strong>O efeito composto:</strong> Refactoring cria um ciclo virtuoso com a IA. Código melhor estruturado produz melhores sugestões de IA — ela raciocina sobre uma função focada e nomeada com muito mais precisão do que sobre um bloco entrelaçado de 200 linhas. Melhores sugestões de IA produzem melhores propostas de refactoring. O investimento em estrutura gera juros compostos: cada sessão de refactoring deixa o codebase em melhor forma para a próxima, e cada sessão custa menos porque o código é mais fácil de raciocinar.</span></p>
+  </div>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+  <ul>
+    <li><span lang="en">Refactoring is structural change without behavior change. Establish tests before touching anything. Run them after every single AI-applied technique. One technique per prompt, one prompt per commit.</span><span lang="pt" hidden>Refactoring é mudança estrutural sem mudança de comportamento. Estabeleça testes antes de tocar em qualquer coisa. Rode-os após cada técnica aplicada pela IA. Uma técnica por prompt, um prompt por commit.</span></li>
+    <li><span lang="en">Start with the smell audit prompt: inventory all smells, sort by impact, review the plan before generating refactored code. You own the prioritization — don't outsource it.</span><span lang="pt" hidden>Comece com o prompt de auditoria de smells: inventarie todos os smells, ordene por impacto, revise o plano antes de gerar código refatorado. Você é dono da priorização — não a terceirize.</span></li>
+    <li><span lang="en">Extract Method is the most frequently applied technique. Any comment block that says "do X" is a hint for a function named X. Use it to make structure visible without changing behavior.</span><span lang="pt" hidden>Extract Method é a técnica mais aplicada com frequência. Qualquer bloco de comentário que diz "fazer X" é uma dica para uma função chamada X. Use-o para tornar a estrutura visível sem mudar o comportamento.</span></li>
+    <li><span lang="en">Introduce Parameter Object when the same 3+ parameters appear together across multiple functions. The object validates its own invariants and gives the clump a name.</span><span lang="pt" hidden>Introduce Parameter Object quando os mesmos 3+ parâmetros aparecem juntos em múltiplas funções. O objeto valida seus próprios invariantes e dá um nome ao clump.</span></li>
+    <li><span lang="en">Replace Conditional with Polymorphism when the same type dispatch appears in multiple methods. Each type becomes a class; the dispatcher becomes a map or registry.</span><span lang="pt" hidden>Replace Conditional with Polymorphism quando o mesmo despacho de tipo aparece em múltiplos métodos. Cada tipo vira uma classe; o dispatcher vira um mapa ou registry.</span></li>
+    <li><span lang="en">Always run the behavior-preservation check after AI refactoring: compare return paths, exception handling, side effects, null behavior, and mutations between the original and refactored version.</span><span lang="pt" hidden>Sempre execute a verificação de preservação de comportamento após refactoring com IA: compare caminhos de retorno, tratamento de exceções, efeitos colaterais, comportamento com null e mutações entre a versão original e a refatorada.</span></li>
+    <li><span lang="en">Enforce the refactoring contract: structural changes only, no bug fixes, no behavior improvements, no new features. If AI notices a bug, it goes in a separate ticket — not in the same refactoring commit.</span><span lang="pt" hidden>Aplique o contrato de refactoring: apenas mudanças estruturais, sem correção de bugs, sem melhorias de comportamento, sem novas features. Se a IA notar um bug, vai para um ticket separado — não no mesmo commit de refactoring.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+<footer><p>&copy; 2025 Jefferson Valandro. Built with care.</p></footer>
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").innerHTML = lang === "en" ? "&#x1F1E7;&#x1F1F7;" : "&#x1F1FA;&#x1F1F8;";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>

@@ -1,0 +1,766 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SOLID with AI: Using AI to Design, Review, and Enforce the Five Principles — Jefferson Valandro</title>
+  <meta name="description" content="How to use AI assistants to apply SOLID principles in practice — detecting violations, refactoring toward SRP/OCP/LSP/ISP/DIP, and prompting for code that respects design boundaries from the start.">
+  <meta name="author" content="Jefferson Valandro">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/articles/solid-with-ai.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/articles/solid-with-ai.html">
+  <meta property="og:title" content="SOLID with AI: Using AI to Design, Review, and Enforce the Five Principles — Jefferson Valandro">
+  <meta property="og:description" content="How to use AI assistants to apply SOLID principles in practice — detecting violations, refactoring toward SRP/OCP/LSP/ISP/DIP, and prompting for code that respects design boundaries from the start.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/cover_bg_3.png">
+  <meta name="theme-color" content="#070d1a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../css/articles.css">
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Articles</a>
+  <button class="lang-toggle" id="langToggle" onclick="toggleLang()" aria-label="Switch to Portuguese">
+    <span id="langFlag" aria-hidden="true">🇧🇷</span>
+    <span id="langLabel">PT</span>
+  </button>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-layer-group"></i> <span lang="en">AI &amp; Software Design</span><span lang="pt" hidden>IA &amp; Design de Software</span></div>
+    <h1><span lang="en">SOLID with AI: Using AI to Design, Review, and Enforce the Five Principles</span><span lang="pt" hidden>SOLID com IA: Usando IA para Projetar, Revisar e Aplicar os Cinco Princípios</span></h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> June 2025</span>
+      <span><i class="fas fa-clock"></i> <span lang="en">15 min read</span><span lang="pt" hidden>15 min de leitura</span></span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">SOLID</span>
+      <span class="tag">AI</span>
+      <span class="tag">design patterns</span>
+      <span class="tag">refactoring</span>
+      <span class="tag">object-oriented</span>
+      <span class="tag">code quality</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p><span lang="en">SOLID principles are one of the most cited topics in software engineering interviews and one of the least applied disciplines in day-to-day codebases. Developers know the acronym. They can recite the principles. Then they ship a class with nine responsibilities, an abstraction that breaks every time a new feature lands, and an interface that forces implementors to stub out half its methods.</span><span lang="pt" hidden>Os princípios SOLID são um dos tópicos mais citados em entrevistas de engenharia de software e uma das disciplinas menos aplicadas no dia a dia dos codebases. Desenvolvedores conhecem o acrônimo. Conseguem recitar os princípios. Depois entregam uma classe com nove responsabilidades, uma abstração que quebra toda vez que uma nova feature chega e uma interface que força os implementadores a stubarem metade dos seus métodos.</span></p>
+
+  <p><span lang="en">The gap between knowing and applying is where AI can help. Used well, AI becomes a SOLID design partner: it can detect violations before they hit code review, generate refactored alternatives that respect design boundaries, and produce new code that starts on the right side of each principle. This article shows exactly how to make that work.</span><span lang="pt" hidden>A lacuna entre saber e aplicar é onde a IA pode ajudar. Bem utilizada, a IA se torna uma parceira de design SOLID: ela pode detectar violações antes de chegarem ao code review, gerar alternativas refatoradas que respeitam as fronteiras de design e produzir código novo que começa no lado certo de cada princípio. Este artigo mostra exatamente como fazer isso funcionar.</span></p>
+
+  <h2><span lang="en">S — Single Responsibility Principle</span><span lang="pt" hidden>S — Princípio da Responsabilidade Única</span></h2>
+
+  <p><span lang="en"><strong>The principle:</strong> A class should have one, and only one, reason to change. A reason to change means a responsibility — a business concern that, if it evolved, would require you to open that class.</span><span lang="pt" hidden><strong>O princípio:</strong> Uma classe deve ter um, e apenas um, motivo para mudar. Um motivo para mudar significa uma responsabilidade — uma preocupação de negócio que, se evoluísse, exigiria que você abrisse essa classe.</span></p>
+
+  <p><span lang="en"><strong>How AI helps:</strong> SRP violations are easy to describe in natural language but hard to see in your own code. Ask AI to audit a class by listing every distinct reason it might need to change. When the list has more than one item, you have an SRP violation and the list itself tells you how to split.</span><span lang="pt" hidden><strong>Como a IA ajuda:</strong> Violações de SRP são fáceis de descrever em linguagem natural mas difíceis de ver no próprio código. Peça à IA para auditar uma classe listando cada motivo distinto pelo qual ela pode precisar mudar. Quando a lista tem mais de um item, você tem uma violação de SRP e a própria lista indica como dividir.</span></p>
+
+  <div class="code-block" lang="en"><code>// Prompt: "List every distinct reason this class might need to change.
+// A 'reason to change' is a business concern — a separate stakeholder,
+// a separate policy, a separate lifecycle."
+
+class OrderService {
+  async createOrder(data) { /* validate, save to DB */ }
+  async sendConfirmationEmail(order) { /* build and send email */ }
+  async generateInvoicePdf(order) { /* build PDF, upload to S3 */ }
+  async notifyWarehouse(order) { /* call warehouse API */ }
+  async applyLoyaltyPoints(order, user) { /* update points balance */ }
+}
+
+// AI response:
+// Reasons to change:
+// 1. Order creation rules change (business team)
+// 2. Email template or provider changes (marketing team)
+// 3. Invoice format or storage changes (finance/legal team)
+// 4. Warehouse API contract changes (ops team)
+// 5. Loyalty program rules change (CRM team)
+//
+// → 5 reasons = 5 classes</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Prompt: "Liste cada motivo distinto pelo qual esta classe pode precisar mudar.
+// Um 'motivo para mudar' é uma preocupação de negócio — um stakeholder separado,
+// uma política separada, um ciclo de vida separado."
+
+class PedidoService {
+  async criarPedido(dados) { /* validar, salvar no banco */ }
+  async enviarEmailConfirmacao(pedido) { /* montar e enviar email */ }
+  async gerarPdfNotaFiscal(pedido) { /* montar PDF, enviar para S3 */ }
+  async notificarDeposito(pedido) { /* chamar API do depósito */ }
+  async aplicarPontosFildelidade(pedido, usuario) { /* atualizar saldo de pontos */ }
+}
+
+// Resposta da IA:
+// Motivos para mudar:
+// 1. Regras de criação de pedidos mudam (time de negócio)
+// 2. Template de email ou provedor muda (time de marketing)
+// 3. Formato da nota fiscal ou armazenamento muda (time financeiro/jurídico)
+// 4. Contrato da API do depósito muda (time de operações)
+// 5. Regras do programa de fidelidade mudam (time de CRM)
+//
+// → 5 motivos = 5 classes</code></div>
+
+  <p><span lang="en">Once the analysis is done, ask for the refactored split. The AI generates the separated classes and an orchestrator that composes them — maintaining behavior while respecting SRP:</span><span lang="pt" hidden>Feita a análise, peça a divisão refatorada. A IA gera as classes separadas e um orquestrador que as compõe — mantendo o comportamento enquanto respeita o SRP:</span></p>
+
+  <div class="code-block" lang="en"><code>// Prompt: "Refactor this class following SRP. Create one class per responsibility.
+// Create a thin orchestrator that composes them. Keep the public interface identical."
+
+class OrderCreator { /* validate + persist */ }
+class OrderEmailNotifier { /* send confirmation */ }
+class OrderInvoiceGenerator { /* produce PDF */ }
+class WarehouseNotifier { /* call warehouse API */ }
+class LoyaltyPointsApplier { /* update points */ }
+
+class OrderService {
+  constructor(creator, emailer, invoicer, warehouse, loyalty) { ... }
+
+  async createOrder(data) {
+    const order = await this.creator.create(data);
+    await Promise.all([
+      this.emailer.notify(order),
+      this.invoicer.generate(order),
+      this.warehouse.notify(order),
+      this.loyalty.apply(order),
+    ]);
+    return order;
+  }
+}</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Prompt: "Refatore esta classe seguindo SRP. Crie uma classe por responsabilidade.
+// Crie um orquestrador fino que as componha. Mantenha a interface pública idêntica."
+
+class CriadorDePedido { /* validar + persistir */ }
+class NotificadorEmailPedido { /* enviar confirmação */ }
+class GeradorNotaFiscalPedido { /* produzir PDF */ }
+class NotificadorDeposito { /* chamar API do depósito */ }
+class AplicadorPontosFidelidade { /* atualizar pontos */ }
+
+class PedidoService {
+  constructor(criador, emailer, notaFiscal, deposito, fidelidade) { ... }
+
+  async criarPedido(dados) {
+    const pedido = await this.criador.criar(dados);
+    await Promise.all([
+      this.emailer.notificar(pedido),
+      this.notaFiscal.gerar(pedido),
+      this.deposito.notificar(pedido),
+      this.fidelidade.aplicar(pedido),
+    ]);
+    return pedido;
+  }
+}</code></div>
+
+  <h2><span lang="en">O — Open/Closed Principle</span><span lang="pt" hidden>O — Princípio Aberto/Fechado</span></h2>
+
+  <p><span lang="en"><strong>The principle:</strong> Software entities should be open for extension but closed for modification. Adding a new behavior should not require changing existing, tested code.</span><span lang="pt" hidden><strong>O princípio:</strong> Entidades de software devem ser abertas para extensão mas fechadas para modificação. Adicionar um novo comportamento não deve exigir a alteração de código existente e testado.</span></p>
+
+  <p><span lang="en"><strong>The classic OCP smell:</strong> a <code>switch</code> or long <code>if/else if</code> chain that dispatches on a type. Every new type means opening the switch and adding another case — a modification of existing code instead of an extension.</span><span lang="pt" hidden><strong>O cheiro clássico de OCP:</strong> um <code>switch</code> ou longa cadeia <code>if/else if</code> que despacha com base em um tipo. Cada novo tipo significa abrir o switch e adicionar mais um case — uma modificação de código existente em vez de uma extensão.</span></p>
+
+  <div class="code-block" lang="en"><code>// OCP violation: every new payment method requires modifying this class
+class PaymentProcessor {
+  process(payment) {
+    switch (payment.method) {
+      case 'credit_card': return this.processCard(payment);
+      case 'pix':         return this.processPix(payment);
+      case 'boleto':      return this.processBoleto(payment);
+      // New method? Open this file, add a case. Risky.
+    }
+  }
+}</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Violação de OCP: cada novo método de pagamento exige modificar esta classe
+class ProcessadorPagamento {
+  processar(pagamento) {
+    switch (pagamento.metodo) {
+      case 'cartao_credito': return this.processarCartao(pagamento);
+      case 'pix':            return this.processarPix(pagamento);
+      case 'boleto':         return this.processarBoleto(pagamento);
+      // Novo método? Abra este arquivo, adicione um case. Arriscado.
+    }
+  }
+}</code></div>
+
+  <p><span lang="en">The right prompt makes AI generate the OCP-compliant version using a strategy map — closed for modification, open for extension by registering new handlers:</span><span lang="pt" hidden>O prompt certo faz a IA gerar a versão compatível com OCP usando um mapa de estratégias — fechado para modificação, aberto para extensão ao registrar novos handlers:</span></p>
+
+  <div class="code-block" lang="en"><code>// Prompt: "Refactor to follow OCP. Adding a new payment method should require
+// creating a new class only — no changes to existing code."
+
+// Strategy interface
+class PaymentStrategy {
+  process(payment) { throw new Error('Not implemented'); }
+}
+
+// Concrete strategies — one class per method, each in its own file
+class CreditCardStrategy extends PaymentStrategy { ... }
+class PixStrategy extends PaymentStrategy { ... }
+class BoletoStrategy extends PaymentStrategy { ... }
+
+// Processor — never needs to change when a new method is added
+class PaymentProcessor {
+  constructor(strategies) {
+    this.strategies = strategies; // Map<string, PaymentStrategy>
+  }
+
+  process(payment) {
+    const strategy = this.strategies.get(payment.method);
+    if (!strategy) throw new UnsupportedPaymentMethodError(payment.method);
+    return strategy.process(payment);
+  }
+}
+
+// Adding "crypto" tomorrow: create CryptoStrategy, register it. Done.
+// PaymentProcessor is never touched.</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Prompt: "Refatore para seguir OCP. Adicionar um novo método de pagamento deve
+// exigir apenas criar uma nova classe — sem alterações em código existente."
+
+// Interface de estratégia
+class EstrategiaPagamento {
+  processar(pagamento) { throw new Error('Não implementado'); }
+}
+
+// Estratégias concretas — uma classe por método, cada uma em seu próprio arquivo
+class EstrategiaCartaoCredito extends EstrategiaPagamento { ... }
+class EstrategiaPix extends EstrategiaPagamento { ... }
+class EstrategiaBoleto extends EstrategiaPagamento { ... }
+
+// Processador — nunca precisa mudar quando um novo método é adicionado
+class ProcessadorPagamento {
+  constructor(estrategias) {
+    this.estrategias = estrategias; // Map<string, EstrategiaPagamento>
+  }
+
+  processar(pagamento) {
+    const estrategia = this.estrategias.get(pagamento.metodo);
+    if (!estrategia) throw new MetodoPagamentoNaoSuportadoError(pagamento.metodo);
+    return estrategia.processar(pagamento);
+  }
+}
+
+// Adicionando "cripto" amanhã: crie EstrategiaCripto, registre. Pronto.
+// ProcessadorPagamento nunca é tocado.</code></div>
+
+  <h2><span lang="en">L — Liskov Substitution Principle</span><span lang="pt" hidden>L — Princípio da Substituição de Liskov</span></h2>
+
+  <p><span lang="en"><strong>The principle:</strong> Subtypes must be substitutable for their base types without breaking the program. If your code works with an <code>Animal</code>, it must work with any subclass of <code>Animal</code> — without special-casing, without checking <code>instanceof</code>, without catching unexpected exceptions.</span><span lang="pt" hidden><strong>O princípio:</strong> Subtipos devem ser substituíveis por seus tipos base sem quebrar o programa. Se seu código funciona com um <code>Animal</code>, deve funcionar com qualquer subclasse de <code>Animal</code> — sem casos especiais, sem verificar <code>instanceof</code>, sem capturar exceções inesperadas.</span></p>
+
+  <p><span lang="en">LSP violations often hide in class hierarchies that look correct on paper. The tell-tale signs: a subclass that throws <code>NotImplementedException</code> for an inherited method, a subclass that weakens the parent's postconditions, or client code that must check the runtime type to avoid a crash.</span><span lang="pt" hidden>Violações de LSP frequentemente se escondem em hierarquias de classes que parecem corretas no papel. Os sinais reveladores: uma subclasse que lança <code>NotImplementedException</code> para um método herdado, uma subclasse que enfraquece as pós-condições do pai, ou código cliente que deve verificar o tipo em tempo de execução para evitar um crash.</span></p>
+
+  <div class="code-block" lang="en"><code>// Classic LSP violation: Square extends Rectangle
+class Rectangle {
+  setWidth(w)  { this.width = w; }
+  setHeight(h) { this.height = h; }
+  area()       { return this.width * this.height; }
+}
+
+class Square extends Rectangle {
+  setWidth(w)  { this.width = w; this.height = w; }  // side effect!
+  setHeight(h) { this.width = h; this.height = h; }  // side effect!
+}
+
+// Client code breaks silently:
+function resizeAndMeasure(rect) {
+  rect.setWidth(5);
+  rect.setHeight(10);
+  // Expected: 50. Square returns: 100. LSP violated.
+  console.log(rect.area());
+}</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Violação clássica de LSP: Quadrado estende Retângulo
+class Retangulo {
+  setLargura(l) { this.largura = l; }
+  setAltura(a)  { this.altura = a; }
+  area()        { return this.largura * this.altura; }
+}
+
+class Quadrado extends Retangulo {
+  setLargura(l) { this.largura = l; this.altura = l; }  // efeito colateral!
+  setAltura(a)  { this.largura = a; this.altura = a; }  // efeito colateral!
+}
+
+// Código cliente quebra silenciosamente:
+function redimensionarEMedir(ret) {
+  ret.setLargura(5);
+  ret.setAltura(10);
+  // Esperado: 50. Quadrado retorna: 100. LSP violado.
+  console.log(ret.area());
+}</code></div>
+
+  <p><span lang="en">Use AI to audit a hierarchy before it causes production bugs:</span><span lang="pt" hidden>Use a IA para auditar uma hierarquia antes que ela cause bugs em produção:</span></p>
+
+  <div class="code-block" lang="en"><code>// Prompt: "Audit this class hierarchy for LSP violations. For each subclass, check:
+// 1. Does it throw exceptions the parent contract doesn't declare?
+// 2. Does it weaken preconditions or postconditions relative to the parent?
+// 3. Would code written against the base class break if given this subclass?
+// If violations exist, suggest how to restructure the hierarchy."
+
+// AI will recommend flattening to a Shape interface with separate types
+// when inheritance doesn't model a true IS-A relationship.</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Prompt: "Audite esta hierarquia de classes por violações de LSP. Para cada subclasse, verifique:
+// 1. Ela lança exceções que o contrato pai não declara?
+// 2. Ela enfraquece pré-condições ou pós-condições em relação ao pai?
+// 3. Código escrito contra a classe base quebraria se recebesse esta subclasse?
+// Se houver violações, sugira como reestruturar a hierarquia."
+
+// A IA vai recomendar achatar para uma interface Shape com tipos separados
+// quando a herança não modela um verdadeiro relacionamento É-UM.</code></div>
+
+  <h2><span lang="en">I — Interface Segregation Principle</span><span lang="pt" hidden>I — Princípio da Segregação de Interface</span></h2>
+
+  <p><span lang="en"><strong>The principle:</strong> No client should be forced to depend on methods it does not use. Fat interfaces create artificial coupling: a class that implements only three of twelve methods must still import and stub the other nine, and changes to those nine affect classes that don't use them.</span><span lang="pt" hidden><strong>O princípio:</strong> Nenhum cliente deve ser forçado a depender de métodos que não usa. Interfaces gordas criam acoplamento artificial: uma classe que implementa apenas três de doze métodos ainda deve importar e stubbar os outros nove, e mudanças nesses nove afetam classes que não os usam.</span></p>
+
+  <div class="code-block" lang="en"><code>// ISP violation: implementors are forced to stub methods they don't use
+interface UserRepository {
+  findById(id: string): User;
+  findByEmail(email: string): User;
+  save(user: User): void;
+  delete(id: string): void;
+  findAllWithExpiredSubscriptions(): User[];  // only used by a billing job
+  generateActivityReport(from: Date, to: Date): Report;  // only used by admin
+  anonymize(id: string): void;  // only used by GDPR compliance service
+}
+
+// ReadOnlyUserRepository only needs findById and findByEmail,
+// but is forced to implement all 7 methods.</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Violação de ISP: implementadores são forçados a stubbar métodos que não usam
+interface RepositorioUsuario {
+  buscarPorId(id: string): Usuario;
+  buscarPorEmail(email: string): Usuario;
+  salvar(usuario: Usuario): void;
+  excluir(id: string): void;
+  buscarComAssinaturasVencidas(): Usuario[];  // usado só por job de billing
+  gerarRelatorioAtividade(de: Date, ate: Date): Relatorio;  // só admin
+  anonimizar(id: string): void;  // só serviço de conformidade LGPD
+}
+
+// RepositorioUsuarioSomenteLeitura só precisa de buscarPorId e buscarPorEmail,
+// mas é forçado a implementar todos os 7 métodos.</code></div>
+
+  <p><span lang="en">The prompt for ISP refactoring asks AI to identify natural groupings and split by client:</span><span lang="pt" hidden>O prompt para refatoração ISP pede à IA que identifique agrupamentos naturais e divida por cliente:</span></p>
+
+  <div class="code-block" lang="en"><code>// Prompt: "Split this interface following ISP. Group methods by which client uses them.
+// Each interface should contain only the methods a single type of caller needs."
+
+// AI produces:
+interface UserReader {
+  findById(id: string): User;
+  findByEmail(email: string): User;
+}
+
+interface UserWriter {
+  save(user: User): void;
+  delete(id: string): void;
+}
+
+interface BillingUserQuery {
+  findAllWithExpiredSubscriptions(): User[];
+}
+
+interface UserReporter {
+  generateActivityReport(from: Date, to: Date): Report;
+}
+
+interface GdprUserManager {
+  anonymize(id: string): void;
+}
+
+// Each concrete repository implements only what it needs.
+// UserService: implements UserReader + UserWriter
+// BillingJob: implements BillingUserQuery
+// AdminController: implements UserReporter</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Prompt: "Divida esta interface seguindo ISP. Agrupe métodos por qual cliente os usa.
+// Cada interface deve conter apenas os métodos que um único tipo de chamador precisa."
+
+// A IA produz:
+interface LeitorUsuario {
+  buscarPorId(id: string): Usuario;
+  buscarPorEmail(email: string): Usuario;
+}
+
+interface EscritorUsuario {
+  salvar(usuario: Usuario): void;
+  excluir(id: string): void;
+}
+
+interface ConsultaBillingUsuario {
+  buscarComAssinaturasVencidas(): Usuario[];
+}
+
+interface RelatorioUsuario {
+  gerarRelatorioAtividade(de: Date, ate: Date): Relatorio;
+}
+
+interface GerenciadorLgpdUsuario {
+  anonimizar(id: string): void;
+}
+
+// Cada repositório concreto implementa só o que precisa.
+// ServicoUsuario: implementa LeitorUsuario + EscritorUsuario
+// JobBilling: implementa ConsultaBillingUsuario
+// ControladorAdmin: implementa RelatorioUsuario</code></div>
+
+  <h2><span lang="en">D — Dependency Inversion Principle</span><span lang="pt" hidden>D — Princípio da Inversão de Dependência</span></h2>
+
+  <p><span lang="en"><strong>The principle:</strong> High-level modules should not depend on low-level modules. Both should depend on abstractions. Abstractions should not depend on details; details should depend on abstractions.</span><span lang="pt" hidden><strong>O princípio:</strong> Módulos de alto nível não devem depender de módulos de baixo nível. Ambos devem depender de abstrações. Abstrações não devem depender de detalhes; detalhes devem depender de abstrações.</span></p>
+
+  <p><span lang="en">In practice: if your <code>OrderService</code> (high-level) directly instantiates <code>PostgresOrderRepository</code> (low-level), you've hardwired a dependency. Changing the database requires modifying business logic. Testing business logic requires a real database. Both are wrong.</span><span lang="pt" hidden>Na prática: se seu <code>PedidoService</code> (alto nível) instancia diretamente <code>RepositorioPedidoPostgres</code> (baixo nível), você criou uma dependência hardwired. Trocar o banco exige modificar a lógica de negócio. Testar a lógica de negócio exige um banco real. Ambos estão errados.</span></p>
+
+  <div class="code-block" lang="en"><code>// DIP violation: high-level module depends on concrete low-level module
+class OrderService {
+  constructor() {
+    // Direct instantiation = hardwired dependency
+    this.repository = new PostgresOrderRepository();
+    this.emailClient = new SendGridEmailClient();
+    this.logger      = new DatadogLogger();
+  }
+
+  async createOrder(data) {
+    const order = await this.repository.save(data);
+    await this.emailClient.send(order.email, 'confirmation', order);
+    this.logger.info('Order created', { orderId: order.id });
+    return order;
+  }
+}</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Violação de DIP: módulo de alto nível depende de módulo concreto de baixo nível
+class PedidoService {
+  constructor() {
+    // Instanciação direta = dependência hardwired
+    this.repositorio  = new RepositorioPedidoPostgres();
+    this.clienteEmail = new ClienteEmailSendGrid();
+    this.logger       = new LoggerDatadog();
+  }
+
+  async criarPedido(dados) {
+    const pedido = await this.repositorio.salvar(dados);
+    await this.clienteEmail.enviar(pedido.email, 'confirmacao', pedido);
+    this.logger.info('Pedido criado', { pedidoId: pedido.id });
+    return pedido;
+  }
+}</code></div>
+
+  <p><span lang="en">The DIP prompt asks AI to invert the dependencies by introducing interfaces and constructor injection:</span><span lang="pt" hidden>O prompt DIP pede à IA que inverta as dependências introduzindo interfaces e injeção por construtor:</span></p>
+
+  <div class="code-block" lang="en"><code>// Prompt: "Refactor to follow DIP. The high-level class should depend on
+// abstractions injected through the constructor — not on concrete implementations.
+// Define the interfaces the class needs. Do not instantiate anything internally."
+
+// Abstractions (defined by the high-level module's needs)
+interface OrderRepository {
+  save(data: OrderData): Promise<Order>;
+  findById(id: string): Promise<Order | null>;
+}
+
+interface EmailNotifier {
+  send(to: string, template: string, context: object): Promise<void>;
+}
+
+interface Logger {
+  info(message: string, meta?: object): void;
+}
+
+// High-level module — no concrete dependencies anywhere
+class OrderService {
+  constructor(
+    private readonly repository: OrderRepository,
+    private readonly emailNotifier: EmailNotifier,
+    private readonly logger: Logger,
+  ) {}
+
+  async createOrder(data: OrderData): Promise<Order> {
+    const order = await this.repository.save(data);
+    await this.emailNotifier.send(order.email, 'confirmation', order);
+    this.logger.info('Order created', { orderId: order.id });
+    return order;
+  }
+}
+
+// Low-level modules depend on the abstractions — not the other way around
+class PostgresOrderRepository implements OrderRepository { ... }
+class SendGridEmailNotifier implements EmailNotifier { ... }
+class DatadogLogger implements Logger { ... }</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Prompt: "Refatore para seguir DIP. A classe de alto nível deve depender de
+// abstrações injetadas pelo construtor — não de implementações concretas.
+// Defina as interfaces que a classe precisa. Não instancie nada internamente."
+
+// Abstrações (definidas pelas necessidades do módulo de alto nível)
+interface RepositorioPedido {
+  salvar(dados: DadosPedido): Promise<Pedido>;
+  buscarPorId(id: string): Promise<Pedido | null>;
+}
+
+interface NotificadorEmail {
+  enviar(para: string, template: string, contexto: object): Promise<void>;
+}
+
+interface Logger {
+  info(mensagem: string, meta?: object): void;
+}
+
+// Módulo de alto nível — sem dependências concretas em lugar nenhum
+class PedidoService {
+  constructor(
+    private readonly repositorio: RepositorioPedido,
+    private readonly notificadorEmail: NotificadorEmail,
+    private readonly logger: Logger,
+  ) {}
+
+  async criarPedido(dados: DadosPedido): Promise<Pedido> {
+    const pedido = await this.repositorio.salvar(dados);
+    await this.notificadorEmail.enviar(pedido.email, 'confirmacao', pedido);
+    this.logger.info('Pedido criado', { pedidoId: pedido.id });
+    return pedido;
+  }
+}
+
+// Módulos de baixo nível dependem das abstrações — não o contrário
+class RepositorioPedidoPostgres implements RepositorioPedido { ... }
+class NotificadorEmailSendGrid implements NotificadorEmail { ... }
+class LoggerDatadog implements Logger { ... }</code></div>
+
+  <h2><span lang="en">The SOLID Audit Prompt</span><span lang="pt" hidden>O Prompt de Auditoria SOLID</span></h2>
+
+  <p><span lang="en">Beyond working with each principle individually, one of the highest-value uses of AI is a comprehensive SOLID audit of a class or module before it reaches code review. This prompt runs all five principles in a single pass:</span><span lang="pt" hidden>Além de trabalhar com cada princípio individualmente, um dos usos de maior valor da IA é uma auditoria SOLID abrangente de uma classe ou módulo antes de chegar ao code review. Este prompt executa os cinco princípios em uma única passagem:</span></p>
+
+  <div class="code-block" lang="en"><code>"Audit this class against each SOLID principle. For each one:
+
+S — Single Responsibility: List every distinct reason this class might need
+    to change. If more than one, name each responsibility and suggest a split.
+
+O — Open/Closed: Identify any conditional dispatch on type (switch, if/else
+    chains checking a type field). Show how to replace it with a strategy or
+    polymorphism so adding behavior requires only new code, not changed code.
+
+L — Liskov Substitution: If this class is part of a hierarchy, check whether
+    any subclass throws exceptions not declared by the parent, weakens
+    postconditions, or requires callers to check instanceof. Flag each violation.
+
+I — Interface Segregation: If this class implements an interface, check whether
+    any method goes unused by some callers. If so, suggest smaller interfaces
+    grouped by client type.
+
+D — Dependency Inversion: List every concrete dependency instantiated inside
+    this class. For each one, show how to extract an interface and inject it
+    through the constructor.
+
+For each violation found, explain the concrete consequence (what breaks,
+what becomes harder to change) and show the refactored code."</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>"Audite esta classe contra cada princípio SOLID. Para cada um:
+
+S — Responsabilidade Única: Liste cada motivo distinto pelo qual esta classe
+    pode precisar mudar. Se mais de um, nomeie cada responsabilidade e sugira
+    uma divisão.
+
+O — Aberto/Fechado: Identifique qualquer despacho condicional por tipo
+    (switch, cadeias if/else verificando um campo de tipo). Mostre como
+    substituir por strategy ou polimorfismo para que adicionar comportamento
+    exija apenas código novo, não código alterado.
+
+L — Substituição de Liskov: Se esta classe faz parte de uma hierarquia,
+    verifique se alguma subclasse lança exceções não declaradas pelo pai,
+    enfraquece pós-condições ou exige que chamadores verifiquem instanceof.
+    Sinalize cada violação.
+
+I — Segregação de Interface: Se esta classe implementa uma interface,
+    verifique se algum método fica sem uso por alguns chamadores. Se sim,
+    sugira interfaces menores agrupadas por tipo de cliente.
+
+D — Inversão de Dependência: Liste cada dependência concreta instanciada
+    dentro desta classe. Para cada uma, mostre como extrair uma interface e
+    injetá-la pelo construtor.
+
+Para cada violação encontrada, explique a consequência concreta (o que quebra,
+o que fica mais difícil de mudar) e mostre o código refatorado."</code></div>
+
+  <h2><span lang="en">Prompting for SOLID Code From the Start</span><span lang="pt" hidden>Promtando para Código SOLID Desde o Início</span></h2>
+
+  <p><span lang="en">Detection and refactoring are valuable, but the highest leverage comes from generating SOLID-compliant code before violations are introduced. These constraints, added to any code generation prompt, eliminate the most common violations from the first output:</span><span lang="pt" hidden>Detecção e refatoração são valiosas, mas a maior alavancagem vem de gerar código compatível com SOLID antes que as violações sejam introduzidas. Estas restrições, adicionadas a qualquer prompt de geração de código, eliminam as violações mais comuns do primeiro output:</span></p>
+
+  <div class="code-block" lang="en"><code>"Write [the class/module]. Apply these SOLID constraints:
+
+- SRP: One class, one reason to change. If the implementation needs to do
+  more than one thing, create separate collaborators for each responsibility.
+
+- OCP: Do not write switch or if/else chains that dispatch on a type.
+  Use polymorphism or a strategy map so new types require only new classes.
+
+- LSP: If creating a hierarchy, ensure every subtype is a true IS-A.
+  Prefer composition over inheritance when the relationship is has-a.
+
+- ISP: Define the narrowest interface possible for each collaborator.
+  Clients should depend only on the methods they actually call.
+
+- DIP: Never instantiate dependencies inside the class. Accept all
+  dependencies as constructor parameters typed to interfaces, not concretions.
+
+Show the interfaces alongside the implementation."</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>"Escreva [a classe/módulo]. Aplique estas restrições SOLID:
+
+- SRP: Uma classe, um motivo para mudar. Se a implementação precisa fazer
+  mais de uma coisa, crie colaboradores separados para cada responsabilidade.
+
+- OCP: Não escreva switch ou cadeias if/else que despachiam por tipo.
+  Use polimorfismo ou mapa de estratégias para que novos tipos exijam
+  apenas novas classes.
+
+- LSP: Se criar uma hierarquia, garanta que cada subtipo seja um verdadeiro
+  É-UM. Prefira composição sobre herança quando o relacionamento é tem-um.
+
+- ISP: Defina a interface mais estreita possível para cada colaborador.
+  Clientes devem depender apenas dos métodos que realmente chamam.
+
+- DIP: Nunca instancie dependências dentro da classe. Aceite todas as
+  dependências como parâmetros do construtor tipados a interfaces,
+  não a concretizações.
+
+Mostre as interfaces junto com a implementação."</code></div>
+
+  <h2><span lang="en">Where AI Gets SOLID Wrong</span><span lang="pt" hidden>Onde a IA Erra no SOLID</span></h2>
+
+  <p><span lang="en">AI is not infallible on SOLID. Two failure modes appear consistently:</span><span lang="pt" hidden>A IA não é infalível no SOLID. Dois modos de falha aparecem consistentemente:</span></p>
+
+  <p><span lang="en"><strong>Over-engineering the OCP.</strong> AI sometimes introduces Strategy + Factory + Registry for a case that has two variants and will never have more. Three concrete classes for two payment methods is probably over-abstracted. The test: if you can see all the types from here and they're stable, a simple switch is honest. Apply OCP where the set of variants is open — where you genuinely expect it to grow.</span><span lang="pt" hidden><strong>Over-engineering do OCP.</strong> A IA às vezes introduz Strategy + Factory + Registry para um caso com duas variantes que nunca terá mais. Três classes concretas para dois métodos de pagamento provavelmente é sobre-abstraído. O teste: se você consegue ver todos os tipos daqui e eles são estáveis, um switch simples é honesto. Aplique OCP onde o conjunto de variantes é aberto — onde você genuinamente espera que cresça.</span></p>
+
+  <p><span lang="en"><strong>Misapplying DIP to create interfaces for everything.</strong> DIP says depend on abstractions — it does not say wrap every class in an interface. An interface has a cost: a second file, indirection, mock complexity in tests. Create an interface when you have at least two implementations (production + test double, or two real variants), or when you explicitly want to protect a high-level module from a volatile low-level one. One implementation + one interface = unnecessary abstraction.</span><span lang="pt" hidden><strong>Aplicação errada do DIP criando interfaces para tudo.</strong> DIP diz dependa de abstrações — não diz envolva cada classe em uma interface. Uma interface tem um custo: um segundo arquivo, indireção, complexidade de mock nos testes. Crie uma interface quando tiver pelo menos duas implementações (produção + test double, ou duas variantes reais), ou quando quiser proteger explicitamente um módulo de alto nível de um de baixo nível volátil. Uma implementação + uma interface = abstração desnecessária.</span></p>
+
+  <div class="callout">
+    <p><span lang="en"><strong>The SOLID judgment call:</strong> SOLID is not a checklist to maximize. It's a set of principles to apply where they reduce the cost of change. Ask "what changes independently here?" — the answer tells you where to draw the boundaries. AI can spot violations and generate compliant code; you decide which violations actually hurt and which "violations" are honest simplicity.</span><span lang="pt" hidden><strong>A decisão de julgamento SOLID:</strong> SOLID não é um checklist para maximizar. É um conjunto de princípios para aplicar onde reduzem o custo da mudança. Pergunte "o que muda de forma independente aqui?" — a resposta diz onde traçar as fronteiras. A IA pode detectar violações e gerar código compatível; você decide quais violações realmente doem e quais "violações" são simplicidade honesta.</span></p>
+  </div>
+
+  <h2><span lang="en">Using AI to Write SOLID Tests</span><span lang="pt" hidden>Usando IA para Escrever Testes SOLID</span></h2>
+
+  <p><span lang="en">One underused AI capability is generating tests that enforce SOLID boundaries. A test suite written with DIP in mind uses injected fakes instead of mocks, tests one behavior per test, and fails for exactly one reason. Ask AI to generate tests that validate SOLID compliance:</span><span lang="pt" hidden>Uma capacidade subutilizada da IA é gerar testes que reforçam as fronteiras SOLID. Uma suite de testes escrita com DIP em mente usa fakes injetados em vez de mocks, testa um comportamento por teste e falha por exatamente um motivo. Peça à IA que gere testes que validem conformidade SOLID:</span></p>
+
+  <div class="code-block" lang="en"><code>// Prompt: "Write unit tests for OrderService. Use in-memory fakes for all
+// dependencies — no mocking frameworks, no real databases. Each test should:
+// - Test exactly one behavior
+// - Inject its own fakes so it's completely isolated
+// - Name the tested behavior in the test name
+// - Assert only the outcome relevant to that behavior"
+
+class InMemoryOrderRepository implements OrderRepository {
+  private orders: Order[] = [];
+  async save(data) { const order = { id: uuid(), ...data }; this.orders.push(order); return order; }
+  async findById(id) { return this.orders.find(o => o.id === id) ?? null; }
+  getSavedOrders() { return this.orders; }
+}
+
+class SpyEmailNotifier implements EmailNotifier {
+  sent: Array<{ to: string; template: string }> = [];
+  async send(to, template) { this.sent.push({ to, template }); }
+}
+
+it('persists the order when creation succeeds', async () => {
+  const repository = new InMemoryOrderRepository();
+  const service = new OrderService(repository, new SpyEmailNotifier(), silentLogger);
+
+  await service.createOrder({ email: 'user@example.com', items: [{ sku: 'A', qty: 1 }] });
+
+  expect(repository.getSavedOrders()).toHaveLength(1);
+});
+
+it('sends a confirmation email to the order owner after creation', async () => {
+  const emailNotifier = new SpyEmailNotifier();
+  const service = new OrderService(new InMemoryOrderRepository(), emailNotifier, silentLogger);
+
+  await service.createOrder({ email: 'user@example.com', items: [] });
+
+  expect(emailNotifier.sent).toContainEqual({ to: 'user@example.com', template: 'confirmation' });
+});</code></div>
+
+  <div class="code-block" lang="pt" hidden><code>// Prompt: "Escreva testes unitários para PedidoService. Use fakes em memória para
+// todas as dependências — sem frameworks de mock, sem banco real. Cada teste deve:
+// - Testar exatamente um comportamento
+// - Injetar seus próprios fakes para ser completamente isolado
+// - Nomear o comportamento testado no nome do teste
+// - Assertar apenas o resultado relevante para aquele comportamento"
+
+class RepositorioPedidoEmMemoria implements RepositorioPedido {
+  private pedidos: Pedido[] = [];
+  async salvar(dados) { const pedido = { id: uuid(), ...dados }; this.pedidos.push(pedido); return pedido; }
+  async buscarPorId(id) { return this.pedidos.find(p => p.id === id) ?? null; }
+  getPedidosSalvos() { return this.pedidos; }
+}
+
+class NotificadorEmailEspia implements NotificadorEmail {
+  enviados: Array<{ para: string; template: string }> = [];
+  async enviar(para, template) { this.enviados.push({ para, template }); }
+}
+
+it('persiste o pedido quando a criação é bem-sucedida', async () => {
+  const repositorio = new RepositorioPedidoEmMemoria();
+  const service = new PedidoService(repositorio, new NotificadorEmailEspia(), loggerSilencioso);
+
+  await service.criarPedido({ email: 'usuario@exemplo.com', itens: [{ sku: 'A', qtd: 1 }] });
+
+  expect(repositorio.getPedidosSalvos()).toHaveLength(1);
+});
+
+it('envia email de confirmação para o dono do pedido após criação', async () => {
+  const notificadorEmail = new NotificadorEmailEspia();
+  const service = new PedidoService(new RepositorioPedidoEmMemoria(), notificadorEmail, loggerSilencioso);
+
+  await service.criarPedido({ email: 'usuario@exemplo.com', itens: [] });
+
+  expect(notificadorEmail.enviados).toContainEqual({ para: 'usuario@exemplo.com', template: 'confirmacao' });
+});</code></div>
+
+  <p><span lang="en">These tests are possible precisely because DIP was applied. If <code>OrderService</code> instantiated <code>PostgresOrderRepository</code> internally, none of this in-memory testing would work. SOLID and testability reinforce each other — and AI generates both when you prompt for both.</span><span lang="pt" hidden>Esses testes são possíveis precisamente porque o DIP foi aplicado. Se <code>PedidoService</code> instanciasse <code>RepositorioPedidoPostgres</code> internamente, nada desse teste em memória funcionaria. SOLID e testabilidade se reforçam mutuamente — e a IA gera ambos quando você promta por ambos.</span></p>
+
+  <div class="callout green">
+    <p><span lang="en"><strong>The compounding effect:</strong> SOLID and AI form a virtuous cycle. Clean boundaries make AI suggestions more accurate — the AI can reason about a small, focused class far better than a 400-line god class. Better boundaries make tests cheaper to write, so AI generates better tests. Better tests catch violations early, so violations accumulate less debt. The discipline pays compound interest.</span><span lang="pt" hidden><strong>O efeito composto:</strong> SOLID e IA formam um ciclo virtuoso. Fronteiras limpas tornam as sugestões da IA mais precisas — ela consegue raciocinar sobre uma classe pequena e focada muito melhor do que uma classe deus de 400 linhas. Fronteiras melhores tornam os testes mais baratos de escrever, então a IA gera testes melhores. Testes melhores capturam violações cedo, então violações acumulam menos dívida. A disciplina rende juros compostos.</span></p>
+  </div>
+
+  <h2><span lang="en">Key Takeaways</span><span lang="pt" hidden>Pontos Principais</span></h2>
+  <ul>
+    <li><span lang="en">Use the "list every reason to change" prompt to detect SRP violations before splitting. The list tells you both that there's a violation and how to divide the class.</span><span lang="pt" hidden>Use o prompt "liste cada motivo para mudar" para detectar violações de SRP antes de dividir. A lista indica tanto que existe uma violação quanto como dividir a classe.</span></li>
+    <li><span lang="en">OCP violations appear as type-dispatching conditionals. Replace them with strategy maps or polymorphism. AI generates both the pattern and the migration reliably when given the right constraint.</span><span lang="pt" hidden>Violações de OCP aparecem como condicionais de despacho por tipo. Substitua-os por mapas de estratégia ou polimorfismo. A IA gera tanto o padrão quanto a migração de forma confiável quando dada a restrição certa.</span></li>
+    <li><span lang="en">LSP failures hide in class hierarchies. Prompt AI to check subclass contracts — throwing undeclared exceptions, weakening postconditions, and forcing instanceof checks are the three red flags.</span><span lang="pt" hidden>Falhas de LSP se escondem em hierarquias de classes. Promte a IA a verificar contratos de subclasse — lançar exceções não declaradas, enfraquecer pós-condições e forçar verificações instanceof são os três sinais de alerta.</span></li>
+    <li><span lang="en">ISP violations show up as interfaces with methods that some implementors stub. Group by client type — each interface should contain only what one type of caller needs.</span><span lang="pt" hidden>Violações de ISP aparecem como interfaces com métodos que alguns implementadores stubbam. Agrupe por tipo de cliente — cada interface deve conter apenas o que um tipo de chamador precisa.</span></li>
+    <li><span lang="en">DIP violations are concrete instantiations inside high-level classes. Extract interfaces, inject through constructor. Apply DIP where you have at least two implementations — not for single-implementation wrappers.</span><span lang="pt" hidden>Violações de DIP são instanciações concretas dentro de classes de alto nível. Extraia interfaces, injete pelo construtor. Aplique DIP onde tiver pelo menos duas implementações — não para wrappers de implementação única.</span></li>
+    <li><span lang="en">The comprehensive SOLID audit prompt — run all five principles at once — catches most design violations before code review in one AI pass.</span><span lang="pt" hidden>O prompt de auditoria SOLID abrangente — executando todos os cinco princípios de uma vez — captura a maioria das violações de design antes do code review em uma única passagem de IA.</span></li>
+    <li><span lang="en">SOLID and testability reinforce each other. DIP-compliant code enables in-memory fakes instead of mocks. AI generates both the SOLID structure and the matching test suite when prompted for both together.</span><span lang="pt" hidden>SOLID e testabilidade se reforçam mutuamente. Código compatível com DIP permite fakes em memória em vez de mocks. A IA gera tanto a estrutura SOLID quanto a suite de testes correspondente quando solicitada por ambos juntos.</span></li>
+  </ul>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Back to all articles</a>
+</div>
+<footer><p>&copy; 2025 Jefferson Valandro. Built with care.</p></footer>
+
+<script>
+  let currentLang = localStorage.getItem("lang") || "en";
+  function applyArticleLang(lang) {
+    var other = lang === "en" ? "pt" : "en";
+    document.querySelectorAll("[lang=\"" + lang + "\"]:not(html)").forEach(function(el) { el.hidden = false; });
+    document.querySelectorAll("[lang=\"" + other + "\"]:not(html)").forEach(function(el) { el.hidden = true; });
+    document.getElementById("langFlag").textContent = lang === "en" ? "u{1F1E7}u{1F1F7}" : "u{1F1FA}u{1F1F8}";
+    document.getElementById("langLabel").textContent = lang === "en" ? "PT" : "EN";
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    var navBack = document.querySelector(".nav-back");
+    if (navBack) navBack.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to Articles' : '<i class="fas fa-arrow-left"></i> Voltar para Artigos';
+    var backLink = document.querySelector(".back-link");
+    if (backLink) backLink.innerHTML = lang === "en" ? '<i class="fas fa-arrow-left"></i> Back to all articles' : '<i class="fas fa-arrow-left"></i> Voltar para todos os artigos';
+    var footerP = document.querySelector("footer p");
+    if (footerP) footerP.innerHTML = lang === "en" ? "&copy; 2025 Jefferson Valandro. Built with care." : "&copy; 2025 Jefferson Valandro. Feito com cuidado.";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+  function toggleLang() { applyArticleLang(currentLang === "en" ? "pt" : "en"); }
+  applyArticleLang(currentLang);
+</script>
+</body>
+</html>
