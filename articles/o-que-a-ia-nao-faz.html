@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>O que a IA não faz por você: como revisei meus templates e e-books antes de vender — Jefferson Valandro</title>
+  <meta name="description" content="Usei IA para construir templates Next.js e e-books técnicos. O que garante a qualidade não é a IA: é a revisão. Os testes, as conferências e os erros que encontrei antes de vender.">
+  <meta name="author" content="Jefferson Valandro">
+  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/articles/o-que-a-ia-nao-faz.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/articles/o-que-a-ia-nao-faz.html">
+  <meta property="og:title" content="O que a IA não faz por você: como revisei meus templates e e-books antes de vender">
+  <meta property="og:description" content="Os testes, as conferências e os erros que encontrei antes de colocar meus produtos à venda.">
+  <meta property="og:image" content="https://jeffev.github.io/jeffersonvalandro/images/products/kairo-complete-kit.jpg">
+  <meta property="og:locale" content="pt_BR">
+  <meta name="theme-color" content="#070d1a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../css/articles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "O que a IA não faz por você: como revisei meus templates e e-books antes de vender",
+    "inLanguage": "pt-BR",
+    "datePublished": "2026-10-04",
+    "image": "https://jeffev.github.io/jeffersonvalandro/images/products/kairo-complete-kit.jpg",
+    "author": { "@id": "https://jeffev.github.io/jeffersonvalandro/#person" },
+    "mainEntityOfPage": "https://jeffev.github.io/jeffersonvalandro/articles/o-que-a-ia-nao-faz.html"
+  }
+  </script>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Jefferson<span>.</span></a>
+  <a href="../index.html#articles" class="nav-back"><i class="fas fa-arrow-left"></i> Voltar para Artigos</a>
+</nav>
+
+<header class="hero-article">
+  <div class="hero-inner">
+    <div class="article-category"><i class="fas fa-magnifying-glass"></i> Bastidores</div>
+    <h1>O que a IA não faz por você: como revisei meus templates e e-books antes de vender</h1>
+    <div class="article-meta">
+      <span><i class="fas fa-calendar-alt"></i> Outubro de 2026</span>
+      <span><i class="fas fa-clock"></i> 8 min de leitura</span>
+      <span><i class="fas fa-user"></i> Jefferson Valandro</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">IA no desenvolvimento</span>
+      <span class="tag">qualidade</span>
+      <span class="tag">Next.js</span>
+      <span class="tag">bastidores</span>
+    </div>
+  </div>
+</header>
+
+<article class="article-content">
+
+  <p>Coloquei à venda seis templates de Next.js e cinco e-books técnicos, e usei IA intensamente para construir tudo. Sei a pergunta que vem na cabeça de quem lê isso: <em>"se a IA fez, vale alguma coisa?"</em></p>
+
+  <p>É uma pergunta justa. A IA gera código e texto em quantidade. O que ela não garante é que aquilo funcione, esteja certo e possa ser vendido para outra pessoa com a minha assinatura. Essa parte continua sendo trabalho de engenharia, e é sobre ela que eu quero falar.</p>
+
+  <h2>O que eu coloquei à venda</h2>
+
+  <p><strong>Seis templates</strong> (Next.js 16, Tailwind CSS 4 e shadcn/ui), cada um com uma demo no ar para você testar antes de comprar:</p>
+  <ul>
+    <li><strong>Kairo Admin</strong>: painel administrativo com 23 telas</li>
+    <li><strong>Kairo AI Starter</strong>: base de SaaS com login, chat de IA, créditos e Stripe</li>
+    <li><strong>Kairo Blocks</strong>: 61 blocos de landing page</li>
+    <li><strong>Kairo Estate</strong>: site de imobiliária com mapa e filtros na URL</li>
+    <li><strong>Kairo Mail</strong>: 32 templates de e-mail com React Email</li>
+    <li><strong>Kairo Studio</strong>: site de agência e portfólio</li>
+  </ul>
+
+  <p><strong>Cinco e-books</strong> em português, cada um ensinando a construir um tipo de projeto, com o código completo de um dos templates junto.</p>
+
+  <h2>A IA como equipe, eu como tech lead</h2>
+
+  <p>Usei o Claude Code como uma equipe muito rápida: ele escreve o código, roda o build e os testes, tira as capturas de tela, monta os PDFs. O meu papel foi o mesmo que eu tenho como tech lead há anos: decidir o que construir, revisar tudo, dizer não e assumir a responsabilidade pelo que vai para as mãos de quem compra.</p>
+
+  <div class="callout">
+    <p><strong>O gargalo mudou de lugar:</strong> escrever código deixou de ser a parte demorada. Revisar e decidir passou a ser. Quem já liderou time conhece essa sensação. A diferença é que a revisão precisa acompanhar um time que entrega muito, sem afrouxar.</p>
+  </div>
+
+  <h2>O que eu conferi antes de vender</h2>
+
+  <h3>Os templates</h3>
+  <ul>
+    <li><strong>Build de produção sem erros</strong>, com a checagem de tipos do TypeScript rodando junto</li>
+    <li><strong>Instalação do zero a partir do zip</strong>, numa pasta limpa, exatamente como o comprador vai receber. Template que só funciona na máquina de quem fez não é produto</li>
+    <li><strong>Testes automáticos de interação</strong> nas demos: 16 no Kairo Estate e 23 no Kairo Studio, clicando em filtros, formulários e navegação como uma pessoa faria</li>
+    <li><strong>No Kairo AI Starter</strong>, que mexe com dinheiro: cadastro, chat, consumo de créditos, bloqueio quando o saldo acaba, recuperação de senha, isolamento entre usuários (um não enxerga os dados do outro) e o webhook do Stripe assinado e idempotente (o mesmo pagamento avisado duas vezes não credita duas vezes)</li>
+    <li><strong>Revisão visual</strong> no tema claro, no escuro e no celular</li>
+    <li><strong>As fotos das demos</strong>, uma a uma. No Kairo Studio, troquei três que mostravam marcas de terceiros. A IA não percebe esse tipo de problema; um cliente atento, sim</li>
+  </ul>
+
+  <h3>Os e-books</h3>
+  <p>A regra mais importante: <strong>toda afirmação técnica é conferida no código antes de ir para o PDF.</strong> Cada trecho citado, cada número, cada "o template já faz isso". Se o livro diz que um formulário tem validação, eu abro o arquivo e confiro. Material técnico que erra fatos perde a confiança do leitor na primeira página.</p>
+
+  <h2>Onde a IA errou (e eu peguei)</h2>
+
+  <h3>1. Fatos errados, com toda a confiança</h3>
+  <p>Um rascunho dizia que um template tinha seis formulários. Eram cinco: o sexto tipo existia no código, mas nenhuma tela usava. Parece detalhe, mas é exatamente o tipo de erro que faz o comprador desconfiar de todo o resto.</p>
+
+  <h3>2. Um bug que faria o SaaS dar crédito de graça</h3>
+  <p>No Kairo AI Starter, se o usuário apertasse "Parar" no meio de uma resposta do chat, a resposta não era cobrada. Quem montasse um SaaS em cima do template estaria pagando a IA do próprio bolso a cada clique. A correção: o servidor continua a geração mesmo depois que o navegador desconecta, salva a resposta e cobra os créditos. Lancei a versão 1.0.1 e troquei o arquivo na loja.</p>
+
+  <h3>3. Texto de venda com promessa falsa</h3>
+  <p>A Hotmart oferece uma página de vendas gerada por IA. A primeira versão dizia que o código era "testado em produção". Não é verdade, é um template novo. Corrigi antes de divulgar. Qualquer texto que fala em meu nome passa por mim, mesmo quando vem pronto da plataforma.</p>
+
+  <h2>O que eu aprendi</h2>
+
+  <ul>
+    <li><strong>A IA multiplica quem sabe revisar.</strong> Ela não substitui o critério de quem já viu código quebrar em produção</li>
+    <li><strong>Teste como o cliente.</strong> Instalação limpa e testes de interação pegam o que passa batido no "funciona aqui"</li>
+    <li><strong>Desconfie do texto bem escrito.</strong> Erro com boa redação é o mais perigoso, porque convence</li>
+  </ul>
+
+  <h2>E agora</h2>
+
+  <p>Produto bom que ninguém conhece não vende. Por isso vou começar a mostrar esse trabalho por aqui, no LinkedIn, no Instagram, no TikTok e no YouTube, sempre com conteúdo técnico tirado do que eu construí. E vou publicar os números reais: o que funcionou e o que não funcionou.</p>
+
+  <div class="callout">
+    <p>Os templates estão na <a href="https://payhip.com/ValandroUI" rel="noopener noreferrer" target="_blank">loja ValandroUI</a>, cada um com demo ao vivo, e os e-books na <a href="../index.html#products">seção de produtos</a> do meu site. Para acompanhar os próximos bastidores, me siga no <a href="https://www.linkedin.com/in/jeffersonvalandro" rel="noopener noreferrer" target="_blank">LinkedIn</a>.</p>
+  </div>
+
+</article>
+
+<div class="article-footer">
+  <a href="../index.html#articles" class="back-link"><i class="fas fa-arrow-left"></i> Voltar para todos os artigos</a>
+</div>
+<footer><p>&copy; 2026 Jefferson Valandro.</p></footer>
+</body>
+</html>
