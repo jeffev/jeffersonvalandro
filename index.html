@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Jefferson Valandro — Software Engineer</title>
-  <meta name="description" content="Jefferson Valandro — Senior Software Engineer, Tech Lead, and Full Stack Developer with 10+ years of experience in system architecture, Java, APIs, and MLOps.">
+  <meta name="description" content="Jefferson Valandro — Senior Software Engineer, Tech Lead, and Full Stack Developer with 10+ years of experience in system architecture, Java, APIs, and MLOps. Creator of the ValandroUI Next.js templates and e-books.">
   <meta name="keywords" content="Software Engineer, System Architect, Tech Lead, Java, Spring Boot, MLOps, Full Stack, Backend, DevOps, API, Microservices">
   <meta name="author" content="Jefferson Valandro">
   <meta property="og:title" content="Jefferson Valandro — Software Engineer">
@@ -41,9 +41,11 @@
         "sameAs": [
           "https://www.linkedin.com/in/jeffersonvalandro",
           "https://github.com/jeffev",
-          "https://www.kaggle.com/jeffersonvalandro"
+          "https://www.kaggle.com/jeffersonvalandro",
+        "https://payhip.com/ValandroUI"
         ],
-        "knowsAbout": ["Java", "Spring Boot", "Microservices", "MLOps", "React", "Docker", "PostgreSQL", "System Architecture"]
+        "brand": { "@type": "Brand", "name": "ValandroUI", "url": "https://payhip.com/ValandroUI" },
+      "knowsAbout": ["Java", "Spring Boot", "Microservices", "MLOps", "React", "Docker", "PostgreSQL", "System Architecture"]
       },
       {
         "@type": "WebSite",
@@ -430,6 +432,55 @@
     }
     .project-link:hover { gap: 10px; }
 
+    /* ── PRODUCTS ────────────────────────────────────── */
+    #products { background: linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%); }
+    .products-sub {
+      display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.7rem;
+      font-size: 1.1rem; font-weight: 700; margin: 0 0 1.2rem;
+    }
+    .products-sub i { color: var(--accent); }
+    .products-note { font-size: 0.75rem; font-weight: 500; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .ebooks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; }
+    .product-card, .ebook-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, border-color 0.2s;
+    }
+    .product-card:hover, .ebook-card:hover { transform: translateY(-4px); border-color: rgba(79,142,247,0.35); }
+    .product-cover, .ebook-cover { display: block; background: var(--tag-bg); }
+    .product-cover img, .ebook-cover img { display: block; width: 100%; height: auto; }
+    .product-cover img { aspect-ratio: 16 / 10; object-fit: cover; }
+    .ebook-cover img { aspect-ratio: 1; object-fit: cover; }
+    .product-body { padding: 1.1rem 1.3rem 1.2rem; flex: 1; display: flex; flex-direction: column; gap: 0.6rem; }
+    .product-top { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; }
+    .product-name { font-size: 0.95rem; font-weight: 700; line-height: 1.35; }
+    .product-name a { color: var(--text); text-decoration: none; }
+    .product-name a:hover { color: var(--accent); }
+    .product-price { font-size: 0.78rem; font-weight: 600; color: var(--accent2); white-space: nowrap; font-family: 'JetBrains Mono', monospace; }
+    .product-desc { font-size: 0.83rem; color: var(--muted); flex: 1; }
+    .product-actions { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; }
+    .product-buy {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px;
+      background: var(--accent); color: #fff; font-size: 0.8rem; font-weight: 600; text-decoration: none;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .product-buy:hover { background: #6aa0f8; }
+    .bundle-banner {
+      display: grid; grid-template-columns: 180px 1fr auto; align-items: center; gap: 1.4rem;
+      margin: 1.5rem 0 3.5rem; padding: 1rem 1.4rem 1rem 1rem; border-radius: var(--radius);
+      background: linear-gradient(90deg, rgba(79,142,247,0.16), rgba(6,214,160,0.10));
+      border: 1px solid rgba(79,142,247,0.35); color: var(--text); text-decoration: none; transition: border-color 0.2s;
+    }
+    .bundle-banner:hover { border-color: var(--accent); }
+    .bundle-banner img { width: 100%; height: auto; border-radius: 8px; display: block; }
+    .bundle-banner strong { display: block; font-size: 1rem; margin-bottom: 0.2rem; }
+    .bundle-banner div span { font-size: 0.85rem; color: var(--muted); }
+    .bundle-banner .product-buy { justify-self: start; }
+    .products-store { text-align: center; margin-top: 2.5rem; }
+    @media (max-width: 640px) {
+      .bundle-banner { grid-template-columns: 1fr; padding: 1rem; }
+    }
+
     /* ── ARTICLES ────────────────────────────────────── */
     #articles { background: var(--surface); }
     .articles-grid {
@@ -633,6 +684,7 @@
     <li><a href="#skills" data-i18n="nav.skills">Skills</a></li>
     <li><a href="#experience" data-i18n="nav.experience">Experience</a></li>
     <li><a href="#projects" data-i18n="nav.projects">Projects</a></li>
+    <li><a href="#products" data-i18n="nav.products">Products</a></li>
     <li><a href="#articles" data-i18n="nav.articles">Articles</a></li>
     <li><a href="news.html" data-i18n="nav.news">News</a></li>
     <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
@@ -672,6 +724,7 @@
     </div>
     <div class="hero-actions">
       <a href="#experience" class="btn btn-primary"><i class="fas fa-briefcase"></i> <span data-i18n="hero.btnExp">View Experience</span></a>
+      <a href="#products" class="btn btn-ghost"><i class="fas fa-layer-group"></i> <span data-i18n="hero.btnProducts">Templates &amp; e-books</span></a>
       <a href="#contact" class="btn btn-ghost"><i class="fas fa-envelope"></i> <span data-i18n="hero.btnContact">Get in touch</span></a>
     </div>
     <div class="hero-socials" role="list" aria-label="Social profiles">
@@ -1327,6 +1380,142 @@
   </div>
 </section>
 
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label" data-i18n="products.label">ValandroUI</span>
+      <h2 data-i18n="products.title">Templates &amp; e-books</h2>
+      <p data-i18n="products.desc">Production-ready Next.js templates and hands-on e-books that I build and sell under the ValandroUI brand.</p>
+    </div>
+
+    <h3 class="products-sub fade-in"><i class="fas fa-layer-group" aria-hidden="true"></i> <span data-i18n="products.templates">Next.js templates</span> <span class="products-note" data-i18n="products.templatesNote">Next.js 16 · Tailwind CSS 4 · shadcn/ui · source code</span></h3>
+    <div class="products-grid fade-in">
+      <article class="product-card">
+        <a href="https://payhip.com/b/kehrf" class="product-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/kairo-admin.jpg" alt="" width="800" height="500" loading="lazy"></a>
+        <div class="product-body">
+          <div class="product-top"><h4 class="product-name">Kairo Admin</h4><span class="product-price"><span data-i18n="products.from">from</span> US$ 19</span></div>
+          <p class="product-desc" data-i18n="tpl.admin">Admin dashboard with 23 screens: data tables, charts, kanban, settings and auth pages. Light and dark themes.</p>
+          <div class="product-actions">
+            <a href="https://kairo-admin-demo.jeffev123.workers.dev" class="project-link" rel="noopener noreferrer" target="_blank"><span data-i18n="products.demo">Live demo</span> <i class="fas fa-external-link-alt" aria-hidden="true"></i></a>
+            <a href="https://payhip.com/b/kehrf" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy Kairo Admin on Payhip"><span data-i18n="products.buy">Buy</span> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </article>
+      <article class="product-card">
+        <a href="https://payhip.com/b/ZkP2y" class="product-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/kairo-ai-starter.jpg" alt="" width="800" height="500" loading="lazy"></a>
+        <div class="product-body">
+          <div class="product-top"><h4 class="product-name">Kairo AI Starter</h4><span class="product-price"><span data-i18n="products.from">from</span> US$ 39</span></div>
+          <p class="product-desc" data-i18n="tpl.ai">SaaS starter with authentication, AI chat with streaming, usage credits and Stripe payments. Runs in demo mode without keys.</p>
+          <div class="product-actions">
+            <a href="https://kairo-ai-demo.vercel.app" class="project-link" rel="noopener noreferrer" target="_blank"><span data-i18n="products.demo">Live demo</span> <i class="fas fa-external-link-alt" aria-hidden="true"></i></a>
+            <a href="https://payhip.com/b/ZkP2y" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy Kairo AI Starter on Payhip"><span data-i18n="products.buy">Buy</span> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </article>
+      <article class="product-card">
+        <a href="https://payhip.com/b/gD6od" class="product-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/kairo-blocks.jpg" alt="" width="800" height="500" loading="lazy"></a>
+        <div class="product-body">
+          <div class="product-top"><h4 class="product-name">Kairo Blocks</h4><span class="product-price"><span data-i18n="products.from">from</span> US$ 29</span></div>
+          <p class="product-desc" data-i18n="tpl.blocks">61 landing-page blocks in 14 categories, one file each, with a live preview and code viewer.</p>
+          <div class="product-actions">
+            <a href="https://kairo-blocks-demo.jeffev123.workers.dev" class="project-link" rel="noopener noreferrer" target="_blank"><span data-i18n="products.demo">Live demo</span> <i class="fas fa-external-link-alt" aria-hidden="true"></i></a>
+            <a href="https://payhip.com/b/gD6od" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy Kairo Blocks on Payhip"><span data-i18n="products.buy">Buy</span> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </article>
+      <article class="product-card">
+        <a href="https://payhip.com/b/71AJn" class="product-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/kairo-estate.jpg" alt="" width="800" height="500" loading="lazy"></a>
+        <div class="product-body">
+          <div class="product-top"><h4 class="product-name">Kairo Estate</h4><span class="product-price"><span data-i18n="products.from">from</span> US$ 39</span></div>
+          <p class="product-desc" data-i18n="tpl.estate">Real-estate website with listings on a map, filters kept in the URL, property pages and lead forms.</p>
+          <div class="product-actions">
+            <a href="https://kairo-estate-demo.jeffev123.workers.dev" class="project-link" rel="noopener noreferrer" target="_blank"><span data-i18n="products.demo">Live demo</span> <i class="fas fa-external-link-alt" aria-hidden="true"></i></a>
+            <a href="https://payhip.com/b/71AJn" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy Kairo Estate on Payhip"><span data-i18n="products.buy">Buy</span> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </article>
+      <article class="product-card">
+        <a href="https://payhip.com/b/71tTH" class="product-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/kairo-mail.jpg" alt="" width="800" height="500" loading="lazy"></a>
+        <div class="product-body">
+          <div class="product-top"><h4 class="product-name">Kairo Mail</h4><span class="product-price"><span data-i18n="products.from">from</span> US$ 29</span></div>
+          <p class="product-desc" data-i18n="tpl.mail">32 transactional and marketing email templates built with React Email and Tailwind.</p>
+          <div class="product-actions">
+            <a href="https://kairo-mail-demo.jeffev123.workers.dev" class="project-link" rel="noopener noreferrer" target="_blank"><span data-i18n="products.demo">Live demo</span> <i class="fas fa-external-link-alt" aria-hidden="true"></i></a>
+            <a href="https://payhip.com/b/71tTH" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy Kairo Mail on Payhip"><span data-i18n="products.buy">Buy</span> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </article>
+      <article class="product-card">
+        <a href="https://payhip.com/b/KwUv8" class="product-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/kairo-studio.jpg" alt="" width="800" height="500" loading="lazy"></a>
+        <div class="product-body">
+          <div class="product-top"><h4 class="product-name">Kairo Studio</h4><span class="product-price"><span data-i18n="products.from">from</span> US$ 29</span></div>
+          <p class="product-desc" data-i18n="tpl.studio">Agency and portfolio website with case studies, services with pricing and a project brief form.</p>
+          <div class="product-actions">
+            <a href="https://kairo-studio-demo.jeffev123.workers.dev" class="project-link" rel="noopener noreferrer" target="_blank"><span data-i18n="products.demo">Live demo</span> <i class="fas fa-external-link-alt" aria-hidden="true"></i></a>
+            <a href="https://payhip.com/b/KwUv8" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy Kairo Studio on Payhip"><span data-i18n="products.buy">Buy</span> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <a href="https://payhip.com/b/CP8el" class="bundle-banner fade-in" rel="noopener noreferrer" target="_blank">
+      <img src="images/products/kairo-complete-kit.jpg" alt="" width="800" height="500" loading="lazy">
+      <div>
+        <strong data-i18n="products.bundleTitle">Kairo Complete Kit: all 6 templates</strong>
+        <span data-i18n="products.bundleDesc">US$ 119 instead of US$ 184 bought separately.</span>
+      </div>
+      <span class="product-buy"><span data-i18n="products.bundleCta">Get the bundle</span> <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+    </a>
+
+    <h3 class="products-sub fade-in"><i class="fas fa-book-open" aria-hidden="true"></i> <span data-i18n="products.ebooks">E-books</span> <span class="products-note" data-i18n="products.ebooksNote">In Portuguese · PDF + full source code of a template</span></h3>
+    <div class="ebooks-grid fade-in">
+      <article class="ebook-card">
+        <a href="https://go.hotmart.com/I107876437M" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-admin.jpg" alt="" width="560" height="560" loading="lazy"></a>
+        <div class="product-body">
+          <h4 class="product-name"><a href="https://go.hotmart.com/I107876437M" rel="noopener noreferrer" target="_blank">Painel Admin Profissional com Next.js 16 e shadcn/ui</a></h4>
+          <p class="product-desc" data-i18n="eb.admin">Build a complete admin dashboard, with the Kairo Admin source code included.</p>
+          <div class="product-top"><span class="product-price">R$ 67</span><a href="https://go.hotmart.com/I107876437M" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the e-book Painel Admin Profissional com Next.js 16 e shadcn/ui on Hotmart">Hotmart <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+        </div>
+      </article>
+      <article class="ebook-card">
+        <a href="https://go.hotmart.com/Y107877709N" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-saas.jpg" alt="" width="560" height="560" loading="lazy"></a>
+        <div class="product-body">
+          <h4 class="product-name"><a href="https://go.hotmart.com/Y107877709N" rel="noopener noreferrer" target="_blank">SaaS com IA do Zero: Next.js 16, Claude e Stripe</a></h4>
+          <p class="product-desc" data-i18n="eb.saas">Auth, AI chat, credits and payments, with the Kairo AI Starter source code included.</p>
+          <div class="product-top"><span class="product-price">R$ 97</span><a href="https://go.hotmart.com/Y107877709N" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the e-book SaaS com IA do Zero: Next.js 16, Claude e Stripe on Hotmart">Hotmart <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+        </div>
+      </article>
+      <article class="ebook-card">
+        <a href="https://go.hotmart.com/P107879453E" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-landing.jpg" alt="" width="560" height="560" loading="lazy"></a>
+        <div class="product-body">
+          <h4 class="product-name"><a href="https://go.hotmart.com/P107879453E" rel="noopener noreferrer" target="_blank">Landing Pages que Vendem: Next.js 16, Tailwind e shadcn/ui</a></h4>
+          <p class="product-desc" data-i18n="eb.landing">Landing pages that convert, with the Kairo Blocks source code included.</p>
+          <div class="product-top"><span class="product-price">R$ 67</span><a href="https://go.hotmart.com/P107879453E" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the e-book Landing Pages que Vendem: Next.js 16, Tailwind e shadcn/ui on Hotmart">Hotmart <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+        </div>
+      </article>
+      <article class="ebook-card">
+        <a href="https://go.hotmart.com/Y107879665G" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-imob.jpg" alt="" width="560" height="560" loading="lazy"></a>
+        <div class="product-body">
+          <h4 class="product-name"><a href="https://go.hotmart.com/Y107879665G" rel="noopener noreferrer" target="_blank">Site de Imobiliária com Next.js</a></h4>
+          <p class="product-desc" data-i18n="eb.imob">Listings, map, mortgage simulator and WhatsApp leads, adapted to Brazil.</p>
+          <div class="product-top"><span class="product-price">R$ 97</span><a href="https://go.hotmart.com/Y107879665G" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the e-book Site de Imobiliária com Next.js on Hotmart">Hotmart <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+        </div>
+      </article>
+      <article class="ebook-card">
+        <a href="https://go.hotmart.com/K107879932Q" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-portfolio.jpg" alt="" width="560" height="560" loading="lazy"></a>
+        <div class="product-body">
+          <h4 class="product-name"><a href="https://go.hotmart.com/K107879932Q" rel="noopener noreferrer" target="_blank">Portfólio que Atrai Clientes</a></h4>
+          <p class="product-desc" data-i18n="eb.portfolio">A portfolio with case studies, services and a brief form that brings clients.</p>
+          <div class="product-top"><span class="product-price">R$ 67</span><a href="https://go.hotmart.com/K107879932Q" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the e-book Portfólio que Atrai Clientes on Hotmart">Hotmart <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+        </div>
+      </article>
+    </div>
+
+    <p class="products-store fade-in"><a href="https://payhip.com/ValandroUI" rel="noopener noreferrer" target="_blank" class="project-link"><span data-i18n="products.store">Visit the ValandroUI store</span> <i class="fas fa-arrow-right" aria-hidden="true"></i></a></p>
+  </div>
+</section>
+
 <!-- ARTICLES -->
 <section id="articles">
   <div class="container">
@@ -1638,6 +1827,33 @@
       'nav.articles': 'Articles',
       'nav.news': 'News',
       'nav.contact': 'Contact',
+      'nav.products': 'Products',
+      'hero.btnProducts': 'Templates &amp; e-books',
+      'products.label': 'ValandroUI',
+      'products.title': 'Templates &amp; e-books',
+      'products.desc': 'Production-ready Next.js templates and hands-on e-books that I build and sell under the ValandroUI brand.',
+      'products.templates': 'Next.js templates',
+      'products.templatesNote': 'Next.js 16 · Tailwind CSS 4 · shadcn/ui · source code',
+      'products.from': 'from',
+      'products.demo': 'Live demo',
+      'products.buy': 'Buy',
+      'products.bundleTitle': 'Kairo Complete Kit: all 6 templates',
+      'products.bundleDesc': 'US$ 119 instead of US$ 184 bought separately.',
+      'products.bundleCta': 'Get the bundle',
+      'products.ebooks': 'E-books',
+      'products.ebooksNote': 'In Portuguese · PDF + full source code of a template',
+      'products.store': 'Visit the ValandroUI store',
+      'tpl.admin': 'Admin dashboard with 23 screens: data tables, charts, kanban, settings and auth pages. Light and dark themes.',
+      'tpl.ai': 'SaaS starter with authentication, AI chat with streaming, usage credits and Stripe payments. Runs in demo mode without keys.',
+      'tpl.blocks': '61 landing-page blocks in 14 categories, one file each, with a live preview and code viewer.',
+      'tpl.estate': 'Real-estate website with listings on a map, filters kept in the URL, property pages and lead forms.',
+      'tpl.mail': '32 transactional and marketing email templates built with React Email and Tailwind.',
+      'tpl.studio': 'Agency and portfolio website with case studies, services with pricing and a project brief form.',
+      'eb.admin': 'Build a complete admin dashboard, with the Kairo Admin source code included.',
+      'eb.saas': 'Auth, AI chat, credits and payments, with the Kairo AI Starter source code included.',
+      'eb.landing': 'Landing pages that convert, with the Kairo Blocks source code included.',
+      'eb.imob': 'Listings, map, mortgage simulator and WhatsApp leads, adapted to Brazil.',
+      'eb.portfolio': 'A portfolio with case studies, services and a brief form that brings clients.',
 
       'hero.badge': 'Available for opportunities',
       'hero.subtitle': 'Senior Software Engineer & Tech Lead with 10+ years building scalable systems, microservices architectures, and cloud-native solutions.',
@@ -1763,6 +1979,33 @@
       'nav.articles': 'Artigos',
       'nav.news': 'Notícias',
       'nav.contact': 'Contato',
+      'nav.products': 'Produtos',
+      'hero.btnProducts': 'Templates e e-books',
+      'products.label': 'ValandroUI',
+      'products.title': 'Templates e e-books',
+      'products.desc': 'Templates Next.js prontos para produção e e-books práticos que eu crio e vendo com a marca ValandroUI.',
+      'products.templates': 'Templates Next.js',
+      'products.templatesNote': 'Next.js 16 · Tailwind CSS 4 · shadcn/ui · código-fonte',
+      'products.from': 'a partir de',
+      'products.demo': 'Ver demo',
+      'products.buy': 'Comprar',
+      'products.bundleTitle': 'Kairo Complete Kit: os 6 templates',
+      'products.bundleDesc': 'US$ 119 em vez de US$ 184 comprando separado.',
+      'products.bundleCta': 'Ver o pacote',
+      'products.ebooks': 'E-books',
+      'products.ebooksNote': 'Em português · PDF + código-fonte completo de um template',
+      'products.store': 'Visitar a loja ValandroUI',
+      'tpl.admin': 'Painel administrativo com 23 telas: tabelas, gráficos, kanban, configurações e telas de login. Tema claro e escuro.',
+      'tpl.ai': 'Base de SaaS com login, chat de IA em streaming, créditos de uso e pagamentos com Stripe. Roda em modo demo sem chaves.',
+      'tpl.blocks': '61 blocos de landing page em 14 categorias, um arquivo cada, com prévia ao vivo e visualizador de código.',
+      'tpl.estate': 'Site de imobiliária com imóveis no mapa, filtros guardados na URL, página do imóvel e formulários de contato.',
+      'tpl.mail': '32 templates de e-mail transacional e de marketing feitos com React Email e Tailwind.',
+      'tpl.studio': 'Site de agência e portfólio com estudos de caso, serviços com preço e formulário de briefing.',
+      'eb.admin': 'Construa um painel administrativo completo, com o código do Kairo Admin incluso.',
+      'eb.saas': 'Login, chat com IA, créditos e pagamentos, com o código do Kairo AI Starter incluso.',
+      'eb.landing': 'Landing pages que convertem, com o código do Kairo Blocks incluso.',
+      'eb.imob': 'Catálogo, mapa, simulador SAC/Price e leads no WhatsApp, adaptado ao Brasil.',
+      'eb.portfolio': 'Portfólio com casos, serviços e briefing que trazem clientes.',
 
       'hero.badge': 'Aberto a oportunidades',
       'hero.subtitle': 'Engenheiro de Software Sênior & Tech Lead com 10+ anos desenvolvendo sistemas escaláveis, arquiteturas de microsserviços e soluções cloud-native.',
