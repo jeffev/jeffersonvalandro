@@ -470,6 +470,7 @@
       transition: background 0.2s; white-space: nowrap;
     }
     .product-buy:hover { background: #6aa0f8; }
+    .product-buy--soon { opacity: .55; cursor: default; pointer-events: none; }
     .bundle-banner {
       display: grid; grid-template-columns: 180px 1fr auto; align-items: center; gap: 1.4rem;
       margin: 1.5rem 0 1rem; padding: 1rem 1.4rem 1rem 1rem; border-radius: var(--radius);
@@ -1513,46 +1514,47 @@
       </article>
     </div>
 
-    <h3 class="products-sub fade-in"><i class="fas fa-brain" aria-hidden="true"></i> <span data-i18n="products.ebooksAi">E-books on AI &amp; career</span> <span class="products-note" data-i18n="products.ebooksAiNote">In Portuguese · PDF · from beginners to Transformers</span></h3>
+    <h3 class="products-sub fade-in"><i class="fas fa-brain" aria-hidden="true"></i> <span data-i18n="products.ebooksAi">E-books on AI &amp; career</span> <span class="products-note" data-i18n="products.ebooksAiNote">In Portuguese · Kindle on Amazon · from beginners to Transformers</span></h3>
     <div class="ebooks-grid ebooks-grid--compact fade-in">
       <article class="ebook-card">
-        <a href="https://go.hotmart.com/J107965517S" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-ia-essencial.jpg" alt="" width="560" height="560" loading="lazy"></a>
+        <span class="ebook-cover" aria-hidden="true"><img src="images/products/ebook-ia-essencial.jpg" alt="" width="560" height="560" loading="lazy"></span>
         <div class="product-body">
-          <h4 class="product-name"><a href="https://go.hotmart.com/J107965517S" rel="noopener noreferrer" target="_blank">Inteligência Artificial sem Mistério</a></h4>
+          <h4 class="product-name">Inteligência Artificial sem Mistério</h4>
           <p class="product-desc" data-i18n="eb.essencial">The essentials of AI for people outside tech: what it does, where it fails and how to use it with care. 151 pages.</p>
-          <div class="product-top"><span class="product-price">R$ 37</span><a href="https://go.hotmart.com/J107965517S" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the e-book Inteligência Artificial sem Mistério on Hotmart">Hotmart <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+          <div class="product-top"><span class="product-price">R$ 37</span><span class="product-buy product-buy--soon"><span data-i18n="eb.soon">Coming soon on Amazon</span> <i class="fas fa-clock" aria-hidden="true"></i></span></div>
         </div>
       </article>
       <article class="ebook-card">
-        <a href="https://go.hotmart.com/D107921153D" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-ia.jpg" alt="" width="560" height="560" loading="lazy"></a>
+        <span class="ebook-cover" aria-hidden="true"><img src="images/products/ebook-ia.jpg" alt="" width="560" height="560" loading="lazy"></span>
         <div class="product-body">
-          <h4 class="product-name"><a href="https://go.hotmart.com/D107921153D" rel="noopener noreferrer" target="_blank">Abaixo do Prompt: como a IA funciona de verdade</a></h4>
+          <h4 class="product-name">Abaixo do Prompt: como a IA funciona de verdade</h4>
           <p class="product-desc" data-i18n="eb.prompt">Tokens, temperature, attention, hallucination and RAG, measured on a small model you run on your own PC. Code included.</p>
-          <div class="product-top"><span class="product-price">R$ 67</span><a href="https://go.hotmart.com/D107921153D" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the e-book Abaixo do Prompt on Hotmart">Hotmart <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+          <div class="product-top"><span class="product-price">R$ 67</span><span class="product-buy product-buy--soon"><span data-i18n="eb.soon">Coming soon on Amazon</span> <i class="fas fa-clock" aria-hidden="true"></i></span></div>
         </div>
       </article>
       <article class="ebook-card">
-        <a href="https://go.hotmart.com/U107934547O" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-ia-dentro.jpg" alt="" width="560" height="560" loading="lazy"></a>
+        <a href="https://www.amazon.com.br/dp/B0HNRQNJYL" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-ia-dentro.jpg" alt="" width="560" height="560" loading="lazy"></a>
         <div class="product-body">
-          <h4 class="product-name"><a href="https://go.hotmart.com/U107934547O" rel="noopener noreferrer" target="_blank">Inteligência Artificial por Dentro</a></h4>
+          <h4 class="product-name"><a href="https://www.amazon.com.br/dp/B0HNRQNJYL" rel="noopener noreferrer" target="_blank">Inteligência Artificial por Dentro</a></h4>
           <p class="product-desc" data-i18n="eb.dentro">From predictive models to LLMs and Transformers, with math, code and 190+ verified references. 599 pages.</p>
-          <div class="product-top"><span class="product-price">R$ 100</span><a href="https://go.hotmart.com/U107934547O" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the e-book Inteligência Artificial por Dentro on Hotmart">Hotmart <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+          <a href="https://www.amazon.com/dp/B0HNR1GLTG" class="project-link" rel="noopener noreferrer" target="_blank"><span data-i18n="eb.paperbackEn">English paperback on Amazon</span> <i class="fas fa-book" aria-hidden="true"></i></a>
+          <div class="product-top"><span class="product-price">R$ 31,99</span><a href="https://www.amazon.com.br/dp/B0HNRQNJYL" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the Kindle e-book Inteligência Artificial por Dentro on Amazon">Amazon <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
         </div>
       </article>
       <article class="ebook-card">
-        <a href="https://go.hotmart.com/W107966200A" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-ia-dev.jpg" alt="" width="560" height="560" loading="lazy"></a>
+        <span class="ebook-cover" aria-hidden="true"><img src="images/products/ebook-ia-dev.jpg" alt="" width="560" height="560" loading="lazy"></span>
         <div class="product-body">
-          <h4 class="product-name"><a href="https://go.hotmart.com/W107966200A" rel="noopener noreferrer" target="_blank">IA no Fluxo do Dev</a></h4>
+          <h4 class="product-name">IA no Fluxo do Dev</h4>
           <p class="product-desc" data-i18n="eb.iadev">Harness, context, spec-driven development, agents and MCP in practice, with a kit that includes an MCP server. 400 pages.</p>
-          <div class="product-top"><span class="product-price">R$ 97</span><a href="https://go.hotmart.com/W107966200A" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the e-book IA no Fluxo do Dev on Hotmart">Hotmart <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+          <div class="product-top"><span class="product-price">R$ 97</span><span class="product-buy product-buy--soon"><span data-i18n="eb.soon">Coming soon on Amazon</span> <i class="fas fa-clock" aria-hidden="true"></i></span></div>
         </div>
       </article>
       <article class="ebook-card">
-        <a href="https://go.hotmart.com/G107935880A" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-entrevistas.jpg" alt="" width="560" height="560" loading="lazy"></a>
+        <a href="https://www.amazon.com/dp/B0HNRC5JSP" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-entrevistas.jpg" alt="" width="560" height="560" loading="lazy"></a>
         <div class="product-body">
-          <h4 class="product-name"><a href="https://go.hotmart.com/G107935880A" rel="noopener noreferrer" target="_blank">Como Passar em Entrevistas para Desenvolvedor</a></h4>
+          <h4 class="product-name"><a href="https://www.amazon.com/dp/B0HNRC5JSP" rel="noopener noreferrer" target="_blank">Como Passar em Entrevistas para Desenvolvedor</a></h4>
           <p class="product-desc" data-i18n="eb.entrevistas">From résumé to offer: coding, system design, behavioral rounds and negotiation, with tested solutions. 639 pages.</p>
-          <div class="product-top"><span class="product-price">R$ 97</span><a href="https://go.hotmart.com/G107935880A" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the e-book Como Passar em Entrevistas para Desenvolvedor on Hotmart">Hotmart <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+          <div class="product-top"><span class="product-price">US$ 34.99 <span data-i18n="eb.enEdition">(English edition)</span></span><a href="https://www.amazon.com/dp/B0HNRC5JSP" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the paperback How to Pass Developer Interviews on Amazon">Amazon <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
         </div>
       </article>
     </div>
@@ -1560,43 +1562,43 @@
     <h3 class="products-sub fade-in"><i class="fas fa-book-open" aria-hidden="true"></i> <span data-i18n="products.ebooks">E-books + template code</span> <span class="products-note" data-i18n="products.ebooksNote">In Portuguese · PDF + full source code of the template it teaches</span></h3>
     <div class="ebooks-grid fade-in">
       <article class="ebook-card">
-        <a href="https://go.hotmart.com/I107876437M" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-admin.jpg" alt="" width="560" height="560" loading="lazy"></a>
+        <span class="ebook-cover" aria-hidden="true"><img src="images/products/ebook-admin.jpg" alt="" width="560" height="560" loading="lazy"></span>
         <div class="product-body">
-          <h4 class="product-name"><a href="https://go.hotmart.com/I107876437M" rel="noopener noreferrer" target="_blank">Painel Admin Profissional com Next.js 16 e shadcn/ui</a></h4>
+          <h4 class="product-name">Painel Admin Profissional com Next.js 16 e shadcn/ui</h4>
           <p class="product-desc" data-i18n="eb.admin">Build a complete admin dashboard, with the Kairo Admin source code included.</p>
-          <div class="product-top"><span class="product-price">R$ 67</span><a href="https://go.hotmart.com/I107876437M" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the e-book Painel Admin Profissional com Next.js 16 e shadcn/ui on Hotmart">Hotmart <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+          <div class="product-top"><span class="product-price">R$ 67</span><span class="product-buy product-buy--soon"><span data-i18n="eb.soon">Coming soon on Amazon</span> <i class="fas fa-clock" aria-hidden="true"></i></span></div>
         </div>
       </article>
       <article class="ebook-card">
-        <a href="https://go.hotmart.com/Y107877709N" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-saas.jpg" alt="" width="560" height="560" loading="lazy"></a>
+        <span class="ebook-cover" aria-hidden="true"><img src="images/products/ebook-saas.jpg" alt="" width="560" height="560" loading="lazy"></span>
         <div class="product-body">
-          <h4 class="product-name"><a href="https://go.hotmart.com/Y107877709N" rel="noopener noreferrer" target="_blank">SaaS com IA do Zero: Next.js 16, Claude e Stripe</a></h4>
+          <h4 class="product-name">SaaS com IA do Zero: Next.js 16, Claude e Stripe</h4>
           <p class="product-desc" data-i18n="eb.saas">Auth, AI chat, credits and payments, with the Kairo AI Starter source code included.</p>
-          <div class="product-top"><span class="product-price">R$ 97</span><a href="https://go.hotmart.com/Y107877709N" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the e-book SaaS com IA do Zero: Next.js 16, Claude e Stripe on Hotmart">Hotmart <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+          <div class="product-top"><span class="product-price">R$ 97</span><span class="product-buy product-buy--soon"><span data-i18n="eb.soon">Coming soon on Amazon</span> <i class="fas fa-clock" aria-hidden="true"></i></span></div>
         </div>
       </article>
       <article class="ebook-card">
-        <a href="https://go.hotmart.com/P107879453E" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-landing.jpg" alt="" width="560" height="560" loading="lazy"></a>
+        <span class="ebook-cover" aria-hidden="true"><img src="images/products/ebook-landing.jpg" alt="" width="560" height="560" loading="lazy"></span>
         <div class="product-body">
-          <h4 class="product-name"><a href="https://go.hotmart.com/P107879453E" rel="noopener noreferrer" target="_blank">Landing Pages que Vendem: Next.js 16, Tailwind e shadcn/ui</a></h4>
+          <h4 class="product-name">Landing Pages que Vendem: Next.js 16, Tailwind e shadcn/ui</h4>
           <p class="product-desc" data-i18n="eb.landing">Landing pages that convert, with the Kairo Blocks source code included.</p>
-          <div class="product-top"><span class="product-price">R$ 67</span><a href="https://go.hotmart.com/P107879453E" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the e-book Landing Pages que Vendem: Next.js 16, Tailwind e shadcn/ui on Hotmart">Hotmart <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+          <div class="product-top"><span class="product-price">R$ 67</span><span class="product-buy product-buy--soon"><span data-i18n="eb.soon">Coming soon on Amazon</span> <i class="fas fa-clock" aria-hidden="true"></i></span></div>
         </div>
       </article>
       <article class="ebook-card">
-        <a href="https://go.hotmart.com/Y107879665G" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-imob.jpg" alt="" width="560" height="560" loading="lazy"></a>
+        <span class="ebook-cover" aria-hidden="true"><img src="images/products/ebook-imob.jpg" alt="" width="560" height="560" loading="lazy"></span>
         <div class="product-body">
-          <h4 class="product-name"><a href="https://go.hotmart.com/Y107879665G" rel="noopener noreferrer" target="_blank">Site de Imobiliária com Next.js</a></h4>
+          <h4 class="product-name">Site de Imobiliária com Next.js</h4>
           <p class="product-desc" data-i18n="eb.imob">Listings, map, mortgage simulator and WhatsApp leads, adapted to Brazil.</p>
-          <div class="product-top"><span class="product-price">R$ 97</span><a href="https://go.hotmart.com/Y107879665G" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the e-book Site de Imobiliária com Next.js on Hotmart">Hotmart <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+          <div class="product-top"><span class="product-price">R$ 97</span><span class="product-buy product-buy--soon"><span data-i18n="eb.soon">Coming soon on Amazon</span> <i class="fas fa-clock" aria-hidden="true"></i></span></div>
         </div>
       </article>
       <article class="ebook-card">
-        <a href="https://go.hotmart.com/K107879932Q" class="ebook-cover" rel="noopener noreferrer" target="_blank" tabindex="-1" aria-hidden="true"><img src="images/products/ebook-portfolio.jpg" alt="" width="560" height="560" loading="lazy"></a>
+        <span class="ebook-cover" aria-hidden="true"><img src="images/products/ebook-portfolio.jpg" alt="" width="560" height="560" loading="lazy"></span>
         <div class="product-body">
-          <h4 class="product-name"><a href="https://go.hotmart.com/K107879932Q" rel="noopener noreferrer" target="_blank">Portfólio que Atrai Clientes</a></h4>
+          <h4 class="product-name">Portfólio que Atrai Clientes</h4>
           <p class="product-desc" data-i18n="eb.portfolio">A portfolio with case studies, services and a brief form that brings clients.</p>
-          <div class="product-top"><span class="product-price">R$ 67</span><a href="https://go.hotmart.com/K107879932Q" class="product-buy" rel="noopener noreferrer" target="_blank" aria-label="Buy the e-book Portfólio que Atrai Clientes on Hotmart">Hotmart <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+          <div class="product-top"><span class="product-price">R$ 67</span><span class="product-buy product-buy--soon"><span data-i18n="eb.soon">Coming soon on Amazon</span> <i class="fas fa-clock" aria-hidden="true"></i></span></div>
         </div>
       </article>
     </div>
@@ -1944,7 +1946,7 @@
       'products.ebooks': 'E-books + template code',
       'products.ebooksNote': 'In Portuguese · PDF + full source code of the template it teaches',
       'products.ebooksAi': 'E-books on AI &amp; career',
-      'products.ebooksAiNote': 'In Portuguese · PDF · from beginners to Transformers',
+      'products.ebooksAiNote': 'In Portuguese · Kindle on Amazon · from beginners to Transformers',
       'products.lite': 'Want to try first? Kairo Blocks Lite has 10 free blocks under the MIT license.',
       'eb.essencial': 'The essentials of AI for people outside tech: what it does, where it fails and how to use it with care. 151 pages.',
       'eb.prompt': 'Tokens, temperature, attention, hallucination and RAG, measured on a small model you run on your own PC. Code included.',
@@ -1972,6 +1974,9 @@
       'eb.mcp': 'Build a small, tested and safe MCP server in TypeScript and connect it to Claude Code. 53 pages.',
       'eb.code': 'Source code (zip, MIT)',
       'eb.download': 'Download PDF',
+      'eb.soon': 'Coming soon on Amazon',
+      'eb.paperbackEn': 'English paperback on Amazon',
+      'eb.enEdition': '(English edition)',
 
       'hero.badge': 'Available for opportunities',
       'hero.subtitle': 'Senior Software Engineer & Tech Lead with 10+ years building scalable systems, microservices architectures, and cloud-native solutions.',
@@ -2115,7 +2120,7 @@
       'products.ebooks': 'E-books + código de template',
       'products.ebooksNote': 'Em português · PDF + código-fonte completo do template que o livro ensina',
       'products.ebooksAi': 'E-books de IA e carreira',
-      'products.ebooksAiNote': 'Em português · PDF · do leigo ao Transformer',
+      'products.ebooksAiNote': 'Em português · Kindle na Amazon · do leigo ao Transformer',
       'products.lite': 'Quer testar antes? O Kairo Blocks Lite tem 10 blocos grátis com licença MIT.',
       'eb.essencial': 'O essencial de IA para quem não é da área: o que ela faz, onde erra e como usar com cuidado. 151 páginas.',
       'eb.prompt': 'Tokens, temperatura, atenção, alucinação e RAG medidos num modelo pequeno que roda no seu PC. Código incluso.',
@@ -2143,6 +2148,9 @@
       'eb.mcp': 'Monte um servidor MCP pequeno, testado e seguro em TypeScript e ligue no Claude Code. 53 páginas.',
       'eb.code': 'Código-fonte (zip, MIT)',
       'eb.download': 'Baixar PDF',
+      'eb.soon': 'Em breve na Amazon',
+      'eb.paperbackEn': 'Edição em inglês impressa na Amazon',
+      'eb.enEdition': '(edição em inglês)',
 
       'hero.badge': 'Aberto a oportunidades',
       'hero.subtitle': 'Engenheiro de Software Sênior & Tech Lead com 10+ anos desenvolvendo sistemas escaláveis, arquiteturas de microsserviços e soluções cloud-native.',
