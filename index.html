@@ -1207,14 +1207,67 @@
       </div>
 
       <div class="project-card">
-        <div class="project-thumb" data-bg="images/analise_acoes.png" role="img" aria-label="InvestLink project preview">
+        <div class="project-thumb" data-bg="images/investlink-demo.jpg" style="background-color:#0d1526;" role="img" aria-label="InvestLink — explainable stock and REIT screener project preview">
           <div class="project-thumb-overlay"></div>
         </div>
         <div class="project-body">
           <div class="project-year">2023 — Present</div>
-          <div class="project-title"><a href="https://github.com/jeffev/Investlink">InvestLink</a></div>
-          <p class="project-desc" data-i18n="projects.investlink.desc">Brazilian investment analysis platform for IBXX stocks and FIIs. Monorepo with Flask API, React frontend, data pipeline, and Docker orchestration.</p>
-          <a href="https://github.com/jeffev/Investlink" class="project-link" data-i18n="projects.linkGithub">View on GitHub <i class="fas fa-arrow-right"></i></a>
+          <div class="project-title"><a href="https://investlink-demo.vercel.app" rel="noopener noreferrer" target="_blank">InvestLink — Explainable Investment Screener</a></div>
+          <p class="project-desc" data-i18n="projects.investlink.desc">Brazilian stock and REIT screener that scores each asset against its own sector and shows the case for it and the warning against it, side by side. Fundamentals come from audited CVM filings, reconciled against market data, with a backtest that shows its survivorship-bias caveat.</p>
+          <div class="timeline-techs" style="margin-bottom:0.8rem;">
+            <span class="timeline-tech">Flask</span>
+            <span class="timeline-tech">React</span>
+            <span class="timeline-tech">PostgreSQL</span>
+            <span class="timeline-tech">pandas</span>
+            <span class="timeline-tech">CVM Open Data</span>
+          </div>
+          <div style="display:flex;gap:0.8rem;flex-wrap:wrap;">
+            <a href="https://github.com/jeffev/Investlink" class="project-link" rel="noopener noreferrer" target="_blank">GitHub <i class="fas fa-arrow-right"></i></a>
+            <a href="https://investlink-demo.vercel.app" class="project-link" rel="noopener noreferrer" target="_blank" style="color:var(--accent2);">Demo <i class="fas fa-external-link-alt"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-thumb" data-bg="images/vizion.jpg" style="background-color:#0d1526;" role="img" aria-label="Vizion — AI-assisted business intelligence project preview">
+          <div class="project-thumb-overlay"></div>
+        </div>
+        <div class="project-body">
+          <div class="project-year">2026</div>
+          <div class="project-title"><a href="https://vizion-demo.vercel.app" rel="noopener noreferrer" target="_blank">Vizion — AI-Assisted BI</a></div>
+          <p class="project-desc" data-i18n="projects.vizion.desc">Business intelligence without SQL: upload a spreadsheet or connect a database, ask questions in plain language and get charts, drag-and-drop dashboards, semantic models with YTD/MoM/YoY measures, no-code ETL pipelines and AI-written reports. Users bring their own Claude or Gemini key.</p>
+          <div class="timeline-techs" style="margin-bottom:0.8rem;">
+            <span class="timeline-tech">Next.js</span>
+            <span class="timeline-tech">FastAPI</span>
+            <span class="timeline-tech">DuckDB</span>
+            <span class="timeline-tech">PostgreSQL</span>
+            <span class="timeline-tech">Claude</span>
+          </div>
+          <div style="display:flex;gap:0.8rem;flex-wrap:wrap;">
+            <a href="https://vizion-demo.vercel.app" class="project-link" rel="noopener noreferrer" target="_blank" style="color:var(--accent2);">Demo <i class="fas fa-external-link-alt"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-thumb" data-bg="images/aria.jpg" style="background-color:#0d1526;" role="img" aria-label="ARIA — AI personal assistant project preview">
+          <div class="project-thumb-overlay"></div>
+        </div>
+        <div class="project-body">
+          <div class="project-year">2026</div>
+          <div class="project-title"><a href="https://aria-demo-beta.vercel.app" rel="noopener noreferrer" target="_blank">ARIA — AI Personal Assistant</a></div>
+          <p class="project-desc" data-i18n="projects.aria.desc">Personal dashboard with an AI assistant that turns text or voice into calendar events, tasks and notes through Gemini function calling. Weekly agenda with recurrence, global search, browser notifications, Google Calendar sync and a desktop overlay in Electron.</p>
+          <div class="timeline-techs" style="margin-bottom:0.8rem;">
+            <span class="timeline-tech">Next.js</span>
+            <span class="timeline-tech">Prisma</span>
+            <span class="timeline-tech">NextAuth</span>
+            <span class="timeline-tech">Gemini</span>
+            <span class="timeline-tech">Electron</span>
+          </div>
+          <div style="display:flex;gap:0.8rem;flex-wrap:wrap;">
+            <a href="https://github.com/jeffev/aria" class="project-link" rel="noopener noreferrer" target="_blank">GitHub <i class="fas fa-arrow-right"></i></a>
+            <a href="https://aria-demo-beta.vercel.app" class="project-link" rel="noopener noreferrer" target="_blank" style="color:var(--accent2);">Demo <i class="fas fa-external-link-alt"></i></a>
+          </div>
         </div>
       </div>
 
@@ -2115,7 +2168,9 @@
       'projects.linkStudy': 'Read the study <i class="fas fa-external-link-alt"></i>',
       'projects.swingquant.desc': 'Quantitative swing-trading system for Brazilian and US equities — walk-forward, out-of-sample, Monte Carlo and cost-stress validation, with automated daily screening — plus a 16-year data study on whether running it actually beat investing. 2.3M daily bars, 26 asset classes, and the finding that most of the apparent edge was interest on idle cash.',
       'projects.gasto.desc': 'Native Android app for personal expense tracking with voice and natural language input, offline AI category classification (TF-IDF + LinearSVC in TypeScript), local SQLite storage, and visual monthly reports — no internet required.',
-      'projects.investlink.desc': 'Brazilian investment analysis platform for IBXX stocks and FIIs. Monorepo with Flask API, React frontend, data pipeline, and Docker orchestration.',
+      'projects.investlink.desc': 'Brazilian stock and REIT screener that scores each asset against its own sector and shows the case for it and the warning against it, side by side. Fundamentals come from audited CVM filings, reconciled against market data, with a backtest that shows its survivorship-bias caveat.',
+      'projects.vizion.desc': 'Business intelligence without SQL: upload a spreadsheet or connect a database, ask questions in plain language and get charts, drag-and-drop dashboards, semantic models with YTD/MoM/YoY measures, no-code ETL pipelines and AI-written reports. Users bring their own Claude or Gemini key.',
+      'projects.aria.desc': 'Personal dashboard with an AI assistant that turns text or voice into calendar events, tasks and notes through Gemini function calling. Weekly agenda with recurrence, global search, browser notifications, Google Calendar sync and a desktop overlay in Electron.',
       'projects.ghostdoc.desc': 'Automated documentation tool that instruments functions with decorators to capture calls, arguments, return values, and generate live interactive flowcharts.',
       'projects.aidevkit.desc': 'Full AI bootstrap for any project — spec-driven workflow, real-time quality auditor, TUI for feature lifecycle management, AI-powered smart commits, and Claude Code hooks. Detects your stack and configures everything with one command.',
       'projects.archlens.desc': 'CLI tool that points at any codebase and generates a self-contained HTML report with an interactive architecture graph, health scores, anti-pattern detection, dependency cycle detection, and refactoring suggestions — powered by Claude Code.',
@@ -2298,7 +2353,9 @@
       'projects.linkStudy': 'Ler o estudo <i class="fas fa-external-link-alt"></i>',
       'projects.swingquant.desc': 'Sistema quantitativo de swing trade para ações da B3 e do S&P 500 — validação com walk-forward, out-of-sample, Monte Carlo e estresse de custo, com screening diário automatizado — mais um estudo de 16 anos sobre se rodar isso de fato ganhava de simplesmente investir. 2,3 milhões de barras diárias, 26 classes de ativo, e o achado de que quase toda a vantagem aparente era juro sobre caixa parado.',
       'projects.gasto.desc': 'App Android nativo para controle de despesas pessoais, com registro por voz e texto em linguagem natural, classificação automática de categorias usando IA offline (TF-IDF + LinearSVC em TypeScript), banco de dados SQLite local e relatórios mensais visuais — sem internet.',
-      'projects.investlink.desc': 'Plataforma de análise de investimentos brasileiros para ações do IBXX e FIIs. Monorepo com API Flask, frontend React, pipeline de dados e orquestração Docker.',
+      'projects.investlink.desc': 'Screener de ações e FIIs da B3 que pontua cada ativo contra o próprio setor e mostra, lado a lado, o argumento a favor e o alerta contra. Os fundamentos vêm dos balanços auditados da CVM, conferidos contra dados de mercado, com backtest que exibe a ressalva de viés de sobrevivência.',
+      'projects.vizion.desc': 'Business intelligence sem SQL: suba uma planilha ou conecte um banco, pergunte em linguagem natural e receba gráficos, dashboards de arrastar e soltar, modelos semânticos com medidas YTD/MoM/YoY, pipelines de ETL sem código e relatórios escritos pela IA. Cada usuário usa a própria chave do Claude ou do Gemini.',
+      'projects.aria.desc': 'Painel pessoal com uma assistente de IA que transforma texto ou voz em eventos, tarefas e notas via function calling do Gemini. Agenda semanal com recorrência, busca global, notificações do navegador, sincronização com o Google Calendar e um overlay desktop em Electron.',
       'projects.ghostdoc.desc': 'Ferramenta de documentação automatizada que instrumenta funções com decorators para capturar chamadas, argumentos, valores de retorno e gerar fluxogramas interativos.',
       'projects.aidevkit.desc': 'Bootstrap completo de IA para qualquer projeto — workflow spec-driven, auditor de qualidade em tempo real, TUI para gestão do ciclo de vida de features, smart commits com IA e hooks para Claude Code. Detecta sua stack e configura tudo com um comando.',
       'projects.archlens.desc': 'CLI que aponta para qualquer codebase e gera um relatório HTML autocontido com grafo interativo de arquitetura, health scores, detecção de anti-patterns, detecção de ciclos de dependência e sugestões de refatoração — powered by Claude Code.',
