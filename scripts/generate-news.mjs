@@ -60,7 +60,7 @@ function parseFeed(xml) {
 async function fetchFeed(feed) {
   try {
     const res = await fetch(feed.url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; TechNewsBot/1.0; +https://jeffev.github.io/jeffersonvalandro/)' },
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; TechNewsBot/1.0; +https://jeffersonvalandro.com.br/)' },
       signal: AbortSignal.timeout(15000),
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -123,9 +123,9 @@ function renderPage(items, generatedAt) {
   <title>Tech News Digest — Jefferson Valandro</title>
   <meta name="description" content="Curated headlines from around the software industry, refreshed daily.">
   <meta name="author" content="Jefferson Valandro">
-  <link rel="canonical" href="https://jeffev.github.io/jeffersonvalandro/news.html">
+  <link rel="canonical" href="https://jeffersonvalandro.com.br/news.html">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://jeffev.github.io/jeffersonvalandro/news.html">
+  <meta property="og:url" content="https://jeffersonvalandro.com.br/news.html">
   <meta property="og:title" content="Tech News Digest — Jefferson Valandro">
   <meta property="og:description" content="Curated headlines from around the software industry, refreshed daily.">
   <meta name="theme-color" content="#070d1a">
