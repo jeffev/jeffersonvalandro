@@ -45,6 +45,33 @@
   "skills": [
     {
       "group": {
+        "pt": "IA aplicada",
+        "en": "Applied AI"
+      },
+      "items": [
+        "LLMs em produto|LLMs in products",
+        "Claude API",
+        "Gemini",
+        "Claude Code",
+        "MCP",
+        "Spec-driven development"
+      ]
+    },
+    {
+      "group": {
+        "pt": "MLOps e dados",
+        "en": "MLOps & data"
+      },
+      "items": [
+        "MLOps",
+        "Machine Learning",
+        "Engenharia de dados|Data engineering",
+        "ETL",
+        "iReports"
+      ]
+    },
+    {
+      "group": {
         "pt": "Linguagens",
         "en": "Languages"
       },
@@ -108,19 +135,6 @@
     },
     {
       "group": {
-        "pt": "MLOps e dados",
-        "en": "MLOps & data"
-      },
-      "items": [
-        "MLOps",
-        "Machine Learning",
-        "Engenharia de dados|Data engineering",
-        "ETL",
-        "iReports"
-      ]
-    },
-    {
-      "group": {
         "pt": "Liderança e processo",
         "en": "Leadership & process"
       },
@@ -131,28 +145,15 @@
         "Mentoria|Mentoring",
         "Boas práticas|Best practices"
       ]
-    },
-    {
-      "group": {
-        "pt": "IA no desenvolvimento",
-        "en": "AI in development"
-      },
-      "items": [
-        "Claude Code",
-        "MCP",
-        "Spec-driven development",
-        "Gemini",
-        "Claude API"
-      ]
     }
   ],
   "headline": {
-    "pt": "Engenheiro de software sênior · backend Java, arquitetura e IA aplicada",
-    "en": "Senior software engineer · Java backend, architecture and applied AI"
+    "pt": "Engenheiro de software sênior · IA aplicada, full stack e ciência de dados",
+    "en": "Senior software engineer · applied AI, full stack and data science"
   },
   "summary": {
-    "pt": "Engenheiro de software com mais de 10 anos de experiência, programando profissionalmente desde 2012. Especialista em backend Java e Spring Boot, arquitetura de sistemas (microsserviços, arquitetura hexagonal, mensageria) e integrações com ERPs via REST e SOAP, em educação, logística, fintech e sistemas tributários. Já atuei como Tech Lead, definindo padrões e arquitetura para o time. Pós-graduado em Ciência de Dados, aplico IA no desenvolvimento e em produto, e lanço meus próprios produtos: apps SaaS com demo pública, templates Next.js, scrapers na Apify e livros técnicos.",
-    "en": "Software engineer with 10+ years of experience, programming professionally since 2012. Specialized in Java and Spring Boot backends, system architecture (microservices, hexagonal architecture, messaging) and ERP integrations over REST and SOAP, across education, logistics, fintech and tax systems. Former Tech Lead, setting standards and architecture for the team. With a postgraduate degree in Data Science, I apply AI to software development and products, and I ship my own products: SaaS apps with public demos, Next.js templates, Apify scrapers and technical books."
+    "pt": "Engenheiro de software há 14 anos, programando profissionalmente desde 2012, pós-graduado em Ciência de Dados pela PUC-Rio. Hoje meu foco é IA aplicada: assistentes com LLM dentro de produtos, BI conversacional, ferramentas de IA para desenvolvimento (Claude Code, MCP, spec-driven) e pipelines de MLOps. Venho de uma base sólida de engenharia: backend em Java e Spring Boot, Python, frontend em React, arquitetura de sistemas (microsserviços, hexagonal, mensageria) e integrações com ERPs, em educação, logística, fintech e sistemas tributários. Já atuei como Tech Lead, definindo padrões e arquitetura para o time. Também lanço meus próprios produtos: apps SaaS com demo pública, templates Next.js, scrapers na Apify e livros técnicos.",
+    "en": "Software engineer for 14 years, programming professionally since 2012, with a postgraduate degree in Data Science from PUC-Rio. My current focus is applied AI: LLM assistants inside products, conversational BI, AI tooling for software development (Claude Code, MCP, spec-driven) and MLOps pipelines. I bring a solid engineering foundation: Java and Spring Boot backends, Python, React frontends, system architecture (microservices, hexagonal, messaging) and ERP integrations, across education, logistics, fintech and tax systems. Former Tech Lead, setting standards and architecture for the team. I also ship my own products: SaaS apps with public demos, Next.js templates, Apify scrapers and technical books."
   },
   "sideProjects": [
     {
