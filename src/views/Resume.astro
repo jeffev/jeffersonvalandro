@@ -42,7 +42,7 @@ const encoded = [...Buffer.from(['jeffev123', 'gmail.com'].join('@')).toString('
         {jobs.map(({ data: j }) => (
           <div class="job">
             <div class="job-head">
-              <h3>{j.role[lang]} <span>· {j.company}</span></h3>
+              <h3>{j.role[lang]} <span>· {typeof j.company === 'string' ? j.company : j.company[lang]}</span></h3>
               <span class="period">{j.period[lang]}</span>
             </div>
             <p class="sum">{j.summary[lang]}</p>

@@ -1,39 +1,39 @@
 [
   {
-    "id": "montreal",
+    "id": "pj",
     "order": 1,
-    "company": "Montreal",
+    "company": {
+      "pt": "Autônomo",
+      "en": "Self-employed"
+    },
     "period": {
       "pt": "01/2026 — atual",
       "en": "01/2026 — Present"
     },
     "role": {
-      "pt": "Desenvolvedor Full Stack (PJ)",
-      "en": "Full Stack Developer (contractor)"
+      "pt": "Engenheiro de Software (PJ)",
+      "en": "Software Engineer (contractor)"
     },
     "summary": {
-      "pt": "Desenvolvimento de ponta a ponta em um sistema tributário usado por dezenas de milhares de brasileiros, em Java 21 e Spring Boot sobre Oracle no Azure, com frontend em React.",
-      "en": "End-to-end development on a tax management system used by tens of thousands of Brazilians, in Java 21 and Spring Boot on Oracle and Azure, with a React frontend."
+      "pt": "Engenheiro de software PJ em projetos de clientes: backend em Java e Spring Boot, APIs REST, frontend em React e infraestrutura em nuvem.",
+      "en": "Contract software engineer on client projects: Java and Spring Boot backends, REST APIs, React frontends and cloud infrastructure."
     },
     "bullets": {
       "pt": [
-        "Desenvolvo serviços backend do sistema tributário em Java 21 e Spring Boot, com Oracle no Azure.",
-        "Projeto e evoluo APIs REST e microsserviços para cargas transacionais de alto volume, com foco em confiabilidade e performance.",
-        "Entrego funcionalidades completas, do backend ao frontend em React, junto com equipes multifuncionais."
+        "Desenvolvo serviços backend e APIs REST em Java 21 e Spring Boot.",
+        "Entrego funcionalidades completas, do backend ao frontend em React, junto com os times dos clientes."
       ],
       "en": [
-        "Build backend services for the tax system in Java 21 and Spring Boot, with Oracle on Azure.",
-        "Design and evolve REST APIs and microservices for high-volume transactional workloads, focused on reliability and performance.",
-        "Deliver complete features from backend to React frontend, working with cross-functional teams."
+        "Build backend services and REST APIs in Java 21 and Spring Boot.",
+        "Deliver complete features from backend to React frontend, working with client teams."
       ]
     },
     "stack": [
       "Java 21",
       "Spring Boot",
-      "Hibernate",
+      "React",
       "Oracle",
-      "Azure",
-      "React"
+      "Cloud"
     ]
   },
   {

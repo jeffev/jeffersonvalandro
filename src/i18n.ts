@@ -36,7 +36,7 @@ export const ui = {
     'hero.title2': 'Produtos que ',
     'hero.title3': 'vão pro ar.',
     'hero.lead':
-      '14 anos construindo software para fintech, logística, educação e sistemas tributários. Pós em Ciência de Dados pela PUC-Rio, hoje levo IA para dentro de produtos de verdade — e lanço o que construo, com demo ao vivo sempre que dá.',
+      '14 anos construindo software para fintech, logística e educação. Pós em Ciência de Dados pela PUC-Rio, hoje levo IA para dentro de produtos de verdade — e lanço o que construo, com demo ao vivo sempre que dá.',
     'hero.path1': 'Trabalhar comigo',
     'hero.path2': 'Produtos',
     'hero.path3': 'Artigos',
@@ -114,7 +114,7 @@ export const ui = {
     'theme.mlops': 'MLOps',
     'resume.title': 'Currículo',
     'resume.lead':
-      'Engenheiro de software há 14 anos, pós-graduado em Ciência de Dados, com foco em IA aplicada. Já liderei equipes como Tech Lead e entreguei projetos em educação, logística, fintech e sistemas tributários.',
+      'Engenheiro de software há 14 anos, pós-graduado em Ciência de Dados, com foco em IA aplicada. Já liderei equipes como Tech Lead e entreguei projetos em educação, logística e fintech.',
     'resume.experience': 'Experiência',
     'resume.education': 'Formação',
     'resume.skills': 'Habilidades',
@@ -145,7 +145,7 @@ export const ui = {
     'hero.title2': 'Products that ',
     'hero.title3': 'actually ship.',
     'hero.lead':
-      '14 years building software for fintech, logistics, education and tax systems. With a postgraduate degree in Data Science from PUC-Rio, I now bring AI into real products — and I ship what I build, with a live demo whenever possible.',
+      '14 years building software for fintech, logistics and education. With a postgraduate degree in Data Science from PUC-Rio, I now bring AI into real products — and I ship what I build, with a live demo whenever possible.',
     'hero.path1': 'Work with me',
     'hero.path2': 'Products',
     'hero.path3': 'Articles',
@@ -223,7 +223,7 @@ export const ui = {
     'theme.mlops': 'MLOps',
     'resume.title': 'Resume',
     'resume.lead':
-      'Software engineer for 14 years, with a postgraduate degree in Data Science and a focus on applied AI. I have led teams as a Tech Lead and delivered projects in education, logistics, fintech and tax systems.',
+      'Software engineer for 14 years, with a postgraduate degree in Data Science and a focus on applied AI. I have led teams as a Tech Lead and delivered projects in education, logistics and fintech.',
     'resume.experience': 'Experience',
     'resume.education': 'Education',
     'resume.skills': 'Skills',

@@ -23,7 +23,7 @@ const experience = defineCollection({
   loader: file('src/data/experience.json'),
   schema: z.object({
     order: z.number(),
-    company: z.string(),
+    company: z.union([z.string(), i18n]),
     period: i18n,
     role: i18n,
     summary: i18n,
