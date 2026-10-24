@@ -1,7 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
+import me from '../assets/me.jpg';
 import profile from '../data/profile.json';
 import { routes, split, useT, type Lang } from '../i18n';
 
@@ -9,18 +11,39 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const tr = useT(lang);
 const jobs = (await getCollection('experience')).sort((a, b) => a.data.order - b.data.order);
+const products = await getCollection('products');
 const pdf = lang === 'pt' ? '/downloads/jefferson-valandro-curriculo.pdf' : '/downloads/jefferson-valandro-resume.pdf';
 const encoded = [...Buffer.from(['jeffev123', 'gmail.com'].join('@')).toString('base64')].reverse().join('');
+const companyOf = (c: string | Record<Lang, string>) => (typeof c === 'string' ? c : c[lang]);
+
+// Career bar: each job placed by its period ("MM/YYYY — MM/YYYY" or "... — atual/Present"), oldest on the left.
+const now = new Date();
+const nowYear = now.getFullYear() + now.getMonth() / 12;
+const toYear = (s: string) => {
+  const m = s.match(/(\d{2})\/(\d{4})/);
+  return m ? Number(m[2]) + (Number(m[1]) - 1) / 12 : nowYear;
+};
+const spans = jobs.map(({ id, data: j }) => {
+  const [a, b] = j.period.pt.split('—').map((x) => x.trim());
+  const name = id === 'pj' ? 'PJ' : companyOf(j.company).split(' ')[0].replace('Transportes', 'Bertolini');
+  return { name, from: toYear(a), to: toYear(b) };
+});
+const first = Math.min(...spans.map((s) => s.from));
+const total = nowYear - first;
+const ticks = [2015, 2018, 2021, 2024].filter((y) => y > first + 1);
+const kpis = [
+  { n: String(Math.floor(nowYear - first)), label: tr('resume.kpiYears') },
+  { n: 'Tech Lead', label: tr('resume.kpiLead') },
+  { n: 'PUC-Rio', label: tr('resume.kpiEdu') },
+  { n: `${products.length} + ${profile.apifyActors}`, label: tr('resume.kpiShip') },
+];
 ---
 <Base lang={lang} title={tr('resume.title')} description={profile.summary[lang]} alternates={routes.resume} current="resume">
-  <div class="wrap">
-    <article class="cv panel">
-      <header>
-        <div class="actions no-print">
-          <a class="btn accent" href={pdf} download><Icon name="download" /> {tr('resume.pdf')}</a>
-          <button type="button" class="btn print"><Icon name="print" /> {tr('resume.print')}</button>
-        </div>
-        <span class="mono no-print">/{tr('nav.resume')}</span>
+  <div class="wrap cv">
+    <header class="top panel">
+      <Image class="photo no-print" src={me} alt="" widths={[150, 300]} sizes="150px" format="webp" quality={80} loading="eager" />
+      <div class="id">
+        <span class="mono no-print">// {tr('nav.resume')}</span>
         <h1>{profile.name}</h1>
         <p class="headline">{profile.headline[lang]}</p>
         <ul class="contact">
@@ -30,56 +53,85 @@ const encoded = [...Buffer.from(['jeffev123', 'gmail.com'].join('@')).toString('
           <li><a href={profile.links.github}>github.com/jeffev</a></li>
           <li><button type="button" class="email link" data-e={encoded} data-copied={tr('cta.copied')}>{tr('cta.email')}</button></li>
         </ul>
-      </header>
+      </div>
+      <div class="actions no-print">
+        <a class="btn accent" href={pdf} download><Icon name="download" /> {tr('resume.pdf')}</a>
+        <button type="button" class="btn print"><Icon name="print" /> {tr('resume.print')}</button>
+      </div>
+    </header>
 
-      <section>
-        <h2>{tr('resume.summary')}</h2>
-        <p>{profile.summary[lang]}</p>
-      </section>
+    <div class="kpis no-print">
+      {kpis.map((k) => <div><b>{k.n}</b><span class="mono">{k.label}</span></div>)}
+    </div>
 
-      <section>
-        <h2>{tr('resume.experience')}</h2>
+    <figure class="career no-print" aria-label={tr('resume.career')}>
+      <div class="bar">
+        {spans.map((s, i) => (
+          <span
+            class:list={['seg', { recent: i < 3, short: (s.to - s.from) / total < 0.12 }]}
+            style={`left:${((s.from - first) / total) * 100}%;width:${((s.to - s.from) / total) * 100}%;--o:${1 - i * 0.09}`}
+            title={`${s.name}`}
+          >{((s.to - s.from) / total) * 1130 >= s.name.length * 8 + 12 ? s.name : ''}</span>
+        ))}
+      </div>
+      <div class="years mono">
+        <span style="left:0">{Math.floor(first)}</span>
+        {ticks.map((y) => <span style={`left:${((y - first) / total) * 100}%`}>{y}</span>)}
+        <span class="end">{tr('resume.now')}</span>
+      </div>
+    </figure>
+
+    <section class="sec">
+      <h2>{tr('resume.summary')}</h2>
+      <p class="summary">{profile.summary[lang]}</p>
+    </section>
+
+    <section class="sec">
+      <h2>{tr('resume.experience')}</h2>
+      <div class="rows">
         {jobs.map(({ data: j }) => (
-          <div class="job">
-            <div class="job-head">
-              <h3>{j.role[lang]} <span>· {typeof j.company === 'string' ? j.company : j.company[lang]}</span></h3>
-              <span class="period">{j.period[lang]}</span>
+          <div class="row job">
+            <div>
+              <div class="jhead"><h3>{j.role[lang]} <span class="co">· {companyOf(j.company)}</span></h3><span class="pdate">{j.period[lang]}</span></div>
+              <p class="sum">{j.summary[lang]}</p>
+              <ul>{j.bullets[lang].map((b) => <li>{b}</li>)}</ul>
+              <p class="stack">{j.stack.map((t) => <span class="tag">{t}</span>)}</p>
             </div>
-            <p class="sum">{j.summary[lang]}</p>
-            <ul>{j.bullets[lang].map((b) => <li>{b}</li>)}</ul>
-            <p class="stack">{j.stack.join(' · ')}</p>
+            <span class="when mono no-print">{j.period[lang]}</span>
           </div>
         ))}
-      </section>
+      </div>
+    </section>
 
-      <section>
-        <h2>{tr('resume.side')}</h2>
-        <ul class="side">
-          {profile.sideProjects.map((s) => (
-            <li><a href={s.url}><strong>{lang === 'en' && 'nameEn' in s ? s.nameEn : s.name}</strong></a> — {s.text[lang]}</li>
-          ))}
-        </ul>
-      </section>
+    <section class="sec">
+      <h2>{tr('resume.skills')}</h2>
+      <div class="skills">
+        {profile.skills.map((s) => (
+          <div><h4>{s.group[lang]}</h4><p>{s.items.map((i) => split(i, lang)).join(' · ')}</p></div>
+        ))}
+      </div>
+    </section>
 
-      <section>
-        <h2>{tr('resume.education')}</h2>
+    <section class="sec">
+      <h2>{tr('resume.side')}</h2>
+      <div class="side">
+        {profile.sideProjects.map((s) => (
+          <a href={s.url}><strong>{lang === 'en' && 'nameEn' in s ? s.nameEn : s.name}<span class="arrow"> ↗</span></strong><span>{s.text[lang]}</span></a>
+        ))}
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2>{tr('resume.education')}</h2>
+      <div class="rows">
         {profile.education.map((e) => (
-          <div class="job-head edu">
-            <h3>{e.title[lang]} <span>· {e.school}</span>{e.note && <span> · {e.note[lang]}</span>}</h3>
-            <span class="period">{e.period}</span>
+          <div class="row edu">
+            <div><div class="jhead"><h3>{e.title[lang]}</h3><span class="pdate">{e.period}</span></div><p class="sum">{e.school}{e.note && ` · ${e.note[lang]}`}</p></div>
+            <span class="when mono no-print">{e.period}</span>
           </div>
         ))}
-      </section>
-
-      <section>
-        <h2>{tr('resume.skills')}</h2>
-        <dl class="skills">
-          {profile.skills.map((s) => (
-            <div><dt>{s.group[lang]}</dt><dd>{s.items.map((i) => split(i, lang)).join(', ')}</dd></div>
-          ))}
-        </dl>
-      </section>
-    </article>
+      </div>
+    </section>
   </div>
 </Base>
 
@@ -88,64 +140,105 @@ const encoded = [...Buffer.from(['jeffev123', 'gmail.com'].join('@')).toString('
 </script>
 
 <style>
-  .cv { margin-top: 40px; padding: 48px 56px; max-width: 920px; }
-  header { border-bottom: 2px solid var(--ink); padding-bottom: 20px; position: relative; }
-  .actions { position: absolute; right: 0; top: 0; display: flex; gap: 8px; }
-  .actions .btn { padding: 8px 14px; font-size: 14px; }
-  h1 { font-size: clamp(32px, 4.4vw, 44px); letter-spacing: -0.03em; line-height: 1.1; margin-top: 8px; }
-  .headline { font-size: 18px; color: var(--muted); margin-top: 4px; }
-  .contact { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 12px; font-size: 14.5px; }
+  .cv { padding-top: 40px; padding-bottom: 24px; }
+  .top { display: grid; grid-template-columns: 150px 1fr auto; gap: 28px; align-items: center; padding: 28px; }
+  .photo { width: 150px; height: 150px; object-fit: cover; display: block; }
+  h1 { font-size: clamp(34px, 4.6vw, 48px); letter-spacing: -0.035em; line-height: 1; margin-top: 6px; }
+  .headline { font-size: 17.5px; color: var(--muted); margin-top: 8px; }
+  .contact { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 12px; font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
   .contact a, .contact .link { color: var(--accent); }
   .contact a:hover, .contact .link:hover { text-decoration: underline; }
-  section { margin-top: 28px; }
-  h2 { font-family: var(--mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); border-bottom: 1px solid var(--line); padding-bottom: 6px; margin-bottom: 14px; }
-  .job + .job { margin-top: 22px; }
-  .job-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
-  h3 { font-size: 17.5px; letter-spacing: -0.01em; }
-  h3 span { font-weight: 400; color: var(--muted); }
-  .period { font-family: var(--mono); font-size: 13px; color: var(--muted); white-space: nowrap; }
-  .sum { margin-top: 4px; }
+  .actions { display: flex; flex-direction: column; gap: 8px; }
+  .actions .btn { padding: 9px 14px; font-size: 14px; justify-content: center; }
+
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-top: 0; }
+  .kpis div { background: var(--paper); padding: 16px 22px; }
+  .kpis b { display: block; font-size: 28px; letter-spacing: -0.03em; line-height: 1.15; }
+
+  .career { margin: 34px 0 30px; }
+  .bar { position: relative; height: 34px; background: var(--paper); border: 1px solid var(--line); }
+  .seg { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap; font-family: var(--mono); font-size: 11px; color: #fff; background: color-mix(in srgb, #3b4552 calc(var(--o) * 100%), #9aa3ad); border-right: 1px solid var(--paper); }
+  .seg.recent { background: color-mix(in srgb, var(--accent) calc(var(--o) * 100%), #7a2a12); }
+  .years { position: relative; height: 18px; margin-top: 6px; }
+  .years span { position: absolute; transform: translateX(-50%); }
+  .years span:first-child { transform: none; }
+  .years .end { right: 0; transform: none; }
+
+  .sec { display: grid; grid-template-columns: 200px 1fr; gap: 28px; padding: 26px 0; border-top: 2px solid var(--ink); }
+  h2 { font-size: 22px; letter-spacing: -0.02em; }
+  .summary { font-size: 16.5px; }
+  .row { display: grid; grid-template-columns: 150px 1fr; gap: 18px; padding: 16px 0; border-bottom: 1px dashed var(--line); }
+  .row:first-child { padding-top: 0; }
+  .row:last-child { border-bottom: 0; }
+  .when { padding-top: 4px; order: -1; }
+  .pdate { display: none; }
+  h3 { font-size: 18px; letter-spacing: -0.01em; }
+  .co { color: var(--accent); font-weight: 500; }
+  .sum { color: var(--muted); margin-top: 3px; }
   .job ul { list-style: square; padding-left: 1.2em; margin-top: 6px; }
   .job li + li { margin-top: 3px; }
   .job li::marker { color: var(--accent); }
-  .stack { font-family: var(--mono); font-size: 12.5px; color: var(--muted); margin-top: 6px; }
-  .side { list-style: square; padding-left: 1.2em; }
-  .side li + li { margin-top: 4px; }
-  .side li::marker { color: var(--accent); }
-  .edu + .edu { margin-top: 8px; }
-  .skills div { display: grid; grid-template-columns: 220px 1fr; gap: 16px; padding: 5px 0; }
-  .skills dt { font-weight: 600; }
-  @media (max-width: 760px) {
-    .cv { padding: 24px 20px; }
-    .actions { position: static; margin-bottom: 16px; flex-wrap: wrap; }
-    .job-head { flex-direction: column; gap: 0; }
-    .skills div { grid-template-columns: 1fr; gap: 0; }
+  .stack { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag { font-family: var(--mono); font-size: 12px; padding: 2px 8px; border: 1px solid var(--line); background: var(--paper); }
+
+  .skills { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .skills div { background: var(--paper); padding: 14px 16px; }
+  .skills div:last-child:nth-child(odd) { grid-column: span 2; }
+  h4 { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; font-weight: 500; }
+
+  .side { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .side a { background: var(--paper); border: 1px solid var(--line); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+  .side a:hover { border-color: var(--accent); }
+  .side a > span { color: var(--muted); font-size: 14.5px; }
+  .side .arrow { color: var(--accent); }
+
+  @media (max-width: 860px) {
+    .top { grid-template-columns: 1fr; }
+    .actions { flex-direction: row; flex-wrap: wrap; }
+    .kpis { grid-template-columns: 1fr 1fr; }
+    .sec { grid-template-columns: 1fr; gap: 14px; }
+    .row { grid-template-columns: 1fr; gap: 2px; }
+    .skills, .side { grid-template-columns: 1fr; }
+    .skills div:last-child:nth-child(odd) { grid-column: auto; }
+    .years span:not(.end):not(:first-child):nth-child(odd) { display: none; }
+    .seg.short { font-size: 0; }
   }
 
+  /* PDF / print: single column, text only, ATS-friendly. */
   @media print {
     @page { size: A4; margin: 12mm 14mm; }
     :global(body) { background: #fff !important; color: #111; font-size: 9.6pt; line-height: 1.36; }
-    :global(.skip), .no-print { display: none !important; }
-    .wrap { padding: 0; max-width: none; }
-    .cv { margin: 0; padding: 0; border: 0; max-width: none; background: #fff; }
-    header { position: static; border-bottom-width: 1.5pt; padding-bottom: 7pt; }
+    :global(.skip), :global(header.site), :global(footer), .no-print { display: none !important; }
+    .cv { padding: 0; max-width: none; }
+    .top { display: block; padding: 0 0 7pt; border: 0; border-bottom: 1.5pt solid #111; background: #fff; }
     h1 { font-size: 20pt; margin: 0; color: #111; }
     .headline { font-size: 11pt; color: #333; margin-top: 1pt; }
-    .contact { font-size: 9pt; margin-top: 4pt; gap: 2pt 12pt; }
-    .contact a, .contact .link { color: #111; text-decoration: none; }
-    section { margin-top: 9pt; }
-    h2 { font-size: 8.5pt; color: #111; margin-bottom: 5pt; padding-bottom: 2pt; border-color: #999; break-after: avoid; }
-    h3 { font-size: 10.2pt; }
-    h3 span, .period, .stack { color: #444; }
-    .period { font-size: 8.5pt; }
+    .contact { font-size: 8.5pt; margin-top: 4pt; gap: 2pt 12pt; color: #333; }
+    .contact a, .contact .link { color: #111 !important; text-decoration: none; font: inherit !important; }
+    .contact :global(*) { color: #111 !important; font: inherit !important; text-decoration: none !important; }
+    .side .arrow { display: none; }
+    .sec { display: block; padding: 0; border: 0; margin-top: 9pt; }
+    h2 { font-family: var(--mono); font-size: 8.5pt; letter-spacing: 0.08em; text-transform: uppercase; color: #111; border-bottom: 1px solid #999; padding-bottom: 2pt; margin-bottom: 5pt; break-after: avoid; }
+    .summary { font-size: 9.6pt; }
+    .row { display: block; padding: 0; border: 0; }
+    .jhead { display: flex; justify-content: space-between; align-items: baseline; gap: 12pt; }
+    .pdate { display: inline; font-family: var(--mono); font-size: 8.5pt; color: #444; white-space: nowrap; }
+    .row + .row { margin-top: 7pt; }
     .job { break-inside: avoid; }
-    .job + .job { margin-top: 7pt; }
-    .sum { margin-top: 1pt; }
+    h3 { font-size: 10.2pt; }
+    .co { color: #444; font-weight: 400; }
+    .sum { color: #333; margin-top: 1pt; }
     .job ul { margin-top: 2pt; }
-    .job li + li, .side li + li { margin-top: 0; }
-    .stack { font-size: 7.8pt; margin-top: 2pt; }
-    .skills div { grid-template-columns: 130pt 1fr; padding: 0; }
-    .edu + .edu { margin-top: 3pt; }
-    .side a { color: #111; text-decoration: none; }
+    .job li + li { margin-top: 0; }
+    .stack { display: block; margin-top: 2pt; font-family: var(--mono); font-size: 7.8pt; color: #444; }
+    .tag { border: 0; padding: 0; background: none; font-size: 7.8pt; }
+    .tag + .tag::before { content: ' · '; }
+    .skills, .side { display: block; border: 0; background: none; }
+    .skills div { display: grid; grid-template-columns: 130pt 1fr; padding: 0; background: none; }
+    h4 { font-family: inherit; text-transform: none; letter-spacing: 0; font-size: 9.6pt; color: #111; font-weight: 600; margin: 0; }
+    .side a { display: block; border: 0; padding: 0; background: none; color: #111; }
+    .side a + a { margin-top: 1pt; }
+    .side strong::after { content: ' — '; font-weight: 400; }
+    .side a > span { color: #111; font-size: 9.6pt; }
   }
 </style>
