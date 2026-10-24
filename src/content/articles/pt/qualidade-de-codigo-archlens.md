@@ -1,6 +1,6 @@
 ---
 title: "Qualidade de código na prática, e o que aprendi construindo o archlens-ai"
-description: "Os anti-padrões que mais degradam um código, ciclos, complexidade, o quadrante de dívida técnica do Fowler e um estudo de caso com a minha ferramenta archlens-ai."
+description: "Os anti-padrões que mais degradam um código, ciclos, complexidade, o quadrante de dívida do Fowler e um estudo de caso da minha ferramenta archlens-ai."
 slug: "qualidade-de-codigo-archlens"
 theme: "qualidade"
 order: 2
