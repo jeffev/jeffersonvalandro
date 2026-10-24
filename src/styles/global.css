@@ -1,0 +1,112 @@
+@import '@fontsource-variable/space-grotesk/wght.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+
+:root {
+  --bg: #eef0f2;
+  --paper: #fafbfc;
+  --ink: #14181d;
+  --muted: #545d67;
+  --line: #cfd5db;
+  --accent: #c8461f;
+  --accent-ink: #ffffff;
+  --ok: #1f7a50;
+  --grid: rgba(20, 24, 29, 0.05);
+  --code-bg: #f1f3f5;
+  --sans: 'Space Grotesk Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+  --wrap: 1180px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #0f1215;
+    --paper: #161a1e;
+    --ink: #e7eaee;
+    --muted: #9aa3ad;
+    --line: #2a3037;
+    --accent: #f07a52;
+    --accent-ink: #14181d;
+    --ok: #4cc38a;
+    --grid: rgba(255, 255, 255, 0.035);
+    --code-bg: #1d2227;
+    color-scheme: dark;
+  }
+}
+:root[data-theme='dark'] {
+  --bg: #0f1215;
+  --paper: #161a1e;
+  --ink: #e7eaee;
+  --muted: #9aa3ad;
+  --line: #2a3037;
+  --accent: #f07a52;
+  --accent-ink: #14181d;
+  --ok: #4cc38a;
+  --grid: rgba(255, 255, 255, 0.035);
+  --code-bg: #1d2227;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 24px; }
+body {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 32px 32px;
+  color: var(--ink);
+  font: 16px/1.6 var(--sans);
+  overflow-wrap: break-word;
+}
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+ul { list-style: none; }
+
+.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 24px; }
+.mono { font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.02em; color: var(--muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip { position: absolute; left: 12px; top: -48px; background: var(--ink); color: var(--paper); padding: 8px 14px; z-index: 10; }
+.skip:focus { top: 12px; }
+
+.panel { background: var(--paper); border: 1px solid var(--line); }
+
+/* Section heading with the heavy rule from the mockup */
+.head { display: flex; justify-content: space-between; align-items: end; gap: 16px; border-bottom: 2px solid var(--ink); padding-bottom: 12px; margin-bottom: 28px; }
+.head h2 { font-size: clamp(24px, 3vw, 32px); letter-spacing: -0.02em; line-height: 1.15; }
+.head a.mono:hover { color: var(--accent); }
+section.block { margin-top: 72px; }
+
+.page-title { margin-top: 48px; padding: 40px; }
+.page-title h1 { font-size: clamp(36px, 5vw, 56px); line-height: 1.05; letter-spacing: -0.035em; margin: 10px 0 14px; }
+.page-title p { color: var(--muted); font-size: 18px; max-width: 680px; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.links { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.links a, a.link { color: var(--accent); font-weight: 500; font-size: 14px; display: inline-flex; align-items: center; gap: 4px; }
+.links a:hover, a.link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; font-weight: 500; border: 1px solid var(--ink); }
+.btn.solid { background: var(--ink); color: var(--paper); }
+.btn.accent { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn:hover { filter: brightness(1.08); }
+
+@media (max-width: 640px) {
+  .wrap { padding: 0 16px; }
+  .page-title { padding: 28px 20px; margin-top: 28px; }
+  section.block { margin-top: 56px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a, button { transition: color 0.15s, background-color 0.15s, filter 0.15s; }
+}
+
+/* Code blocks: Shiki dual theme (light colors inline, dark ones in --shiki-dark) */
+:root[data-theme='dark'] .astro-code, :root[data-theme='dark'] .astro-code span { color: var(--shiki-dark) !important; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .astro-code, :root:not([data-theme='light']) .astro-code span { color: var(--shiki-dark) !important; }
+}

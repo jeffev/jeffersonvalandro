@@ -1,0 +1,188 @@
+[
+  {
+    "id": "montreal",
+    "order": 1,
+    "company": "Montreal",
+    "period": { "pt": "01/2026 — atual", "en": "01/2026 — Present" },
+    "role": { "pt": "Desenvolvedor Full Stack (PJ)", "en": "Full Stack Developer (contractor)" },
+    "summary": {
+      "pt": "Desenvolvimento de ponta a ponta em um sistema tributário usado por dezenas de milhares de brasileiros, em Java 21 e Spring Boot sobre Oracle no Azure, com frontend em React.",
+      "en": "End-to-end development on a tax management system used by tens of thousands of Brazilians, in Java 21 and Spring Boot on Oracle and Azure, with a React frontend."
+    },
+    "bullets": {
+      "pt": [
+        "Desenvolvo serviços backend do sistema tributário em Java 21 e Spring Boot, com Oracle no Azure.",
+        "Projeto e evoluo APIs REST e microsserviços para cargas transacionais de alto volume, com foco em confiabilidade e performance.",
+        "Entrego funcionalidades completas, do backend ao frontend em React, junto com equipes multifuncionais."
+      ],
+      "en": [
+        "Build backend services for the tax system in Java 21 and Spring Boot, with Oracle on Azure.",
+        "Design and evolve REST APIs and microservices for high-volume transactional workloads, focused on reliability and performance.",
+        "Deliver complete features from backend to React frontend, working with cross-functional teams."
+      ]
+    },
+    "stack": ["Java 21", "Spring Boot", "Hibernate", "Oracle", "Azure", "React"]
+  },
+  {
+    "id": "dexian",
+    "order": 2,
+    "company": "Dexian",
+    "period": { "pt": "07/2025 — 12/2025", "en": "07/2025 — 12/2025" },
+    "role": { "pt": "Desenvolvedor Backend Sênior", "en": "Senior Backend Developer" },
+    "summary": {
+      "pt": "Desenvolvimento e arquitetura de sistemas backend em Java com Oracle, em microsserviços com arquitetura hexagonal e mensageria com RabbitMQ.",
+      "en": "Development and architecture of Java backend systems on Oracle, as microservices with hexagonal architecture and RabbitMQ messaging."
+    },
+    "bullets": {
+      "pt": [
+        "Desenvolvi e defini a arquitetura de serviços backend escaláveis em Java 21, Spring Boot e Oracle.",
+        "Apliquei arquitetura hexagonal e mensageria assíncrona com RabbitMQ entre microsserviços.",
+        "Defini boas práticas, padrões e estratégias de desenvolvimento backend para o time.",
+        "Integrei os serviços à infraestrutura e às práticas de segurança da informação, com pipelines de CI/CD em GitLab e Jenkins."
+      ],
+      "en": [
+        "Developed and shaped the architecture of scalable backend services in Java 21, Spring Boot and Oracle.",
+        "Applied hexagonal architecture and asynchronous RabbitMQ messaging between microservices.",
+        "Defined best practices, standards and backend development strategies for the team.",
+        "Integrated services with infrastructure and information security practices, with CI/CD pipelines on GitLab and Jenkins."
+      ]
+    },
+    "stack": ["Java 21", "Spring Boot", "Hexagonal Architecture", "RabbitMQ", "Oracle", "CI/CD"]
+  },
+  {
+    "id": "esig",
+    "order": 3,
+    "company": "Esig Software",
+    "period": { "pt": "11/2024 — 07/2025", "en": "11/2024 — 07/2025" },
+    "role": { "pt": "Tech Lead", "en": "Tech Lead" },
+    "summary": {
+      "pt": "Liderança técnica de um time multidisciplinar em projetos de software educacional em Java, responsável por arquitetura, qualidade de código e padrões do time.",
+      "en": "Technical leadership of a multidisciplinary team on Java educational software, responsible for architecture, code quality and team standards."
+    },
+    "bullets": {
+      "pt": [
+        "Liderei tecnicamente o time multidisciplinar nos projetos de software educacional.",
+        "Conduzi a arquitetura e o desenvolvimento de sistemas escaláveis em Java, garantindo qualidade de código e boas práticas.",
+        "Defini padrões de codificação, diretrizes técnicas e estratégias de desenvolvimento.",
+        "Coordenei a integração com infraestrutura e segurança da informação em múltiplos ambientes."
+      ],
+      "en": [
+        "Led the multidisciplinary team technically across the educational software projects.",
+        "Drove architecture and development of scalable Java systems, ensuring code quality and best practices.",
+        "Defined coding standards, technical guidelines and development strategies.",
+        "Coordinated integration with infrastructure and information security across multiple environments."
+      ]
+    },
+    "stack": ["Java", "Struts", "Hibernate / JPA", "PostgreSQL", "Jenkins", "iReports"]
+  },
+  {
+    "id": "promob2",
+    "order": 4,
+    "company": "Promob Software Solutions",
+    "period": { "pt": "2021 — 2024", "en": "2021 — 2024" },
+    "role": { "pt": "Engenheiro de Software Sênior", "en": "Senior Software Engineer" },
+    "summary": {
+      "pt": "Modernização do ERP da empresa, com foco em desempenho, escalabilidade e confiabilidade, e automação de processos de negócio no backend.",
+      "en": "Modernization of the company ERP, focused on performance, scalability and reliability, plus backend automation of business processes."
+    },
+    "bullets": {
+      "pt": [
+        "Liderei iniciativas de modernização do ERP com foco em desempenho, escalabilidade e confiabilidade.",
+        "Implementei funcionalidades backend e automatizei processos de negócio, com ganho de 20% em eficiência operacional.",
+        "Mantive a integração com serviços de terceiros e a alta disponibilidade dos ambientes de produção."
+      ],
+      "en": [
+        "Led ERP modernization initiatives focused on performance, scalability and reliability.",
+        "Built backend features and automated business processes, achieving a 20% gain in operational efficiency.",
+        "Kept third-party integrations working and production environments highly available."
+      ]
+    },
+    "stack": ["Java 11+", "Spring Boot", "RabbitMQ", "Docker", "Kubernetes", "PostgreSQL"]
+  },
+  {
+    "id": "bertolini",
+    "order": 5,
+    "company": "Transportes Bertolini",
+    "period": { "pt": "2021", "en": "2021" },
+    "role": { "pt": "Engenheiro de Software", "en": "Software Engineer" },
+    "summary": {
+      "pt": "Sustentação e evolução do ERP de uma transportadora.",
+      "en": "Support and evolution of a transport company's ERP."
+    },
+    "bullets": {
+      "pt": ["Diagnostiquei problemas operacionais, atualizei o ERP e implementei melhorias de processo para a operação de transporte."],
+      "en": ["Diagnosed operational issues, updated the ERP and implemented process improvements for transport operations."]
+    },
+    "stack": ["Java 8", "Spring", "JSP", "iBatis", "PostgreSQL"]
+  },
+  {
+    "id": "group",
+    "order": 6,
+    "company": "Group",
+    "period": { "pt": "2019 — 2021", "en": "2019 — 2021" },
+    "role": { "pt": "Engenheiro de Software — ERP e integrações", "en": "Software Engineer — ERP & Integrations" },
+    "summary": {
+      "pt": "Integrações entre sistemas internos e externos e evolução de um ERP legado, com serviços backend em Java para pedidos e automação.",
+      "en": "Integrations between internal and external systems and evolution of a legacy ERP, with Java backend services for orders and automation."
+    },
+    "bullets": {
+      "pt": [
+        "Integrei APIs REST e SOAP entre sistemas internos e externos, melhorando o fluxo de dados e reduzindo custos operacionais em 10%.",
+        "Mantive e evoluí um ERP legado em Visual DataFlex, com novas funcionalidades e mais estabilidade.",
+        "Contribuí com serviços backend em Java para gestão de pedidos e automação de processos de negócio."
+      ],
+      "en": [
+        "Integrated REST and SOAP APIs across internal and external systems, improving data flow and cutting operational costs by 10%.",
+        "Maintained and evolved a legacy ERP in Visual DataFlex, adding features and improving stability.",
+        "Contributed Java backend services for order management and business process automation."
+      ]
+    },
+    "stack": ["Java 11+", "Spring Boot", "REST / SOAP", "RabbitMQ", "Oracle", "Visual DataFlex"]
+  },
+  {
+    "id": "promob1",
+    "order": 7,
+    "company": "Promob Software Solutions",
+    "period": { "pt": "2013 — 2019", "en": "2013 — 2019" },
+    "role": { "pt": "Desenvolvedor de Software", "en": "Software Developer" },
+    "summary": {
+      "pt": "Seis anos no ERP da empresa: fluxos de pedidos, integrações com plataformas externas e evolução de funcionalidades críticas.",
+      "en": "Six years on the company ERP: order workflows, integrations with external platforms and evolution of critical features."
+    },
+    "bullets": {
+      "pt": [
+        "Gerenciei fluxos de pedidos e construí integrações em Java entre módulos do ERP e plataformas externas.",
+        "Evoluí funcionalidades críticas do ERP com foco em estabilidade, desempenho e manutenibilidade.",
+        "Participei de projetos de integração REST e SOAP, melhorando a conectividade e a consistência de dados entre sistemas."
+      ],
+      "en": [
+        "Managed order workflows and built Java integrations between ERP modules and external platforms.",
+        "Evolved critical ERP features with a focus on stability, performance and maintainability.",
+        "Took part in REST and SOAP integration projects, improving connectivity and data consistency between systems."
+      ]
+    },
+    "stack": ["Java", "Spring Boot", "JSF / Primefaces", "PostgreSQL", "JUnit", "Jenkins"]
+  },
+  {
+    "id": "mtw",
+    "order": 8,
+    "company": "MTW",
+    "period": { "pt": "2012 — 2013", "en": "2012 — 2013" },
+    "role": { "pt": "Desenvolvedor de Software Júnior", "en": "Junior Software Developer" },
+    "summary": {
+      "pt": "Primeira experiência como programador, em integração de dados entre escolas e governo.",
+      "en": "First role as a programmer, on data integration between schools and government."
+    },
+    "bullets": {
+      "pt": [
+        "Coordenei o projeto de integração de dados entre escolas e governo, otimizando a comunicação entre os sistemas.",
+        "Fui um dos principais responsáveis pela adoção do Scrum na empresa."
+      ],
+      "en": [
+        "Coordinated the data integration project between schools and government, streamlining communication between systems.",
+        "Was a key contributor to the company's adoption of Scrum."
+      ]
+    },
+    "stack": ["Java 7", "Spring", "JSP", "iBatis", "PostgreSQL", "Scrum"]
+  }
+]

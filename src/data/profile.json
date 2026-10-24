@@ -1,0 +1,208 @@
+{
+  "name": "Jefferson Valandro",
+  "apifyActors": 44,
+  "links": {
+    "linkedin": "https://www.linkedin.com/in/jeffersonvalandro",
+    "github": "https://github.com/jeffev",
+    "kaggle": "https://www.kaggle.com/jeffersonvalandro",
+    "store": "https://payhip.com/ValandroUI",
+    "apify": "https://apify.com/jeffev"
+  },
+  "education": [
+    {
+      "title": {
+        "pt": "Pós-graduação em Ciência de Dados e Analytics",
+        "en": "Postgraduate in Data Science & Analytics"
+      },
+      "school": "PUC-Rio — Rio de Janeiro",
+      "period": "2024 — 2025",
+      "note": {
+        "pt": "Concluída",
+        "en": "Concluded"
+      }
+    },
+    {
+      "title": {
+        "pt": "Bacharel em Análise e Desenvolvimento de Sistemas",
+        "en": "Bachelor's in Systems Analysis & Development"
+      },
+      "school": "Ftec — Caxias do Sul",
+      "period": "2009 — 2012",
+      "note": {
+        "pt": "Honra acadêmica — aluno destaque",
+        "en": "Academic honor — outstanding student"
+      }
+    },
+    {
+      "title": {
+        "pt": "IBM Data Science Professional Certificate",
+        "en": "IBM Data Science Professional Certificate"
+      },
+      "school": "Coursera — IBM",
+      "period": "2023"
+    }
+  ],
+  "skills": [
+    {
+      "group": {
+        "pt": "Linguagens",
+        "en": "Languages"
+      },
+      "items": [
+        "Java",
+        "Python",
+        "JavaScript",
+        "TypeScript",
+        "SQL"
+      ]
+    },
+    {
+      "group": {
+        "pt": "Frameworks e bibliotecas",
+        "en": "Frameworks & libraries"
+      },
+      "items": [
+        "Spring Boot",
+        "Hibernate / JPA",
+        "Struts",
+        "JSP",
+        "Flask",
+        "FastAPI",
+        "React",
+        "Next.js",
+        "Material-UI"
+      ]
+    },
+    {
+      "group": {
+        "pt": "Dados e infraestrutura",
+        "en": "Data & infrastructure"
+      },
+      "items": [
+        "PostgreSQL",
+        "Oracle",
+        "IBM DB2",
+        "Docker",
+        "RabbitMQ",
+        "Kafka",
+        "Maven",
+        "Gradle",
+        "GitLab",
+        "Jenkins",
+        "CI/CD"
+      ]
+    },
+    {
+      "group": {
+        "pt": "Arquitetura e integração",
+        "en": "Architecture & integration"
+      },
+      "items": [
+        "Arquitetura de sistemas|System architecture",
+        "Microsserviços|Microservices",
+        "REST APIs",
+        "SOAP",
+        "Integração com ERP|ERP integration",
+        "Monorepo"
+      ]
+    },
+    {
+      "group": {
+        "pt": "MLOps e dados",
+        "en": "MLOps & data"
+      },
+      "items": [
+        "MLOps",
+        "Machine Learning",
+        "Engenharia de dados|Data engineering",
+        "ETL",
+        "iReports"
+      ]
+    },
+    {
+      "group": {
+        "pt": "Liderança e processo",
+        "en": "Leadership & process"
+      },
+      "items": [
+        "Tech Lead",
+        "Scrum / Agile",
+        "Code review",
+        "Mentoria|Mentoring",
+        "Boas práticas|Best practices"
+      ]
+    },
+    {
+      "group": {
+        "pt": "IA no desenvolvimento",
+        "en": "AI in development"
+      },
+      "items": [
+        "Claude Code",
+        "MCP",
+        "Spec-driven development",
+        "Gemini",
+        "Claude API"
+      ]
+    }
+  ],
+  "headline": {
+    "pt": "Engenheiro de software sênior · backend Java, arquitetura e IA aplicada",
+    "en": "Senior software engineer · Java backend, architecture and applied AI"
+  },
+  "summary": {
+    "pt": "Engenheiro de software com mais de 10 anos de experiência, programando profissionalmente desde 2012. Especialista em backend Java e Spring Boot, arquitetura de sistemas (microsserviços, arquitetura hexagonal, mensageria) e integrações com ERPs via REST e SOAP, em educação, logística, fintech e sistemas tributários. Já atuei como Tech Lead, definindo padrões e arquitetura para o time. Pós-graduado em Ciência de Dados, aplico IA no desenvolvimento e em produto, e lanço meus próprios produtos: apps SaaS com demo pública, templates Next.js, scrapers na Apify e livros técnicos.",
+    "en": "Software engineer with 10+ years of experience, programming professionally since 2012. Specialized in Java and Spring Boot backends, system architecture (microservices, hexagonal architecture, messaging) and ERP integrations over REST and SOAP, across education, logistics, fintech and tax systems. Former Tech Lead, setting standards and architecture for the team. With a postgraduate degree in Data Science, I apply AI to software development and products, and I ship my own products: SaaS apps with public demos, Next.js templates, Apify scrapers and technical books."
+  },
+  "sideProjects": [
+    {
+      "name": "Lastro",
+      "url": "https://lastro.jeffersonvalandro.com.br",
+      "text": {
+        "pt": "CRM imobiliário multiempresa (FastAPI, Postgres com RLS, React PWA) com assistente de IA.",
+        "en": "Multi-tenant real estate CRM (FastAPI, Postgres RLS, React PWA) with an AI assistant."
+      }
+    },
+    {
+      "name": "InvestLink",
+      "url": "https://investlink.jeffersonvalandro.com.br",
+      "text": {
+        "pt": "Screener de ações e FIIs com score explicável sobre os balanços da CVM (Flask, React, Postgres).",
+        "en": "Stock and REIT screener with an explainable score built on CVM filings (Flask, React, Postgres)."
+      }
+    },
+    {
+      "name": "Vizion",
+      "url": "https://vizion.jeffersonvalandro.com.br",
+      "text": {
+        "pt": "BI com IA: perguntas em linguagem natural viram gráficos e relatórios (Next.js, FastAPI, DuckDB).",
+        "en": "AI-assisted BI: plain-language questions become charts and reports (Next.js, FastAPI, DuckDB)."
+      }
+    },
+    {
+      "name": "Kairo templates",
+      "url": "https://payhip.com/ValandroUI",
+      "text": {
+        "pt": "9 templates Next.js à venda, incluindo 3 apps SaaS completos com Stripe e demo ao vivo.",
+        "en": "9 Next.js templates for sale, including 3 complete SaaS apps with Stripe and live demos."
+      }
+    },
+    {
+      "name": "Apify actors",
+      "url": "https://apify.com/jeffev",
+      "text": {
+        "pt": "44 scrapers públicos na Apify Store (Python), com cobrança por resultado.",
+        "en": "44 public scrapers on the Apify Store (Python), billed per result."
+      }
+    },
+    {
+      "name": "Livros",
+      "nameEn": "Books",
+      "url": "https://jeffersonvalandro.com.br/livros/",
+      "text": {
+        "pt": "Livros técnicos sobre IA e entrevistas na Amazon, e livros grátis sobre IA, MCP e carreira.",
+        "en": "Technical books on AI and interviews on Amazon, plus free books on AI, MCP and careers."
+      }
+    }
+  ]
+}

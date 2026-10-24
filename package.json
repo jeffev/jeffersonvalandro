@@ -1,0 +1,26 @@
+{
+  "name": "jeffersonvalandro",
+  "type": "module",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "resume:pdf": "node scripts/resume-pdf.mjs",
+    "og": "node scripts/og.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.0",
+    "@fontsource-variable/space-grotesk": "5.2.10",
+    "@fontsource/jetbrains-mono": "5.2.8",
+    "astro": "5.18.2",
+    "sharp": "0.34.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.6",
+    "playwright-core": "1.64.1",
+    "typescript": "5.9.3"
+  }
+}

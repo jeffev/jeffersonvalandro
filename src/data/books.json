@@ -1,0 +1,146 @@
+[
+  {
+    "id": "ia-por-dentro", "group": "ai", "order": 1, "title": "Inteligência Artificial por Dentro", "image": "ebook-ia-dentro.jpg", "pages": 599,
+    "description": {
+      "pt": "Dos modelos preditivos aos LLMs e Transformers, com matemática, código e 190+ referências conferidas.",
+      "en": "From predictive models to LLMs and Transformers, with math, code and 190+ verified references."
+    },
+    "links": [
+      { "kind": "amazon", "url": "https://www.amazon.com.br/dp/B0HNRQNJYL", "price": "R$ 31,99", "label": { "pt": "Kindle", "en": "Kindle (Portuguese)" } },
+      { "kind": "amazon", "url": "https://www.amazon.com/dp/B0HNR1GLTG", "label": { "pt": "Edição em inglês impressa", "en": "English paperback" } }
+    ]
+  },
+  {
+    "id": "entrevistas", "group": "ai", "order": 2, "title": "Como Passar em Entrevistas para Desenvolvedor", "image": "ebook-entrevistas.jpg", "pages": 639,
+    "description": {
+      "pt": "Do currículo à proposta: código, system design, comportamental e negociação, com soluções testadas.",
+      "en": "From résumé to offer: coding, system design, behavioral rounds and negotiation, with tested solutions."
+    },
+    "links": [
+      { "kind": "amazon", "url": "https://www.amazon.com/dp/B0HNRC5JSP", "price": "US$ 34.99", "label": { "pt": "Edição em inglês (impressa)", "en": "English edition (paperback)" } }
+    ]
+  },
+  {
+    "id": "ia-fluxo-dev", "group": "ai", "order": 3, "title": "IA no Fluxo do Dev", "image": "ebook-ia-dev.jpg", "pages": 400, "soon": true,
+    "description": {
+      "pt": "Harness, contexto, spec-driven, agents e MCP na prática, com um kit que inclui um servidor MCP.",
+      "en": "Harness, context, spec-driven development, agents and MCP in practice, with a kit that includes an MCP server."
+    }
+  },
+  {
+    "id": "abaixo-do-prompt", "group": "ai", "order": 4, "title": "Abaixo do Prompt: como a IA funciona de verdade", "image": "ebook-ia.jpg", "soon": true,
+    "description": {
+      "pt": "Tokens, temperatura, atenção, alucinação e RAG medidos num modelo pequeno que roda no seu PC. Código incluso.",
+      "en": "Tokens, temperature, attention, hallucination and RAG, measured on a small model you run on your own PC. Code included."
+    }
+  },
+  {
+    "id": "ia-sem-misterio", "group": "ai", "order": 5, "title": "Inteligência Artificial sem Mistério", "image": "ebook-ia-essencial.jpg", "pages": 151, "soon": true,
+    "description": {
+      "pt": "O essencial de IA para quem não é da área: o que ela faz, onde erra e como usar com cuidado.",
+      "en": "The essentials of AI for people outside tech: what it does, where it fails and how to use it with care."
+    }
+  },
+  {
+    "id": "painel-admin", "group": "code", "order": 1, "title": "Painel Admin Profissional com Next.js 16 e shadcn/ui", "image": "ebook-admin.jpg", "soon": true,
+    "description": {
+      "pt": "Construa um painel administrativo completo, com o código do Kairo Admin incluso.",
+      "en": "Build a complete admin dashboard, with the Kairo Admin source code included."
+    }
+  },
+  {
+    "id": "saas-ia", "group": "code", "order": 2, "title": "SaaS com IA do Zero: Next.js 16, Claude e Stripe", "image": "ebook-saas.jpg", "soon": true,
+    "description": {
+      "pt": "Login, chat com IA, créditos e pagamentos, com o código do Kairo AI Starter incluso.",
+      "en": "Auth, AI chat, credits and payments, with the Kairo AI Starter source code included."
+    }
+  },
+  {
+    "id": "landing-pages", "group": "code", "order": 3, "title": "Landing Pages que Vendem: Next.js 16, Tailwind e shadcn/ui", "image": "ebook-landing.jpg", "soon": true,
+    "description": {
+      "pt": "Landing pages que convertem, com o código do Kairo Blocks incluso.",
+      "en": "Landing pages that convert, with the Kairo Blocks source code included."
+    }
+  },
+  {
+    "id": "imobiliaria", "group": "code", "order": 4, "title": "Site de Imobiliária com Next.js", "image": "ebook-imob.jpg", "soon": true,
+    "description": {
+      "pt": "Catálogo, mapa, simulador SAC/Price e leads no WhatsApp, adaptado ao Brasil.",
+      "en": "Listings, map, mortgage simulator and WhatsApp leads, adapted to Brazil."
+    }
+  },
+  {
+    "id": "portfolio", "group": "code", "order": 5, "title": "Portfólio que Atrai Clientes", "image": "ebook-portfolio.jpg", "soon": true,
+    "description": {
+      "pt": "Portfólio com casos, serviços e briefing que trazem clientes.",
+      "en": "A portfolio with case studies, services and a brief form that brings clients."
+    }
+  },
+  {
+    "id": "primeiro-mcp", "group": "free", "order": 1, "title": "Seu Primeiro Servidor MCP", "image": "ebook-mcp.jpg", "pages": 53,
+    "description": {
+      "pt": "Monte um servidor MCP pequeno, testado e seguro em TypeScript e ligue no Claude Code.",
+      "en": "Build a small, tested and safe MCP server in TypeScript and connect it to Claude Code."
+    },
+    "links": [
+      { "kind": "pdf", "url": "/downloads/primeiro-servidor-mcp.pdf" },
+      { "kind": "zip", "url": "/downloads/primeiro-servidor-mcp-codigo.zip", "label": { "pt": "Código-fonte (zip, MIT)", "en": "Source code (zip, MIT)" } }
+    ]
+  },
+  {
+    "id": "ia-no-trabalho", "group": "free", "order": 2, "title": "IA no Trabalho: 30 usos práticos e 10 armadilhas", "image": "ebook-ia-trabalho.jpg", "pages": 52,
+    "description": {
+      "pt": "O que pedir a um assistente de IA no trabalho, com exemplos, e as armadilhas a conferir antes de usar a resposta.",
+      "en": "What to ask an AI assistant at work, with examples, and the traps to check before using the answer."
+    },
+    "links": [{ "kind": "pdf", "url": "/downloads/ia-no-trabalho.pdf" }]
+  },
+  {
+    "id": "curriculo", "group": "free", "order": 3, "title": "Currículo e LinkedIn de Dev", "image": "ebook-curriculo.jpg", "pages": 44,
+    "description": {
+      "pt": "Como a triagem funciona, tópicos com impacto, três currículos de antes e depois, LinkedIn, GitHub e um checklist.",
+      "en": "How screening works, bullet points with impact, three before-and-after résumés, LinkedIn, GitHub and a checklist."
+    },
+    "links": [{ "kind": "pdf", "url": "/downloads/curriculo-linkedin-dev.pdf" }]
+  },
+  {
+    "id": "como-a-ia-funciona", "group": "free", "order": 4, "title": "Como a Inteligência Artificial Funciona?", "image": "ebook-ia-jovens.jpg", "pages": 109,
+    "description": {
+      "pt": "IA explicada para curiosos de 12 anos (ou mais): sem fórmulas e com atividades práticas.",
+      "en": "AI explained for curious 12-year-olds (and up): no formulas, with hands-on activities."
+    },
+    "links": [{ "kind": "pdf", "url": "/downloads/como-a-ia-funciona.pdf" }]
+  },
+  {
+    "id": "how-ai-works", "group": "free", "order": 5, "title": "How Does Artificial Intelligence Work?", "image": "ebook-ia-jovens-en.jpg", "pages": 106,
+    "description": {
+      "pt": "Edição em inglês do livro acima: IA para curiosos de 12 anos (ou mais), sem fórmulas e com atividades práticas.",
+      "en": "English edition of the book above: AI for curious 12-year-olds (and up), no formulas, hands-on activities."
+    },
+    "links": [{ "kind": "pdf", "url": "/downloads/how-ai-works.pdf" }]
+  },
+  {
+    "id": "ninguem-me-ensinou", "group": "finance", "order": 1, "title": "Ninguém Me Ensinou Isso", "image": "ebook-fin-adultos.jpg", "pages": 215,
+    "description": {
+      "pt": "Dinheiro explicado para adultos que nunca aprenderam: inflação, juros, orçamento, cartão, como sair das dívidas, primeiros investimentos, golpes e bets.",
+      "en": "Money explained for adults who never learned it: inflation, interest, budget, credit cards, getting out of debt, first investments, scams and betting."
+    },
+    "links": [{ "kind": "pdf", "url": "/downloads/ninguem-me-ensinou-isso.pdf" }]
+  },
+  {
+    "id": "seu-dinheiro", "group": "finance", "order": 2, "title": "Seu Dinheiro, Suas Regras", "image": "ebook-fin-jovens.jpg", "pages": 110,
+    "description": {
+      "pt": "Para jovens de 14 anos ou mais: Pix, compras em jogos, parcelas, golpes, bets, primeiro emprego e como começar a investir, sem sermão.",
+      "en": "For teens 14 and up: Pix, in-game purchases, installments, scams, betting, first job and starting to invest, without a lecture."
+    },
+    "links": [{ "kind": "pdf", "url": "/downloads/seu-dinheiro-suas-regras.pdf" }]
+  },
+  {
+    "id": "de-onde-vem", "group": "finance", "order": 3, "title": "De Onde Vem o Dinheiro?", "image": "ebook-fin-criancas.jpg", "pages": 69,
+    "description": {
+      "pt": "Para curiosos de 10 a 13 anos (e para ler com a família): querer e precisar, mesada, poupar, propaganda, juros e segurança na internet, com atividades.",
+      "en": "For curious kids aged 10 to 13 (to read with the family): wants and needs, allowance, saving, ads, interest and online safety, with activities."
+    },
+    "links": [{ "kind": "pdf", "url": "/downloads/de-onde-vem-o-dinheiro.pdf" }]
+  }
+]

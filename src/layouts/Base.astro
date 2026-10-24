@@ -1,0 +1,88 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { ui, type Lang, type PageKey } from '../i18n';
+import profile from '../data/profile.json';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  /** URL of this page in each language; used for hreflang and the language switch. */
+  alternates: Record<Lang, string>;
+  current?: PageKey;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  /** True when the page has no translation: the switch still links to the other index, but no hreflang is emitted. */
+  untranslated?: boolean;
+}
+const { lang, title, description, alternates, current, type = 'website', noindex = false, untranslated = false } = Astro.props;
+const site = Astro.site!;
+const fullTitle = title ? `${title} — Jefferson Valandro` : ui[lang]['site.title'];
+const desc = description ?? ui[lang]['site.description'];
+const canonical = new URL(alternates[lang], site).href;
+const ogImage = new URL('/og.png', site).href;
+const ld = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${site.href}#person`,
+      name: profile.name,
+      url: site.href,
+      image: new URL('/me.jpg', site).href,
+      jobTitle: lang === 'pt' ? 'Engenheiro de software sênior' : 'Senior software engineer',
+      address: { '@type': 'PostalAddress', addressCountry: 'BR' },
+      sameAs: [profile.links.linkedin, profile.links.github, profile.links.kaggle, profile.links.store],
+      knowsAbout: ['Java', 'Spring Boot', 'Microservices', 'System architecture', 'MLOps', 'React', 'Next.js'],
+    },
+    { '@type': 'WebSite', '@id': `${site.href}#website`, url: site.href, name: 'Jefferson Valandro', inLanguage: ['pt-BR', 'en'] },
+  ],
+};
+---
+<!doctype html>
+<html lang={lang === 'pt' ? 'pt-BR' : 'en'}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{fullTitle}</title>
+  <meta name="description" content={desc} />
+  <meta name="author" content="Jefferson Valandro" />
+  {noindex && <meta name="robots" content="noindex" />}
+  <link rel="canonical" href={canonical} />
+  {!untranslated && (
+    <>
+      <link rel="alternate" hreflang="pt-BR" href={new URL(alternates.pt, site).href} />
+      <link rel="alternate" hreflang="en" href={new URL(alternates.en, site).href} />
+      <link rel="alternate" hreflang="x-default" href={new URL(alternates.pt, site).href} />
+    </>
+  )}
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="sitemap" href="/sitemap-index.xml" />
+  <meta name="theme-color" content="#eef0f2" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0f1215" media="(prefers-color-scheme: dark)" />
+  <meta property="og:type" content={type} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={desc} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:locale" content={lang === 'pt' ? 'pt_BR' : 'en_US'} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={fullTitle} />
+  <meta name="twitter:description" content={desc} />
+  <meta name="twitter:image" content={ogImage} />
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+  <script is:inline>
+    try { const t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch {}
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">{ui[lang]['nav.skip']}</a>
+  <Header lang={lang} alternates={alternates} current={current} />
+  <main id="main">
+    <slot />
+  </main>
+  <Footer lang={lang} />
+</body>
+</html>

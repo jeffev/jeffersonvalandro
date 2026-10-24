@@ -1,0 +1,58 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Shot from './Shot.astro';
+import Icon from './Icon.astro';
+import { productImage } from '../lib/images';
+import { useT, type Lang } from '../i18n';
+
+// Prices of the parts come from products.json, so the "instead of" figures never go stale.
+interface Props { bundle: CollectionEntry<'bundles'>; lang: Lang }
+const { bundle, lang } = Astro.props;
+const b = bundle.data;
+const tr = useT(lang);
+const all = await getCollection('products');
+const parts = b.includes.map((id) => {
+  const p = all.find((x) => x.id === id);
+  if (!p) throw new Error(`Bundle ${bundle.id} includes unknown product ${id}`);
+  return p.data;
+});
+const sum = (k: 'personal' | 'commercial') => parts.reduce((n, p) => n + p.price[k], 0);
+---
+<article class="bundle panel">
+  <Shot src={productImage(b.image)} alt={b.name} ratio="16 / 10" widths={[480, 720, 960]} sizes="(max-width: 860px) 100vw, 460px" />
+  <div class="body">
+    <span class="mono">{tr('products.includes')} {parts.length} templates</span>
+    <h3>{b.name}</h3>
+    <p>{b.description[lang]}</p>
+    <p class="mono parts">{parts.map((p) => p.name.replace('Kairo ', '')).join(' · ')}</p>
+    <dl>
+      {(['personal', 'commercial'] as const).map((k) => (
+        <div>
+          <dt class="mono">{tr(`products.${k}`)}</dt>
+          <dd>
+            <strong>US$ {b.price[k]}</strong>
+            <span class="mono">{tr('products.instead')} <s>US$ {sum(k)}</s></span>
+          </dd>
+        </div>
+      ))}
+    </dl>
+    <a class="btn accent" href={b.buy} target="_blank" rel="noopener">{tr('products.buy')} {b.name} <Icon name="arrow" /></a>
+  </div>
+</article>
+
+<style>
+  .bundle { display: grid; grid-template-columns: 1.05fr 1fr; }
+  .bundle :global(.shot) { border: 0; border-right: 1px solid var(--line); height: 100%; aspect-ratio: auto !important; min-height: 260px; }
+  .body { padding: 24px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+  h3 { font-size: 24px; letter-spacing: -0.02em; }
+  p { color: var(--muted); font-size: 15px; }
+  .parts { font-size: 12px; }
+  dl { display: grid; grid-template-columns: 1fr 1fr; width: 100%; border: 1px solid var(--line); margin: 6px 0 10px; }
+  dl > div { padding: 10px 14px; }
+  dl > div + div { border-left: 1px solid var(--line); }
+  dd strong { display: block; font-size: 26px; letter-spacing: -0.03em; color: var(--accent); }
+  @media (max-width: 860px) {
+    .bundle { grid-template-columns: 1fr; }
+    .bundle :global(.shot) { border-right: 0; border-bottom: 1px solid var(--line); aspect-ratio: 16 / 10 !important; min-height: 0; }
+  }
+</style>

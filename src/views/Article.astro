@@ -1,0 +1,77 @@
+---
+import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { articlesFor, counterpart, readingMinutes, type Article } from '../lib/articles';
+import { articleUrl, routes, useT, type Lang } from '../i18n';
+
+interface Props { article: Article; lang: Lang }
+const { article, lang } = Astro.props;
+const tr = useT(lang);
+const { Content } = await render(article);
+const other: Lang = lang === 'pt' ? 'en' : 'pt';
+const translated = await counterpart(article, other);
+const alternates = { [lang]: articleUrl(lang, article.data.slug), [other]: translated ?? routes.articles[other] } as Record<Lang, string>;
+const all = await articlesFor(lang);
+const next = all[(all.findIndex((a) => a.id === article.id) + 1) % all.length];
+---
+<Base lang={lang} title={article.data.title} description={article.data.description} alternates={alternates} current="articles" type="article" untranslated={!translated}>
+  <div class="wrap">
+    <article class="panel">
+      <header>
+        <a class="mono back" href={routes.articles[lang]}>← {tr('articles.back')}</a>
+        <span class="mono">{tr(`theme.${article.data.theme}`)} · {readingMinutes(article.body)} {tr('articles.min')}</span>
+        <h1>{article.data.title}</h1>
+        <p class="lead">{article.data.description}</p>
+      </header>
+      <div class="prose">
+        <Content />
+      </div>
+    </article>
+    {next && next.id !== article.id && (
+      <a class="next panel" href={articleUrl(lang, next.data.slug)}>
+        <span class="mono">{tr('articles.next')} · {tr(`theme.${next.data.theme}`)}</span>
+        <strong>{next.data.title}</strong>
+        <Icon name="arrow" />
+      </a>
+    )}
+  </div>
+</Base>
+
+<style>
+  article { margin-top: 40px; }
+  header { padding: 40px 56px 32px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+  .back { margin-bottom: 14px; }
+  .back:hover { color: var(--accent); }
+  h1 { font-size: clamp(30px, 4.4vw, 48px); line-height: 1.08; letter-spacing: -0.03em; max-width: 860px; }
+  .lead { color: var(--muted); font-size: 19px; max-width: 760px; }
+  .prose { padding: 40px 56px 56px; max-width: 820px; font-size: 17.5px; line-height: 1.72; }
+  .prose :global(> * + *) { margin-top: 1.1em; }
+  .prose :global(h2) { font-size: 27px; letter-spacing: -0.02em; line-height: 1.2; margin-top: 2em; padding-top: 0.6em; border-top: 1px solid var(--line); }
+  .prose :global(h3) { font-size: 21px; letter-spacing: -0.01em; margin-top: 1.6em; }
+  .prose :global(h4) { font-size: 18px; margin-top: 1.4em; }
+  .prose :global(ul), .prose :global(ol) { padding-left: 1.3em; }
+  .prose :global(ul) { list-style: square; }
+  .prose :global(ol) { list-style: decimal; }
+  .prose :global(li + li) { margin-top: 0.4em; }
+  .prose :global(li::marker) { color: var(--accent); }
+  .prose :global(a) { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .prose :global(strong) { font-weight: 600; }
+  .prose :global(blockquote) { border-left: 3px solid var(--accent); padding: 4px 0 4px 18px; color: var(--muted); }
+  .prose :global(:not(pre) > code) { font-family: var(--mono); font-size: 0.86em; background: var(--code-bg); border: 1px solid var(--line); padding: 1px 5px; }
+  .prose :global(pre) { font-family: var(--mono); font-size: 13.5px; line-height: 1.6; padding: 18px 20px; overflow-x: auto; border: 1px solid var(--line); background: var(--code-bg) !important; }
+  .prose :global(pre code) { font-family: inherit; }
+  .prose :global(table) { border-collapse: collapse; width: 100%; font-size: 15px; display: block; overflow-x: auto; }
+  .prose :global(th), .prose :global(td) { border: 1px solid var(--line); padding: 8px 12px; text-align: left; vertical-align: top; }
+  .prose :global(th) { background: var(--bg); font-weight: 600; }
+  .next { margin-top: 20px; padding: 22px 28px; display: grid; grid-template-columns: 1fr 20px; gap: 4px 16px; align-items: center; }
+  .next strong { font-size: 19px; grid-column: 1; }
+  .next :global(svg) { grid-column: 2; grid-row: 1 / span 2; }
+  .next:hover { border-color: var(--ink); }
+  .next:hover strong { color: var(--accent); }
+  @media (max-width: 760px) {
+    header { padding: 28px 20px 24px; }
+    .prose { padding: 28px 20px 40px; font-size: 16.5px; }
+    .prose :global(pre) { margin-left: -20px; margin-right: -20px; border-left: 0; border-right: 0; }
+  }
+</style>

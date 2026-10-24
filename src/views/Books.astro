@@ -1,0 +1,40 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import BookCard from '../components/BookCard.astro';
+import { routes, useT, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const tr = useT(lang);
+const books = (await getCollection('books')).sort((a, b) => a.data.order - b.data.order);
+const groups = [
+  { title: tr('books.ai'), note: 'Kindle · Amazon', items: books.filter((b) => b.data.group === 'ai') },
+  { title: tr('books.code'), note: 'Kindle · Amazon', items: books.filter((b) => b.data.group === 'code') },
+  { title: tr('books.free'), note: tr('books.freeNote'), items: books.filter((b) => b.data.group === 'free') },
+  { title: tr('books.finance'), note: tr('books.freeNote'), items: books.filter((b) => b.data.group === 'finance') },
+];
+---
+<Base lang={lang} title={tr('books.title')} description={tr('books.lead')} alternates={routes.books} current="books">
+  <div class="wrap">
+    <header class="page-title panel">
+      <span class="mono">/{tr('nav.books')} · {books.length}</span>
+      <h1>{tr('books.title')}</h1>
+      <p>{tr('books.lead')}</p>
+    </header>
+    {groups.map((g) => (
+      <section class="block">
+        <div class="head"><h2>{g.title}</h2><span class="mono">{g.note}</span></div>
+        <div class="list">
+          {g.items.map((b) => <BookCard book={b} lang={lang} />)}
+        </div>
+      </section>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .list { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .list > :global(:last-child:nth-child(odd)) { grid-column: 1 / -1; }
+  @media (max-width: 860px) { .list { grid-template-columns: 1fr; } }
+</style>

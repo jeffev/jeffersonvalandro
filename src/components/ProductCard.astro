@@ -1,0 +1,37 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Shot from './Shot.astro';
+import Icon from './Icon.astro';
+import { productImage } from '../lib/images';
+import { useT, type Lang } from '../i18n';
+
+interface Props { product: CollectionEntry<'products'>; lang: Lang; compact?: boolean }
+const { product, lang, compact = false } = Astro.props;
+const p = product.data;
+const tr = useT(lang);
+---
+<article class="card">
+  <Shot src={productImage(p.image)} alt={p.name} ratio="16 / 10" widths={[400, 640, 800]} sizes="(max-width: 860px) 100vw, 380px" />
+  <div class="body">
+    <div class="top">
+      <h3>{p.name}</h3>
+      <span class="price"><span class="mono">{tr('products.from')}</span> US$ {p.price.personal}</span>
+    </div>
+    {!compact && <p>{p.description[lang]}</p>}
+    <div class="links">
+      <a href={p.demo} target="_blank" rel="noopener">{tr('products.demo')} <Icon name="external" size={13} /></a>
+      <a href={p.buy} target="_blank" rel="noopener">{tr('products.buy')} <Icon name="arrow" size={13} /></a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .card { background: var(--paper); border: 1px solid var(--line); display: flex; flex-direction: column; }
+  .card :global(.shot) { border: 0; border-bottom: 1px solid var(--line); }
+  .body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  h3 { font-size: 18px; letter-spacing: -0.01em; }
+  .price { color: var(--accent); font-weight: 700; white-space: nowrap; }
+  .price .mono { font-weight: 400; }
+  p { color: var(--muted); font-size: 14.5px; flex: 1; }
+</style>

@@ -1,0 +1,83 @@
+[
+  {
+    "id": "kairo-invoice", "order": 1, "name": "Kairo Invoice", "kind": "app", "image": "kairo-invoice.jpg",
+    "price": { "personal": 49, "commercial": 99 },
+    "buy": "https://payhip.com/b/3tacJ", "demo": "https://kairo-invoice-demo.vercel.app",
+    "description": {
+      "pt": "App completo de faturamento: faturas em PDF, links de pagamento Stripe, lembretes, cobrança recorrente, despesas e relatórios.",
+      "en": "Complete invoicing app: PDF invoices, Stripe payment links, reminders, recurring billing, expenses and reports."
+    }
+  },
+  {
+    "id": "kairo-booking", "order": 2, "name": "Kairo Booking", "kind": "app", "image": "kairo-booking.jpg",
+    "price": { "personal": 59, "commercial": 119 },
+    "buy": "https://payhip.com/b/YK5VB", "demo": "https://kairo-booking-demo.vercel.app",
+    "description": {
+      "pt": "App de agendamento online: página de reservas, agenda da equipe, horários livres, sinal via Stripe, lembretes, calendário e relatórios.",
+      "en": "Online booking app: booking page, team schedules, slot engine, Stripe deposits, reminders, calendar and reports."
+    }
+  },
+  {
+    "id": "kairo-directory", "order": 3, "name": "Kairo Directory", "kind": "app", "image": "kairo-directory.jpg",
+    "price": { "personal": 49, "commercial": 99 },
+    "buy": "https://payhip.com/b/ed1jJ", "demo": "https://kairo-directory-demo.vercel.app",
+    "description": {
+      "pt": "SaaS de diretório e listagens: busca, categorias, páginas de SEO, envios com moderação, destaques pagos via Stripe, votos e newsletter.",
+      "en": "Directory and listings SaaS: search, categories, SEO pages, submissions with moderation, paid featured listings via Stripe, upvotes and newsletter."
+    }
+  },
+  {
+    "id": "kairo-ai-starter", "order": 4, "name": "Kairo AI Starter", "kind": "starter", "image": "kairo-ai-starter.jpg",
+    "price": { "personal": 39, "commercial": 79 },
+    "buy": "https://payhip.com/b/ZkP2y", "demo": "https://kairo-ai-demo.vercel.app",
+    "description": {
+      "pt": "Base de SaaS com login, chat de IA em streaming, créditos de uso e pagamentos com Stripe. Roda em modo demo sem chaves.",
+      "en": "SaaS starter with authentication, AI chat with streaming, usage credits and Stripe payments. Runs in demo mode without keys."
+    }
+  },
+  {
+    "id": "kairo-admin", "order": 5, "name": "Kairo Admin", "kind": "starter", "image": "kairo-admin.jpg",
+    "price": { "personal": 19, "commercial": 39 },
+    "buy": "https://payhip.com/b/kehrf", "demo": "https://kairo-admin-demo.jeffev123.workers.dev",
+    "description": {
+      "pt": "Painel administrativo com 23 telas: tabelas, gráficos, kanban, configurações e telas de login. Tema claro e escuro.",
+      "en": "Admin dashboard with 23 screens: data tables, charts, kanban, settings and auth pages. Light and dark themes."
+    }
+  },
+  {
+    "id": "kairo-blocks", "order": 6, "name": "Kairo Blocks", "kind": "site", "image": "kairo-blocks.jpg",
+    "price": { "personal": 29, "commercial": 59 },
+    "buy": "https://payhip.com/b/gD6od", "demo": "https://kairo-blocks-demo.jeffev123.workers.dev",
+    "description": {
+      "pt": "61 blocos de landing page em 14 categorias, um arquivo cada, com prévia ao vivo e visualizador de código.",
+      "en": "61 landing-page blocks in 14 categories, one file each, with a live preview and code viewer."
+    }
+  },
+  {
+    "id": "kairo-estate", "order": 7, "name": "Kairo Estate", "kind": "site", "image": "kairo-estate.jpg",
+    "price": { "personal": 39, "commercial": 79 },
+    "buy": "https://payhip.com/b/71AJn", "demo": "https://kairo-estate-demo.jeffev123.workers.dev",
+    "description": {
+      "pt": "Site de imobiliária com imóveis no mapa, filtros guardados na URL, página do imóvel e formulários de contato.",
+      "en": "Real-estate website with listings on a map, filters kept in the URL, property pages and lead forms."
+    }
+  },
+  {
+    "id": "kairo-studio", "order": 8, "name": "Kairo Studio", "kind": "site", "image": "kairo-studio.jpg",
+    "price": { "personal": 29, "commercial": 59 },
+    "buy": "https://payhip.com/b/KwUv8", "demo": "https://kairo-studio-demo.jeffev123.workers.dev",
+    "description": {
+      "pt": "Site de agência e portfólio com estudos de caso, serviços com preço e formulário de briefing.",
+      "en": "Agency and portfolio website with case studies, services with pricing and a project brief form."
+    }
+  },
+  {
+    "id": "kairo-mail", "order": 9, "name": "Kairo Mail", "kind": "site", "image": "kairo-mail.jpg",
+    "price": { "personal": 29, "commercial": 59 },
+    "buy": "https://payhip.com/b/71tTH", "demo": "https://kairo-mail-demo.jeffev123.workers.dev",
+    "description": {
+      "pt": "32 templates de e-mail transacional e de marketing feitos com React Email e Tailwind.",
+      "en": "32 transactional and marketing email templates built with React Email and Tailwind."
+    }
+  }
+]

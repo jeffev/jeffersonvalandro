@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import { routes, ui } from '../i18n';
+---
+<Base lang="pt" title={ui.pt['404.title']} alternates={{ pt: '/404', en: '/404' }} noindex>
+  <div class="wrap">
+    <header class="page-title panel">
+      <span class="mono">404</span>
+      <h1>{ui.pt['404.title']}</h1>
+      <p>{ui.pt['404.lead']} <a class="link" href={routes.home.pt}>{ui.pt['404.home']}</a></p>
+      <p lang="en">{ui.en['404.title']}. {ui.en['404.lead']} <a class="link" href={routes.home.en}>{ui.en['404.home']}</a></p>
+    </header>
+  </div>
+</Base>

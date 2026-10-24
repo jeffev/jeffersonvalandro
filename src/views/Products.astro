@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import BundleCard from '../components/BundleCard.astro';
+import Icon from '../components/Icon.astro';
+import profile from '../data/profile.json';
+import { routes, useT, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const tr = useT(lang);
+const products = (await getCollection('products')).sort((a, b) => a.data.order - b.data.order);
+const bundles = (await getCollection('bundles')).sort((a, b) => a.data.order - b.data.order);
+const groups = [
+  { title: tr('products.apps'), items: products.filter((p) => p.data.kind === 'app') },
+  { title: tr('products.starters'), items: products.filter((p) => p.data.kind === 'starter') },
+  { title: tr('products.sites'), items: products.filter((p) => p.data.kind === 'site') },
+];
+---
+<Base lang={lang} title={tr('products.title')} description={tr('products.lead')} alternates={routes.products} current="products">
+  <div class="wrap">
+    <header class="page-title panel">
+      <span class="mono">/{tr('nav.products')} · ValandroUI</span>
+      <h1>{tr('products.title')}</h1>
+      <p>{tr('products.lead')}</p>
+      <p class="mono stack">{tr('products.stack')}</p>
+    </header>
+
+    <section class="block">
+      <div class="head"><h2>{tr('products.bundles')}</h2><a class="mono" href={profile.links.store} target="_blank" rel="noopener">{tr('products.storeCta')} →</a></div>
+      <div class="bundles">
+        {bundles.map((b) => <BundleCard bundle={b} lang={lang} />)}
+      </div>
+    </section>
+
+    {groups.map((g) => (
+      <section class="block">
+        <div class="head"><h2>{g.title}</h2><span class="mono">{g.items.length}</span></div>
+        <div class="cards">
+          {g.items.map((p) => <ProductCard product={p} lang={lang} />)}
+        </div>
+      </section>
+    ))}
+
+    <p class="lite mono">
+      {tr('products.lite')}
+      <a class="link" href="https://github.com/jeffev/kairo-blocks-lite" target="_blank" rel="noopener">GitHub <Icon name="arrow" size={13} /></a>
+      <a class="link" href="https://kairo-blocks-lite.jeffev123.workers.dev" target="_blank" rel="noopener">demo <Icon name="external" size={13} /></a>
+    </p>
+
+    <section class="block">
+      <div class="apify panel">
+        <div>
+          <span class="mono">apify.com/jeffev · {profile.apifyActors} actors</span>
+          <h2>{tr('products.apifyTitle')}</h2>
+          <p>{tr('products.apifyLead')}</p>
+        </div>
+        <a class="btn solid" href={profile.links.apify} target="_blank" rel="noopener">{tr('products.apifyCta')} <Icon name="external" /></a>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .stack { margin-top: 14px; }
+  .bundles { display: grid; gap: 20px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .lite { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+  .apify { padding: 32px; display: flex; justify-content: space-between; align-items: center; gap: 28px; }
+  .apify h2 { font-size: 28px; letter-spacing: -0.02em; margin: 6px 0 8px; }
+  .apify p { color: var(--muted); max-width: 640px; }
+  @media (max-width: 960px) { .cards { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 640px) {
+    .cards { grid-template-columns: 1fr; }
+    .apify { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
+  }
+</style>

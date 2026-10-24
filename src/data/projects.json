@@ -1,0 +1,219 @@
+[
+  {
+    "id": "lastro",
+    "title": { "pt": "Lastro — CRM imobiliário", "en": "Lastro — Real Estate CRM" },
+    "year": "2026",
+    "featured": 1,
+    "image": "lastro.jpg",
+    "stack": ["FastAPI", "PostgreSQL", "React", "PWA", "Claude"],
+    "summary": {
+      "pt": "CRM para imobiliárias com assistente de IA que propõe ações para o corretor confirmar.",
+      "en": "CRM for real estate agencies with an AI assistant that proposes actions for the agent to confirm."
+    },
+    "description": {
+      "pt": "CRM para imobiliárias: caixa de leads que mede o tempo até a primeira resposta, funis de venda e locação, agenda de visitas, carteira de imóveis que cruza automaticamente com quem procura, e espelho de vendas de lançamentos com reserva e tabela de preços. Multiempresa com isolamento por Row Level Security no Postgres, instalável como PWA que funciona sem rede, e um assistente de IA (Claude ou Gemini, com a chave de cada usuário) que propõe ações para o corretor confirmar.",
+      "en": "CRM for Brazilian real estate agencies: lead inbox that measures time to first response, sales and rental pipelines, visit scheduling, a property portfolio that matches buyers automatically, and a sales grid for new developments with reservations and price tables. Multi-tenant on Postgres row-level security, installable as an offline PWA, with an AI assistant (Claude or Gemini, on each user's own key) that proposes actions for the agent to confirm."
+    },
+    "links": [{ "kind": "demo", "url": "https://lastro.jeffersonvalandro.com.br" }]
+  },
+  {
+    "id": "investlink",
+    "title": { "pt": "InvestLink — screener explicável", "en": "InvestLink — Explainable Investment Screener" },
+    "year": "2023 — 2026",
+    "featured": 2,
+    "image": "investlink.jpg",
+    "stack": ["Flask", "React", "PostgreSQL", "pandas", "CVM Open Data"],
+    "summary": {
+      "pt": "Screener de ações e FIIs com score explicável contra o próprio setor, a partir dos balanços da CVM.",
+      "en": "Stock and REIT screener with an explainable score against each sector, built on CVM filings."
+    },
+    "description": {
+      "pt": "Screener de ações e FIIs da B3 que pontua cada ativo contra o próprio setor e mostra, lado a lado, o argumento a favor e o alerta contra. Os fundamentos vêm dos balanços auditados da CVM, conferidos contra dados de mercado, com backtest que exibe a ressalva de viés de sobrevivência.",
+      "en": "Brazilian stock and REIT screener that scores each asset against its own sector and shows the case for it and the warning against it, side by side. Fundamentals come from audited CVM filings, reconciled against market data, with a backtest that shows its survivorship-bias caveat."
+    },
+    "links": [
+      { "kind": "demo", "url": "https://investlink.jeffersonvalandro.com.br" },
+      { "kind": "github", "url": "https://github.com/jeffev/Investlink" }
+    ]
+  },
+  {
+    "id": "vizion",
+    "title": { "pt": "Vizion — BI com IA", "en": "Vizion — AI-Assisted BI" },
+    "year": "2026",
+    "featured": 3,
+    "image": "vizion.jpg",
+    "stack": ["Next.js", "FastAPI", "DuckDB", "PostgreSQL", "Claude"],
+    "summary": {
+      "pt": "BI sem SQL: pergunte em linguagem natural e receba gráficos, dashboards e relatórios.",
+      "en": "BI without SQL: ask in plain language and get charts, dashboards and reports."
+    },
+    "description": {
+      "pt": "Business intelligence sem SQL: suba uma planilha ou conecte um banco, pergunte em linguagem natural e receba gráficos, dashboards de arrastar e soltar, modelos semânticos com medidas YTD/MoM/YoY, pipelines de ETL sem código e relatórios escritos pela IA. Cada usuário usa a própria chave do Claude ou do Gemini.",
+      "en": "Business intelligence without SQL: upload a spreadsheet or connect a database, ask questions in plain language and get charts, drag-and-drop dashboards, semantic models with YTD/MoM/YoY measures, no-code ETL pipelines and AI-written reports. Users bring their own Claude or Gemini key."
+    },
+    "links": [{ "kind": "demo", "url": "https://vizion.jeffersonvalandro.com.br" }]
+  },
+  {
+    "id": "swing-quant",
+    "title": { "pt": "Swing Quant — sistema de trading e estudo de 16 anos", "en": "Swing Quant — Trading System & 16-Year Study" },
+    "year": "2026",
+    "featured": 4,
+    "image": "swing-quant.png",
+    "stack": ["Python", "DuckDB", "pandas", "NumPy", "Streamlit", "GitHub Actions"],
+    "summary": {
+      "pt": "Swing trade quantitativo validado com walk-forward e Monte Carlo, e um estudo de 16 anos sobre se valeu mais que investir.",
+      "en": "Quantitative swing trading validated with walk-forward and Monte Carlo, plus a 16-year study on whether it beat investing."
+    },
+    "description": {
+      "pt": "Sistema quantitativo de swing trade para ações da B3 e do S&P 500 — validação com walk-forward, out-of-sample, Monte Carlo e estresse de custo, com screening diário automatizado — mais um estudo de 16 anos sobre se rodar isso de fato ganhava de simplesmente investir. 2,3 milhões de barras diárias, 26 classes de ativo, e o achado de que quase toda a vantagem aparente era juro sobre caixa parado.",
+      "en": "Quantitative swing-trading system for Brazilian and US equities — walk-forward, out-of-sample, Monte Carlo and cost-stress validation, with automated daily screening — plus a 16-year data study on whether running it actually beat investing. 2.3M daily bars, 26 asset classes, and the finding that most of the apparent edge was interest on idle cash."
+    },
+    "links": [
+      { "kind": "study", "url": "https://jeffev.github.io/swing-quant/" },
+      { "kind": "github", "url": "https://github.com/jeffev/swing-quant" }
+    ]
+  },
+  {
+    "id": "aria",
+    "title": { "pt": "ARIA — assistente pessoal com IA", "en": "ARIA — AI Personal Assistant" },
+    "year": "2026",
+    "image": "aria.jpg",
+    "stack": ["Next.js", "Prisma", "NextAuth", "Gemini", "Electron"],
+    "description": {
+      "pt": "Painel pessoal com uma assistente de IA que transforma texto ou voz em eventos, tarefas e notas via function calling do Gemini. Agenda semanal com recorrência, busca global, notificações do navegador, sincronização com o Google Calendar e um overlay desktop em Electron.",
+      "en": "Personal dashboard with an AI assistant that turns text or voice into calendar events, tasks and notes through Gemini function calling. Weekly agenda with recurrence, global search, browser notifications, Google Calendar sync and a desktop overlay in Electron."
+    },
+    "links": [
+      { "kind": "demo", "url": "https://aria.jeffersonvalandro.com.br" },
+      { "kind": "github", "url": "https://github.com/jeffev/aria" }
+    ]
+  },
+  {
+    "id": "tradelink",
+    "title": { "pt": "Tradelink — plataforma de análise de trades", "en": "Tradelink — Trading Analysis Platform" },
+    "year": "2025",
+    "image": "tradelink.png",
+    "stack": ["React", "NestJS", "Python", "FastAPI", "BullMQ", "PostgreSQL", "Redis"],
+    "description": {
+      "pt": "Plataforma web full-stack para traders: diário de trades com P&L, R:R, Sharpe/Sortino e análise psicológica; engine de backtesting multi-indicador (até 15 indicadores) com fila assíncrona BullMQ; simulador de DCA; Volume Profile (POC/VAH/VAL); e scanner de mercado com alertas.",
+      "en": "Full-stack web platform for traders: trade journal with P&L, R:R, Sharpe/Sortino and psychology tracking; multi-indicator backtesting engine (up to 15 indicators) with async BullMQ queue; DCA simulator; Volume Profile (POC/VAH/VAL); and market scanner with alerts."
+    },
+    "links": [
+      { "kind": "demo", "url": "https://tradelink.jeffersonvalandro.com.br" },
+      { "kind": "github", "url": "https://github.com/jeffev/tradelink" }
+    ]
+  },
+  {
+    "id": "ai-dev-kit",
+    "title": { "pt": "AI Dev Kit", "en": "AI Dev Kit" },
+    "year": "2025",
+    "image": "ai-dev-kit.png",
+    "stack": ["Claude Code", "Bash", "Python", "TUI"],
+    "description": {
+      "pt": "Bootstrap completo de IA para qualquer projeto — workflow spec-driven, auditor de qualidade em tempo real, TUI para gestão do ciclo de vida de features, smart commits com IA e hooks para Claude Code. Detecta sua stack e configura tudo com um comando.",
+      "en": "Full AI bootstrap for any project — spec-driven workflow, real-time quality auditor, TUI for feature lifecycle management, AI-powered smart commits, and Claude Code hooks. Detects your stack and configures everything with one command."
+    },
+    "links": [
+      { "kind": "site", "url": "https://jeffev.github.io/ai-dev-kit/" },
+      { "kind": "github", "url": "https://github.com/jeffev/ai-dev-kit" }
+    ]
+  },
+  {
+    "id": "archlens",
+    "title": { "pt": "archlens-ai — visualização de arquitetura", "en": "archlens-ai — Architecture Visualization" },
+    "year": "2025",
+    "image": "archlens.png",
+    "stack": ["TypeScript", "Node.js", "Claude Code", "Cytoscape.js"],
+    "description": {
+      "pt": "CLI que aponta para qualquer codebase e gera um relatório HTML autocontido com grafo interativo de arquitetura, health scores, detecção de anti-patterns, detecção de ciclos de dependência e sugestões de refatoração, usando o Claude Code.",
+      "en": "CLI tool that points at any codebase and generates a self-contained HTML report with an interactive architecture graph, health scores, anti-pattern detection, dependency cycle detection, and refactoring suggestions, powered by Claude Code."
+    },
+    "links": [
+      { "kind": "site", "url": "https://jeffev.github.io/archlens-ai" },
+      { "kind": "github", "url": "https://github.com/jeffev/archlens-ai" }
+    ]
+  },
+  {
+    "id": "ghost-doc",
+    "title": { "pt": "Ghost Doc", "en": "Ghost Doc" },
+    "year": "2024",
+    "image": "ghost-doc.png",
+    "stack": [],
+    "description": {
+      "pt": "Ferramenta de documentação automatizada que instrumenta funções com decorators para capturar chamadas, argumentos, valores de retorno e gerar fluxogramas interativos.",
+      "en": "Automated documentation tool that instruments functions with decorators to capture calls, arguments, return values, and generate live interactive flowcharts."
+    },
+    "links": [{ "kind": "github", "url": "https://github.com/jeffev/ghost-doc" }]
+  },
+  {
+    "id": "cloud-native",
+    "title": { "pt": "Cloud Native Task Platform", "en": "Cloud Native Task Platform" },
+    "year": "2025",
+    "stack": ["FastAPI", "PostgreSQL", "Redis", "Docker", "CI/CD"],
+    "description": {
+      "pt": "Plataforma de gerenciamento de tarefas cloud-native pronta para produção, construída com FastAPI, PostgreSQL, Redis, Docker e stack completa de observabilidade e CI/CD. Feita para demonstrar arquitetura backend escalável, processamento em background, práticas DevOps e fundamentos de SRE.",
+      "en": "Production-ready cloud-native task management platform built with FastAPI, PostgreSQL, Redis, Docker, and a full observability and CI/CD stack. Designed to demonstrate scalable backend architecture, background processing, DevOps practices, and SRE fundamentals."
+    },
+    "links": [{ "kind": "github", "url": "https://github.com/jeffev/cloud-native-task-platform" }]
+  },
+  {
+    "id": "gasto",
+    "title": { "pt": "Gastô — app de finanças pessoais", "en": "Gastô — Personal Finance App" },
+    "year": "2025",
+    "image": "gasto.png",
+    "stack": ["React Native", "Expo SDK 54", "TypeScript", "SQLite", "FastAPI", "Whisper"],
+    "description": {
+      "pt": "App Android nativo para controle de despesas pessoais, com registro por voz e texto em linguagem natural, classificação automática de categorias usando IA offline (TF-IDF + LinearSVC em TypeScript), banco de dados SQLite local e relatórios mensais visuais — sem internet.",
+      "en": "Native Android app for personal expense tracking with voice and natural language input, offline AI category classification (TF-IDF + LinearSVC in TypeScript), local SQLite storage, and visual monthly reports — no internet required."
+    },
+    "links": [{ "kind": "site", "url": "https://jeffev.github.io/gasto" }]
+  },
+  {
+    "id": "ipca",
+    "title": { "pt": "Preço dos alimentos x IPCA", "en": "Food Prices vs. IPCA" },
+    "year": "2024",
+    "image": "ipca.png",
+    "stack": ["Python", "pandas", "Kaggle"],
+    "description": {
+      "pt": "Investiga a relação entre preços de alimentos e o índice de inflação IPCA brasileiro, descobrindo padrões e identificando variações notáveis.",
+      "en": "Investigates the relationship between food prices and the Brazilian IPCA inflation index, uncovering patterns and identifying notable variations."
+    },
+    "links": [{ "kind": "kaggle", "url": "https://www.kaggle.com/code/jeffersonvalandro/analisando-inflacao-brasil" }]
+  },
+  {
+    "id": "fraud",
+    "title": { "pt": "Detecção de fraude em cartão de crédito", "en": "Credit Card Fraud Detection" },
+    "year": "2023",
+    "image": "fraud.png",
+    "stack": ["Python", "Kaggle"],
+    "description": {
+      "pt": "Modelo de machine learning para detectar transações fraudulentas de cartão de crédito, comparando técnicas de classificação.",
+      "en": "Machine learning model to detect fraudulent credit card transactions, comparing classification techniques."
+    },
+    "links": [{ "kind": "kaggle", "url": "https://www.kaggle.com/code/jeffersonvalandro/credit-card-fraud-detection" }]
+  },
+  {
+    "id": "house",
+    "title": { "pt": "Previsão de preço de imóveis", "en": "House Price Prediction" },
+    "year": "2023",
+    "image": "house.png",
+    "stack": ["Python", "Kaggle"],
+    "description": {
+      "pt": "Competição Kaggle: exploração de dados, pré-processamento e treinamento de modelos para prever preços de imóveis.",
+      "en": "Kaggle competition: data exploration, preprocessing, and model training to predict house prices."
+    },
+    "links": [{ "kind": "kaggle", "url": "https://www.kaggle.com/code/jeffersonvalandro/house-prices-prediction" }]
+  },
+  {
+    "id": "invest-compare",
+    "title": { "pt": "Comparação de investimentos no longo prazo", "en": "Long-Term Investment Comparison" },
+    "year": "2023",
+    "image": "invest-compare.png",
+    "stack": ["Python", "pandas", "Kaggle"],
+    "description": {
+      "pt": "Avaliação de desempenho de diversos ativos de investimento brasileiros em diferentes períodos de tempo.",
+      "en": "Performance evaluation of various Brazilian investment assets across different time periods."
+    },
+    "links": [{ "kind": "kaggle", "url": "https://www.kaggle.com/code/jeffersonvalandro/compara-o-de-investimentos" }]
+  }
+]

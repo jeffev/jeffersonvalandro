@@ -1,0 +1,45 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Shot from './Shot.astro';
+import Icon from './Icon.astro';
+import { projectImage } from '../lib/images';
+import { useT, type Lang } from '../i18n';
+
+interface Props { project: CollectionEntry<'projects'>; lang: Lang; full?: boolean; eager?: boolean }
+const { project, lang, full = false, eager = false } = Astro.props;
+const p = project.data;
+const tr = useT(lang);
+const text = full || !p.summary ? p.description[lang] : p.summary[lang];
+const meta = [p.year, ...p.stack.slice(0, full ? 7 : 3).map((s) => s.toLowerCase())].join(' · ');
+const img = projectImage(p.image);
+const contain = ['gasto.png', 'ghost-doc.png'].includes(p.image ?? '');
+---
+<article class:list={['item', { full }]}>
+  <Shot
+    src={img} alt={p.title[lang]} label={p.title[lang]} sub={p.stack.slice(0, 3).join(' · ')}
+    fit={contain ? 'contain' : 'cover'} eager={eager}
+    sizes={full ? '(max-width: 860px) 100vw, 360px' : '(max-width: 860px) 100vw, 200px'}
+  />
+  <div>
+    <span class="mono">{meta}</span>
+    <h3>{p.title[lang]}</h3>
+    <p>{text}</p>
+    <div class="links">
+      {p.links.map((l) => (
+        <a href={l.url} target="_blank" rel="noopener">
+          {tr(`link.${l.kind}`)} <Icon name={l.kind === 'demo' || l.kind === 'site' || l.kind === 'study' ? 'external' : 'arrow'} size={13} />
+        </a>
+      ))}
+    </div>
+  </div>
+</article>
+
+<style>
+  .item { background: var(--paper); padding: 24px; display: grid; grid-template-columns: 200px 1fr; gap: 22px; align-items: start; }
+  .item.full { grid-template-columns: 360px 1fr; }
+  h3 { font-size: 21px; letter-spacing: -0.01em; line-height: 1.25; margin-top: 4px; }
+  p { color: var(--muted); font-size: 15px; margin: 6px 0 12px; }
+  @media (max-width: 860px) {
+    .item, .item.full { grid-template-columns: 1fr; padding: 18px; }
+  }
+</style>

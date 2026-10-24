@@ -1,0 +1,77 @@
+---
+import Icon from './Icon.astro';
+import { routes, useT, type Lang, type PageKey } from '../i18n';
+
+interface Props { lang: Lang; alternates: Record<Lang, string>; current?: PageKey }
+const { lang, alternates, current } = Astro.props;
+const tr = useT(lang);
+const items: { key: PageKey; label: string }[] = [
+  { key: 'projects', label: tr('nav.projects') },
+  { key: 'products', label: tr('nav.products') },
+  { key: 'books', label: tr('nav.books') },
+  { key: 'articles', label: tr('nav.articles') },
+  { key: 'resume', label: tr('nav.resume') },
+];
+const other: Lang = lang === 'pt' ? 'en' : 'pt';
+---
+<header class="wrap">
+  <div class="bar">
+    <a class="logo" href={routes.home[lang]}>jefferson<i>.</i>valandro</a>
+    <nav aria-label={tr('nav.menu')}>
+      <ul class="mono">
+        {items.map((i) => (
+          <li>
+            <a href={routes[i.key][lang]} aria-current={current === i.key ? 'page' : undefined}>/{i.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <div class="tools mono">
+      <a href={alternates[other]} hreflang={other === 'pt' ? 'pt-BR' : 'en'} lang={other === 'pt' ? 'pt-BR' : 'en'} title={tr('lang.switch')}>
+        {lang === 'pt' ? <><b>[PT]</b> / EN</> : <>PT / <b>[EN]</b></>}
+      </a>
+      <button type="button" class="theme" aria-label={tr('theme.toggle')} title={tr('theme.toggle')}>
+        <span class="sun"><Icon name="sun" /></span><span class="moon"><Icon name="moon" /></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('header .theme');
+  btn?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const dark = root.dataset.theme
+      ? root.dataset.theme === 'dark'
+      : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.dataset.theme = dark ? 'light' : 'dark';
+    try { localStorage.setItem('theme', root.dataset.theme); } catch {}
+  });
+</script>
+
+<style>
+  .bar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--line); }
+  .logo { font-weight: 700; letter-spacing: -0.02em; font-size: 17px; }
+  .logo i { color: var(--accent); font-style: normal; }
+  nav ul { display: flex; gap: 22px; }
+  nav a:hover, nav a[aria-current='page'] { color: var(--accent); }
+  nav a[aria-current='page'] { text-decoration: underline; text-underline-offset: 4px; }
+  .tools { display: flex; align-items: center; gap: 14px; }
+  .tools b { color: var(--ink); font-weight: 500; }
+  .tools a:hover { color: var(--accent); }
+  .theme { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid var(--line); color: var(--ink); }
+  .theme:hover { border-color: var(--ink); }
+  .theme .sun { display: none; }
+  :global(:root[data-theme='dark']) .theme .sun { display: block; }
+  :global(:root[data-theme='dark']) .theme .moon { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .theme .sun { display: block; }
+    :global(:root:not([data-theme='light'])) .theme .moon { display: none; }
+  }
+  @media (max-width: 860px) {
+    .bar { flex-wrap: wrap; row-gap: 10px; }
+    nav { order: 3; width: 100%; }
+    nav ul { flex-wrap: wrap; gap: 6px 18px; }
+  }
+  @media print { header { display: none; } }
+</style>

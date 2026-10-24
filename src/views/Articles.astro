@@ -1,0 +1,52 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { listingFor, readingMinutes, themes } from '../lib/articles';
+import { articleUrl, routes, useT, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const tr = useT(lang);
+const list = await listingFor(lang);
+---
+<Base lang={lang} title={tr('articles.title')} description={tr('articles.lead')} alternates={routes.articles} current="articles">
+  <div class="wrap">
+    <header class="page-title panel">
+      <span class="mono">/{tr('nav.articles')} · {list.length}</span>
+      <h1>{tr('articles.title')}</h1>
+      <p>{tr('articles.lead')}</p>
+    </header>
+    {themes.map((theme) => {
+      const items = list.filter((x) => x.article.data.theme === theme);
+      return items.length > 0 && (
+        <section class="block">
+          <div class="head"><h2>{tr(`theme.${theme}`)}</h2><span class="mono">{items.length}</span></div>
+          <ul class="arts">
+            {items.map(({ article: a, foreign }) => (
+              <li>
+                <a href={articleUrl(foreign ? 'pt' : lang, a.data.slug)} hreflang={foreign ? 'pt-BR' : undefined}>
+                  <span class="t">{a.data.title}</span>
+                  <span class="d">{a.data.description}</span>
+                  <span class="mono">{readingMinutes(a.body)} {tr('articles.min')}{foreign && ` · ${tr('articles.ptOnly')}`}</span>
+                  <Icon name="arrow" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      );
+    })}
+  </div>
+</Base>
+
+<style>
+  .arts { border: 1px solid var(--line); background: var(--line); display: grid; gap: 1px; }
+  .arts a { display: grid; grid-template-columns: 1fr 20px; gap: 4px 20px; padding: 20px 24px; background: var(--paper); }
+  .t { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; }
+  .d { color: var(--muted); font-size: 15px; grid-column: 1; }
+  .arts .mono { grid-column: 1; }
+  .arts :global(svg) { grid-column: 2; grid-row: 1 / span 3; align-self: center; color: var(--muted); }
+  .arts a:hover .t { color: var(--accent); }
+  .arts a:hover :global(svg) { color: var(--accent); }
+  @media (max-width: 640px) { .arts a { padding: 18px; grid-template-columns: 1fr; } .arts :global(svg) { display: none; } }
+</style>

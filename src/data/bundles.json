@@ -1,0 +1,22 @@
+[
+  {
+    "id": "complete-kit", "order": 1, "name": "Kairo Complete Kit", "image": "kairo-complete-kit.jpg",
+    "price": { "personal": 179, "commercial": 359 },
+    "buy": "https://payhip.com/b/CP8el",
+    "includes": ["kairo-invoice", "kairo-booking", "kairo-directory", "kairo-ai-starter", "kairo-admin", "kairo-blocks", "kairo-estate", "kairo-studio", "kairo-mail"],
+    "description": {
+      "pt": "Todos os templates num pacote só: os três apps SaaS, os starters e os sites.",
+      "en": "Every template in one bundle: the three SaaS apps, the starters and the websites."
+    }
+  },
+  {
+    "id": "saas-kit", "order": 2, "name": "Kairo SaaS Kit", "image": "kairo-saas-kit.jpg",
+    "price": { "personal": 99, "commercial": 199 },
+    "buy": "https://payhip.com/b/9DNRc",
+    "includes": ["kairo-invoice", "kairo-booking", "kairo-directory"],
+    "description": {
+      "pt": "Os três apps SaaS completos, com Stripe, e-mails e modo demo.",
+      "en": "The three complete SaaS apps, with Stripe, emails and demo mode."
+    }
+  }
+]

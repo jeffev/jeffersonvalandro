@@ -1,0 +1,151 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import profile from '../data/profile.json';
+import { routes, split, useT, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const tr = useT(lang);
+const jobs = (await getCollection('experience')).sort((a, b) => a.data.order - b.data.order);
+const pdf = lang === 'pt' ? '/downloads/jefferson-valandro-curriculo.pdf' : '/downloads/jefferson-valandro-resume.pdf';
+const encoded = [...Buffer.from(['jeffev123', 'gmail.com'].join('@')).toString('base64')].reverse().join('');
+---
+<Base lang={lang} title={tr('resume.title')} description={profile.summary[lang]} alternates={routes.resume} current="resume">
+  <div class="wrap">
+    <article class="cv panel">
+      <header>
+        <div class="actions no-print">
+          <a class="btn accent" href={pdf} download><Icon name="download" /> {tr('resume.pdf')}</a>
+          <button type="button" class="btn print"><Icon name="print" /> {tr('resume.print')}</button>
+        </div>
+        <span class="mono no-print">/{tr('nav.resume')}</span>
+        <h1>{profile.name}</h1>
+        <p class="headline">{profile.headline[lang]}</p>
+        <ul class="contact">
+          <li>{tr('spec.baseVal')}</li>
+          <li><a href="https://jeffersonvalandro.com.br">jeffersonvalandro.com.br</a></li>
+          <li><a href={profile.links.linkedin}>linkedin.com/in/jeffersonvalandro</a></li>
+          <li><a href={profile.links.github}>github.com/jeffev</a></li>
+          <li><button type="button" class="email link" data-e={encoded} data-copied={tr('cta.copied')}>{tr('cta.email')}</button></li>
+        </ul>
+      </header>
+
+      <section>
+        <h2>{tr('resume.summary')}</h2>
+        <p>{profile.summary[lang]}</p>
+      </section>
+
+      <section>
+        <h2>{tr('resume.experience')}</h2>
+        {jobs.map(({ data: j }) => (
+          <div class="job">
+            <div class="job-head">
+              <h3>{j.role[lang]} <span>· {j.company}</span></h3>
+              <span class="period">{j.period[lang]}</span>
+            </div>
+            <p class="sum">{j.summary[lang]}</p>
+            <ul>{j.bullets[lang].map((b) => <li>{b}</li>)}</ul>
+            <p class="stack">{j.stack.join(' · ')}</p>
+          </div>
+        ))}
+      </section>
+
+      <section>
+        <h2>{tr('resume.side')}</h2>
+        <ul class="side">
+          {profile.sideProjects.map((s) => (
+            <li><a href={s.url}><strong>{lang === 'en' && 'nameEn' in s ? s.nameEn : s.name}</strong></a> — {s.text[lang]}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section>
+        <h2>{tr('resume.education')}</h2>
+        {profile.education.map((e) => (
+          <div class="job-head edu">
+            <h3>{e.title[lang]} <span>· {e.school}</span>{e.note && <span> · {e.note[lang]}</span>}</h3>
+            <span class="period">{e.period}</span>
+          </div>
+        ))}
+      </section>
+
+      <section>
+        <h2>{tr('resume.skills')}</h2>
+        <dl class="skills">
+          {profile.skills.map((s) => (
+            <div><dt>{s.group[lang]}</dt><dd>{s.items.map((i) => split(i, lang)).join(', ')}</dd></div>
+          ))}
+        </dl>
+      </section>
+    </article>
+  </div>
+</Base>
+
+<script>
+  document.querySelector('.cv .print')?.addEventListener('click', () => window.print());
+</script>
+
+<style>
+  .cv { margin-top: 40px; padding: 48px 56px; max-width: 920px; }
+  header { border-bottom: 2px solid var(--ink); padding-bottom: 20px; position: relative; }
+  .actions { position: absolute; right: 0; top: 0; display: flex; gap: 8px; }
+  .actions .btn { padding: 8px 14px; font-size: 14px; }
+  h1 { font-size: clamp(32px, 4.4vw, 44px); letter-spacing: -0.03em; line-height: 1.1; margin-top: 8px; }
+  .headline { font-size: 18px; color: var(--muted); margin-top: 4px; }
+  .contact { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 12px; font-size: 14.5px; }
+  .contact a, .contact .link { color: var(--accent); }
+  .contact a:hover, .contact .link:hover { text-decoration: underline; }
+  section { margin-top: 28px; }
+  h2 { font-family: var(--mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); border-bottom: 1px solid var(--line); padding-bottom: 6px; margin-bottom: 14px; }
+  .job + .job { margin-top: 22px; }
+  .job-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+  h3 { font-size: 17.5px; letter-spacing: -0.01em; }
+  h3 span { font-weight: 400; color: var(--muted); }
+  .period { font-family: var(--mono); font-size: 13px; color: var(--muted); white-space: nowrap; }
+  .sum { margin-top: 4px; }
+  .job ul { list-style: square; padding-left: 1.2em; margin-top: 6px; }
+  .job li + li { margin-top: 3px; }
+  .job li::marker { color: var(--accent); }
+  .stack { font-family: var(--mono); font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+  .side { list-style: square; padding-left: 1.2em; }
+  .side li + li { margin-top: 4px; }
+  .side li::marker { color: var(--accent); }
+  .edu + .edu { margin-top: 8px; }
+  .skills div { display: grid; grid-template-columns: 220px 1fr; gap: 16px; padding: 5px 0; }
+  .skills dt { font-weight: 600; }
+  @media (max-width: 760px) {
+    .cv { padding: 24px 20px; }
+    .actions { position: static; margin-bottom: 16px; flex-wrap: wrap; }
+    .job-head { flex-direction: column; gap: 0; }
+    .skills div { grid-template-columns: 1fr; gap: 0; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 12mm 14mm; }
+    :global(body) { background: #fff !important; color: #111; font-size: 9.6pt; line-height: 1.36; }
+    :global(.skip), .no-print { display: none !important; }
+    .wrap { padding: 0; max-width: none; }
+    .cv { margin: 0; padding: 0; border: 0; max-width: none; background: #fff; }
+    header { position: static; border-bottom-width: 1.5pt; padding-bottom: 7pt; }
+    h1 { font-size: 20pt; margin: 0; color: #111; }
+    .headline { font-size: 11pt; color: #333; margin-top: 1pt; }
+    .contact { font-size: 9pt; margin-top: 4pt; gap: 2pt 12pt; }
+    .contact a, .contact .link { color: #111; text-decoration: none; }
+    section { margin-top: 9pt; }
+    h2 { font-size: 8.5pt; color: #111; margin-bottom: 5pt; padding-bottom: 2pt; border-color: #999; break-after: avoid; }
+    h3 { font-size: 10.2pt; }
+    h3 span, .period, .stack { color: #444; }
+    .period { font-size: 8.5pt; }
+    .job { break-inside: avoid; }
+    .job + .job { margin-top: 7pt; }
+    .sum { margin-top: 1pt; }
+    .job ul { margin-top: 2pt; }
+    .job li + li, .side li + li { margin-top: 0; }
+    .stack { font-size: 7.8pt; margin-top: 2pt; }
+    .skills div { grid-template-columns: 130pt 1fr; padding: 0; }
+    .edu + .edu { margin-top: 3pt; }
+    .side a { color: #111; text-decoration: none; }
+  }
+</style>
