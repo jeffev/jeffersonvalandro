@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import BookCard from '../components/BookCard.astro';
+import Coffee from '../components/Coffee.astro';
 import { routes, useT, type Lang } from '../i18n';
 
 interface Props { lang: Lang }
@@ -9,10 +10,10 @@ const { lang } = Astro.props;
 const tr = useT(lang);
 const books = (await getCollection('books')).sort((a, b) => a.data.order - b.data.order);
 const groups = [
-  { title: tr('books.ai'), note: 'Kindle · Amazon', items: books.filter((b) => b.data.group === 'ai') },
-  { title: tr('books.code'), note: 'Kindle · Amazon', items: books.filter((b) => b.data.group === 'code') },
-  { title: tr('books.free'), note: tr('books.freeNote'), items: books.filter((b) => b.data.group === 'free') },
-  { title: tr('books.finance'), note: tr('books.freeNote'), items: books.filter((b) => b.data.group === 'finance') },
+  { id: 'livros', title: tr('books.ai'), note: 'Kindle · Amazon', items: books.filter((b) => b.data.group === 'ai') },
+  { id: 'codigo', title: tr('books.code'), note: 'Kindle · Amazon', items: books.filter((b) => b.data.group === 'code') },
+  { id: 'gratis', title: tr('books.free'), note: tr('books.freeNote'), items: books.filter((b) => b.data.group === 'free') },
+  { id: 'financas', title: tr('books.finance'), note: tr('books.freeNote'), items: books.filter((b) => b.data.group === 'finance') },
 ];
 ---
 <Base lang={lang} title={tr('books.title')} description={tr('books.lead')} alternates={routes.books} current="books">
@@ -23,11 +24,12 @@ const groups = [
       <p>{tr('books.lead')}</p>
     </header>
     {groups.map((g) => (
-      <section class="block">
+      <section class="block" id={g.id}>
         <div class="head"><h2>{g.title}</h2><span class="mono">{g.note}</span></div>
         <div class="list">
           {g.items.map((b) => <BookCard book={b} lang={lang} />)}
         </div>
+        {g.id === 'gratis' && <Coffee lang={lang} text="coffee.books" more="#livros" />}
       </section>
     ))}
   </div>

@@ -51,7 +51,7 @@ const stats = [
         <Image src={me} alt="Jefferson Valandro" widths={[340, 520, 680]} sizes="(max-width: 860px) 100vw, 340px" format="webp" quality={80} loading="eager" fetchpriority="high" />
         <dl class="spec mono">
           <div><dt>{tr('spec.status')}</dt><dd class="ok">● {tr('spec.statusVal')}</dd></div>
-          <div><dt>{tr('spec.stack')}</dt><dd>Java · Python · TypeScript · IA</dd></div>
+          <div><dt>{tr('spec.stack')}</dt><dd>{lang === 'pt' ? 'Java · Python · TypeScript · IA' : 'Java · Python · TypeScript · AI'}</dd></div>
           <div><dt>{tr('spec.base')}</dt><dd>{tr('spec.baseVal')}</dd></div>
         </dl>
       </aside>

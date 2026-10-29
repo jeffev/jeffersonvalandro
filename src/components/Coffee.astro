@@ -1,0 +1,27 @@
+---
+// Discreet "buy me a coffee" strip, shown only next to free content (free books, end of articles).
+import Icon from './Icon.astro';
+import profile from '../data/profile.json';
+import { useT, type Lang } from '../i18n';
+
+interface Props { lang: Lang; text: 'coffee.books' | 'coffee.article'; more?: string }
+const { lang, text, more } = Astro.props;
+const tr = useT(lang);
+---
+<aside class="coffee">
+  <p>{tr(text)}</p>
+  <div class="links">
+    <a class="btn" href={profile.links.coffee} target="_blank" rel="noopener"><Icon name="coffee" /> {tr('coffee.cta')}</a>
+    {more && <a class="more mono" href={more}>{tr('coffee.paid')} →</a>}
+  </div>
+</aside>
+
+<style>
+  .coffee { margin-top: 20px; padding: 18px 24px; border: 1px dashed var(--line); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .coffee p { color: var(--muted); }
+  .links { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .btn { padding: 9px 14px; font-size: 14px; }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .more { color: var(--accent); }
+  @media print { .coffee { display: none; } }
+</style>

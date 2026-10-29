@@ -2,6 +2,7 @@
 import { render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
+import Coffee from '../components/Coffee.astro';
 import { articlesFor, counterpart, readingMinutes, type Article } from '../lib/articles';
 import { articleUrl, routes, useT, type Lang } from '../i18n';
 
@@ -28,6 +29,7 @@ const next = all[(all.findIndex((a) => a.id === article.id) + 1) % all.length];
         <Content />
       </div>
     </article>
+    <Coffee lang={lang} text="coffee.article" />
     {next && next.id !== article.id && (
       <a class="next panel" href={articleUrl(lang, next.data.slug)}>
         <span class="mono">{tr('articles.next')} · {tr(`theme.${next.data.theme}`)}</span>
