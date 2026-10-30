@@ -54,10 +54,29 @@
     "links": [{ "kind": "demo", "url": "https://vizion.jeffersonvalandro.com.br" }]
   },
   {
+    "id": "investlink-mcp",
+    "title": { "pt": "InvestLink MCP — servidor MCP com RAG", "en": "InvestLink MCP — MCP Server with RAG" },
+    "year": "2026",
+    "featured": 4,
+    "image": "investlink-mcp.png",
+    "stack": ["Python", "MCP", "PostgreSQL", "pgvector", "EmbeddingGemma", "Gemini", "Docker"],
+    "summary": {
+      "pt": "Servidor MCP que dá a qualquer assistente de IA a documentação do InvestLink, por RAG, e SQL somente leitura no banco, com uma demo pública que mostra cada chamada.",
+      "en": "MCP server that gives any AI assistant InvestLink's documentation, through RAG, and read-only SQL on its database, with a public demo that shows every call."
+    },
+    "description": {
+      "pt": "Servidor MCP (Model Context Protocol) com seis ferramentas: busca híbrida com pgvector e EmbeddingGemma rodando em CPU sobre 160 seções de documentação escritas a partir do código, e consultas somente leitura ao banco de mercado, com o próprio PostgreSQL como barreira de segurança. A busca foi medida pergunta a pergunta até acertar 29 de 29. Na demo pública, um Gemini gratuito escolhe as ferramentas e um painel mostra cada chamada ao vivo — e documentar o código revelou cinco bugs do InvestLink, corrigidos com teste.",
+      "en": "MCP (Model Context Protocol) server with six tools: hybrid search with pgvector and EmbeddingGemma running on CPU over 160 documentation sections written from the code, and read-only queries on the market database, with PostgreSQL itself as the security barrier. Retrieval was measured question by question until it hit 29 out of 29. In the public demo, a free Gemini picks the tools and a panel shows every call live — and documenting the code uncovered five InvestLink bugs, fixed with tests."
+    },
+    "links": [
+      { "kind": "demo", "url": { "pt": "https://investlink.jeffersonvalandro.com.br/mcp-demo", "en": "https://investlink.jeffersonvalandro.com.br/mcp-demo/en" } },
+      { "kind": "about", "url": { "pt": "https://investlink.jeffersonvalandro.com.br/mcp-demo/sobre", "en": "https://investlink.jeffersonvalandro.com.br/mcp-demo/en/about" } }
+    ]
+  },
+  {
     "id": "swing-quant",
     "title": { "pt": "Swing Quant — sistema de trading e estudo de 16 anos", "en": "Swing Quant — Trading System & 16-Year Study" },
     "year": "2026",
-    "featured": 4,
     "image": "swing-quant.png",
     "stack": ["Python", "DuckDB", "pandas", "NumPy", "Streamlit", "GitHub Actions"],
     "summary": {

@@ -15,7 +15,11 @@ const projects = defineCollection({
     stack: z.array(z.string()),
     summary: i18n.optional(),
     description: i18n,
-    links: z.array(z.object({ kind: z.enum(['demo', 'github', 'site', 'study', 'kaggle']), url: z.string().url() })),
+    // url por idioma quando o destino tem versão em inglês (a demo do MCP tem /mcp-demo e /mcp-demo/en).
+    links: z.array(z.object({
+      kind: z.enum(['demo', 'github', 'site', 'study', 'kaggle', 'about']),
+      url: z.union([z.string().url(), z.object({ pt: z.string().url(), en: z.string().url() })]),
+    })),
   }),
 });
 

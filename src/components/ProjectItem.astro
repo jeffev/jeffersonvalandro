@@ -26,8 +26,8 @@ const contain = ['gasto.png', 'ghost-doc.png'].includes(p.image ?? '');
     <p>{text}</p>
     <div class="links">
       {p.links.map((l) => (
-        <a href={l.url} target="_blank" rel="noopener">
-          {tr(`link.${l.kind}`)} <Icon name={l.kind === 'demo' || l.kind === 'site' || l.kind === 'study' ? 'external' : 'arrow'} size={13} />
+        <a href={typeof l.url === 'string' ? l.url : l.url[lang]} target="_blank" rel="noopener">
+          {tr(`link.${l.kind}`)} <Icon name={l.kind === 'github' || l.kind === 'kaggle' ? 'arrow' : 'external'} size={13} />
         </a>
       ))}
     </div>
