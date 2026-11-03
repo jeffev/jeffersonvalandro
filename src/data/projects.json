@@ -74,6 +74,25 @@
     ]
   },
   {
+    "id": "hollowtest",
+    "title": { "pt": "hollowtest — testes que não testam nada", "en": "hollowtest — Tests That Test Nothing" },
+    "year": "2026",
+    "image": "hollowtest.png",
+    "stack": ["Node.js", "Babel", "Python", "npm", "Claude Code"],
+    "summary": {
+      "pt": "Ferramenta de código aberto que encontra testes que passam mesmo com o código quebrado, em JS, TS e Python.",
+      "en": "Open source tool that finds tests that pass even when the code is broken, in JS, TS and Python."
+    },
+    "description": {
+      "pt": "Ferramenta de linha de comando, de código aberto e publicada no npm, que encontra testes que não conseguem falhar: sem nenhuma asserção, toBeNull sem parênteses, asserção que só roda dentro do catch, .resolves sem await, mock do próprio módulo testado. Lê JS e TS com o parser do Babel e Python com o ast da biblioteca padrão, e o modo --mutate quebra o código de propósito para mostrar qual mudança nenhum teste percebe. Calibrada em 18 repositórios conhecidos, achou testes ocos no zod, no requests e no swr, com as correções enviadas aos projetos. Tem playground no navegador, plugin do ESLint e plugin do Claude Code com um hook que devolve o teste oco ao agente. Um experimento com 64 sessões mostrou que os agentes testados não escreveram testes ocos: o hábito é humano antes de ser da IA.",
+      "en": "Open source command-line tool, published on npm, that finds tests that cannot fail: no assertion at all, toBeNull without parentheses, an assertion that only runs inside a catch, an unawaited .resolves, a mock of the very module under test. It reads JS and TS with the Babel parser and Python with the standard library's ast, and --mutate breaks the code on purpose to show which changes no test notices. Calibrated on 18 well-known repositories, it found hollow tests in zod, requests and swr, with fixes sent upstream. It ships a browser playground, an ESLint plugin and a Claude Code plugin whose hook sends hollow tests back to the agent. An experiment with 64 sessions found that the agents tested did not write hollow tests: the habit is human before it is AI."
+    },
+    "links": [
+      { "kind": "demo", "url": "https://jeffev.github.io/hollowtest/" },
+      { "kind": "github", "url": "https://github.com/jeffev/hollowtest" }
+    ]
+  },
+  {
     "id": "swing-quant",
     "title": { "pt": "Swing Quant — sistema de trading e estudo de 16 anos", "en": "Swing Quant — Trading System & 16-Year Study" },
     "year": "2026",
